@@ -2,8 +2,8 @@
 
 ## English
 Welcome to the chefalacarte QR menu.
-Discover our selected dishes and drinks with a simple and clean menu experience.
+Discover our selected dishes and drinks
 
 ## Türkçe
 chefalacarte QR menüsüne hoş geldiniz.
-Sade ve temiz bir menü deneyimiyle özenle seçilmiş yemek ve içeceklerimizi keşfedin.
+ özenle seçilmiş yemek ve içeceklerimizi keşfedin.
