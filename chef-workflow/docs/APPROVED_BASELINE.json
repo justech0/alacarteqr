@@ -1,0 +1,36 @@
+{
+  "approval_date": "2026-10-13",
+  "purpose": "Frozen visual reference. Integration edits remain permitted under DESIGN_LOCK.md.",
+  "files": [
+    {
+      "relative_path": "chef-onizleme.html",
+      "sha256": "cf61eeff96175dd0573ecaf48dc966ebd43199c6257c16ef49142c3723cac492",
+      "bytes": 280345
+    },
+    {
+      "relative_path": "public_html/index.html",
+      "sha256": "31b656e8da828339fdde9da6c5c5f20eeef7728bd548835264801369a378a038",
+      "bytes": 7644
+    },
+    {
+      "relative_path": "public_html/style.css",
+      "sha256": "d1f281de3d1bf28eb458d2211ca37191e224108b010776ce57b8aef148be29ea",
+      "bytes": 13542
+    },
+    {
+      "relative_path": "public_html/app.js",
+      "sha256": "2c795763aa2bfa2f00758ca0fb43c41356202a8ff0b10629e553cf4347406461",
+      "bytes": 45875
+    },
+    {
+      "relative_path": "source/app.js",
+      "sha256": "9d3512b437b08188fe1d7be8c8a1c30b0acf48d50ad3e916080b5927a15a8817",
+      "bytes": 19141
+    },
+    {
+      "relative_path": "source/menu.json",
+      "sha256": "8475f8a90672d7127629690a49a04f9d2ccdbc410798e106c62f135c8c3bb6b5",
+      "bytes": 21785
+    }
+  ]
+}
