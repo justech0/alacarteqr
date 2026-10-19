@@ -7,9 +7,17 @@ Read AGENTS.md, PROJECT.md, and chef-workflow/CONTRACT.md.
 Read docs/API_CONTRACT.md and the current function parity table.
 Use Ponytail. Use Context7 or Motion documentation only for unresolved implementation details.
 Preserve the approved guest design while connecting real data.
+Preserve revision 1 in DESIGN_LOCK.md, Approved revisions.
+Compare the guest files with current_revision in APPROVED_BASELINE.json before and after each edit.
+Do not run visual checks. Gemini verifies the live menu in Task 09.
 
 ## Guest menu
 
+Choose one editable guest source. Record it in PROJECT.md.
+Build or copy it to public_html. Do not edit three copies of index.html by hand.
+The preview bundles its menu data inside index.html. Find it by searching for the 24 product names.
+Check callers before removing stale preview files: root app.js, style.css, menu-data.js, public_html/app.js, and public_html/style.css.
+Update the package.json test script. It still checks the rejected preview files.
 Implement the documented public menu endpoint with prepared database queries.
 Keep schema migration logic outside the endpoint.
 Exclude admin, private feedback, credentials, and internal paths from public responses.

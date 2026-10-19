@@ -26,6 +26,8 @@ Prefer local assets and explicit directives over broad unsafe allowances.
 Check actual response headers under the deployment-compatible local server.
 Keep Hostinger-specific header verification listed for the later authorized deployment check.
 Check configuration, SQL, backups, logs, repository metadata, and error pages for disclosure.
+Search source, tests, logs, and reports for valid test passwords and credential files.
+Confirm the credentials file stays outside Git and public_html.
 Check public and private cache separation.
 Review external fetches only where they exist.
 Restrict translation destinations and redirect behavior.

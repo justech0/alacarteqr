@@ -1,0 +1,260 @@
+﻿[
+    {
+        "path":  "database/cli.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\cli.php"
+    },
+    {
+        "path":  "database/config.example.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\config.example.php"
+    },
+    {
+        "path":  "database/lib.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\lib.php"
+    },
+    {
+        "path":  "database/media-cli.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\media-cli.php"
+    },
+    {
+        "path":  "database/migrations/2026101401_foundation.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\migrations\\2026101401_foundation.php"
+    },
+    {
+        "path":  "database/migrations/2026101402_operational_support.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\migrations\\2026101402_operational_support.php"
+    },
+    {
+        "path":  "database/migrations/2026101501_media_lifecycle.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\migrations\\2026101501_media_lifecycle.php"
+    },
+    {
+        "path":  "database/recover-owner.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\recover-owner.php"
+    },
+    {
+        "path":  "database/seed-data.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\seed-data.php"
+    },
+    {
+        "path":  "database/tests/admin-route-inventory.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\admin-route-inventory.php"
+    },
+    {
+        "path":  "database/tests/auth-db-control.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\auth-db-control.php"
+    },
+    {
+        "path":  "database/tests/catalog-unit.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\catalog-unit.php"
+    },
+    {
+        "path":  "database/tests/cli-smoke.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\cli-smoke.php"
+    },
+    {
+        "path":  "database/tests/integration.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\integration.php"
+    },
+    {
+        "path":  "database/tests/login-attempt-cli.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\login-attempt-cli.php"
+    },
+    {
+        "path":  "database/tests/media-db-control.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\media-db-control.php"
+    },
+    {
+        "path":  "database/tests/media-fixtures.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\media-fixtures.php"
+    },
+    {
+        "path":  "database/tests/media-lifecycle.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\media-lifecycle.php"
+    },
+    {
+        "path":  "database/tests/readonly-check.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\readonly-check.php"
+    },
+    {
+        "path":  "database/tests/session-expiry.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\session-expiry.php"
+    },
+    {
+        "path":  "database/tests/setup-auth-test.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\setup-auth-test.php"
+    },
+    {
+        "path":  "database/tests/verify-auth-static.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\database\\tests\\verify-auth-static.php"
+    },
+    {
+        "path":  "hvk/admin/api/feedback.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\api\\feedback.php"
+    },
+    {
+        "path":  "hvk/admin/api/menu.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\api\\menu.php"
+    },
+    {
+        "path":  "hvk/admin/branches.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\branches.php"
+    },
+    {
+        "path":  "hvk/admin/bulk-prices.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\bulk-prices.php"
+    },
+    {
+        "path":  "hvk/admin/campaign.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\campaign.php"
+    },
+    {
+        "path":  "hvk/admin/categories.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\categories.php"
+    },
+    {
+        "path":  "hvk/admin/category-order.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\category-order.php"
+    },
+    {
+        "path":  "hvk/admin/config.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\config.php"
+    },
+    {
+        "path":  "hvk/admin/feedbacks.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\feedbacks.php"
+    },
+    {
+        "path":  "hvk/admin/footer.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\footer.php"
+    },
+    {
+        "path":  "hvk/admin/functions.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\functions.php"
+    },
+    {
+        "path":  "hvk/admin/header.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\header.php"
+    },
+    {
+        "path":  "hvk/admin/import-products.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\import-products.php"
+    },
+    {
+        "path":  "hvk/admin/index.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\index.php"
+    },
+    {
+        "path":  "hvk/admin/login.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\login.php"
+    },
+    {
+        "path":  "hvk/admin/logout.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\logout.php"
+    },
+    {
+        "path":  "hvk/admin/media-service.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\media-service.php"
+    },
+    {
+        "path":  "hvk/admin/private-image.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\private-image.php"
+    },
+    {
+        "path":  "hvk/admin/product-order.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\product-order.php"
+    },
+    {
+        "path":  "hvk/admin/products.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\products.php"
+    },
+    {
+        "path":  "hvk/admin/security.php",
+        "exit_code":  0,
+        "status":  "PASS",
+        "output":  "No syntax errors detected in C:\\Users\\Enes\\Desktop\\Alacart\\hvk\\admin\\security.php"
+    }
+]

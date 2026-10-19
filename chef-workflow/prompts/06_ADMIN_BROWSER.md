@@ -1,47 +1,74 @@
-# Task 06: Review the admin in Chrome
+# Task 06: Review the admin in the browser
 
 Owner: Gemini in Antigravity. Preferred model: Gemini 3.8 Flash.
 Escalation: Gemini 3.1 Pro for difficult layout or accessibility diagnosis.
 Prerequisite: Task 05 provides working local admin access.
 
 Read AGENTS.md, PROJECT.md, and chef-workflow/CONTRACT.md.
-Read docs/reviews/05-catalog.md and the current function parity table.
-Use Impeccable, web-design-guidelines, and Antigravity Chrome.
-Use the local test administrator without revealing credentials in chat or screenshots.
-Test the local database only.
+Read chef-workflow/docs/BROWSER_TESTING.md and chef-workflow/docs/DESIGN_LOCK.md.
+Read docs/reviews/05-catalog.md, docs/FUNCTION_PARITY.md, and the "Admin test access" section of docs/ENVIRONMENT.md.
+Use Impeccable, web-design-guidelines, and `browser_subagent`.
+Read the rendered DOM and the accessibility tree. Pair each result with a screenshot.
+Test the local database only. Do not change application source.
+
+## Step 0: Guest reference set
+
+Recompute the guest file hashes. Compare them with current_revision in APPROVED_BASELINE.json.
+Stop and report if they differ. Task 05 must not change guest files.
+Open the guest menu at 390 and 1440 pixels in light and dark mode.
+Capture Turkish and Arabic views. Save them under docs/evidence/ref-rev1/.
+Verify each item in DESIGN_LOCK.md, Approved revisions, with a DOM probe.
+Later tasks compare against this set.
+
+## Access
+
+Read the credentials file named in docs/ENVIRONMENT.md.
+Type the value into the login field through the DOM. Never echo it.
+Take no screenshot while the password field holds a value.
+Confirm saved state with `php database/tests/readonly-check.php`. Do not use raw SQL.
 
 ## Exercise actual workflows
 
 Create one disposable category and two disposable products.
 Edit names, translations, prices, serving details, ingredients, and calories.
-Check empty calorie fields and verification controls.
-Upload and replace a test product photo.
-Change product order, category order, and product category.
-Test invalid prices, failed saves, repeated clicks, and browser refresh.
+Check empty calorie fields. Confirm the saved value is NULL, not zero.
+Check ingredient and calorie verification controls. Confirm each timestamp rule.
+Upload and replace a test product photo. Confirm the old file disappears.
+Change product order and category order with the keyboard buttons.
+Try drag sorting as a best-effort check. Mark a failed attempt UNVERIFIED.
+Change a product category. Confirm the order of both categories.
+Submit invalid prices, malformed values, and missing fields. Confirm the form keeps entered values.
+Double-click save. Confirm exactly one record exists.
+Open one edit form in two tabs. Submit both. Confirm the second submission is rejected and keeps its values.
+Edit a field, then leave the page. Confirm the unsaved-change warning appears.
+Open every delete dialog through the DOM hooks. Confirm it names the record and the result.
 Verify that saved values persist after logout and login.
-Check category deletion with dependent products.
-Remove the disposable records and confirm the recorded cleanup result.
-Do not delete the Chef seed records.
+Check category deletion with dependent products. Confirm nothing changes without confirmation.
+Confirm the recorded cleanup result after deletion.
+Remove the disposable records. Do not delete the Chef seed records.
 
 ## Visual and access review
 
-Check 390, 768, and 1440 pixel widths.
-Check navigation, labels, focus, error placement, contrast, and button hit areas.
-Verify that the admin fits the approved Chef brand.
-Check that validation errors preserve the user's input.
+Check 390, 768, and 1440 pixel widths in light and dark mode.
+Run every standard DOM probe from BROWSER_TESTING.md on each admin page.
+Check navigation groups, labels, focus, error placement, contrast, and hit areas.
+Check that tables become cards on phones and keep every action visible.
+Check that the admin fits the approved Chef brand and the revision 1 tokens.
 Check logged-out access to representative direct admin URLs.
-Inspect request status codes for failed saves.
-Do not count a success toast as proof of a database write.
-Use a read-only database check when the saved state remains uncertain.
+Inspect request status codes for failed saves with DevTools MCP.
+Do not count a success message as proof of a database write.
+Use readonly-check.php when the saved state remains uncertain.
 
 ## Evidence and routing
 
-Do not change application source during this review.
 Write docs/reviews/06-admin-browser.md with defect IDs and exact reproduction steps.
+Include one row per check in the BROWSER_TESTING.md record format.
 Save representative screenshots under docs/evidence/06/.
 Record the current commit or file hashes.
 Classify blockers separately from visual polish.
 Route confirmed defects to R1_REPAIR.md.
 Repeat only affected checks after repairs.
-Set task 07 as next only when blocking catalog defects are resolved.
+Rebuild the test database with the documented command to rotate the password.
+Update docs/FUNCTION_PARITY.md Browser Check Status only for verified rows.
+Set Task 07 as next only when blocking catalog defects are resolved.
 Update PROJECT.md and return a compact handoff.

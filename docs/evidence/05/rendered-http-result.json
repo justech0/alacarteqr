@@ -1,0 +1,6 @@
+﻿{
+    "command":  "node database/tests/catalog-http.mjs --rendered-only",
+    "exit_code":  0,
+    "base_url":  "http://127.0.0.1:38082/hvk/admin/",
+    "status":  "PASS"
+}

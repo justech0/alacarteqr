@@ -1,6 +1,6 @@
 {
   "approval_date": "2026-10-13",
-  "purpose": "Frozen visual reference. Integration edits remain permitted under DESIGN_LOCK.md.",
+  "purpose": "Original frozen visual reference. Revision 1 in current_revision is the active guest design.",
   "files": [
     {
       "relative_path": "chef-onizleme.html",
@@ -32,5 +32,29 @@
       "sha256": "8475f8a90672d7127629690a49a04f9d2ccdbc410798e106c62f135c8c3bb6b5",
       "bytes": 21785
     }
-  ]
+  ],
+  "original_baseline_note": "The files list is the 2026-10-13 original. Its hashes no longer match the current guest files. public_html/style.css, public_html/app.js, and source/* entries are stale.",
+  "current_revision": {
+    "id": "rev1",
+    "date": "2026-10-16",
+    "description": "User-requested guest fixes applied after Task 01. See DESIGN_LOCK.md, Approved revisions.",
+    "verify_rule": "Recompute these hashes before use. Guest files must match them at the start and end of Tasks 05 and 06.",
+    "files": [
+      {
+        "relative_path": "chef-onizleme.html",
+        "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "bytes": 317468
+      },
+      {
+        "relative_path": "index.html",
+        "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "bytes": 317468
+      },
+      {
+        "relative_path": "public_html/index.html",
+        "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "bytes": 317468
+      }
+    ]
+  }
 }

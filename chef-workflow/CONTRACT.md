@@ -57,6 +57,8 @@ Exclude node_modules, compiled bundles, archives, and SQL rows from routine cont
 Read private SQL only for a concrete schema or migration need.
 Do not paste full files, complete DOM snapshots, or complete logs into chat.
 Use one browser tool for routine checks.
+Read docs/BROWSER_TESTING.md before any browser check.
+Gemini runs visual and DOM checks. Codex runs code, HTTP, and database checks.
 Use Context7 only for unresolved version-specific APIs.
 Reuse a known result until its inputs change.
 Repeat a check only for changed behavior, a failed check, or a required release gate.
@@ -75,12 +77,15 @@ Remove code only after checking its callers, routes, templates, and build use.
 Do not disable security checks to make a test pass.
 Do not change production credentials during local development.
 Do not push secrets or merge the default branch.
+Generate test passwords at run time. Never store a valid test password in source, logs, or reports.
+Store test credentials only in a private file outside Git and public_html.
 Prepare deployment files without uploading them to production.
 
 ## Completion and handoff
 
 Record PASS, FAIL, or BLOCKED for each required check.
 Attach concise evidence and the tested commit or file hashes.
+Compare guest files with current_revision in APPROVED_BASELINE.json. Do not use the original hashes.
 Never convert an unrun check into PASS.
 Do not advance a dependent task while its required check fails.
 Use prompts/R1_REPAIR.md for a confirmed failure, then repeat the affected review.

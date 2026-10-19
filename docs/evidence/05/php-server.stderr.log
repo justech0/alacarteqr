@@ -1,0 +1,49 @@
+[Fri Oct 16 21:34:14 2026] PHP 8.3.33 Development Server (http://127.0.0.1:38082) started
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57636 Accepted
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57636 [200]: GET /hvk/admin/login.php
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57636 Closing
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57638 Accepted
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57638 [200]: GET /hvk/admin/login.php
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57638 Closing
+[Fri Oct 16 21:34:25 2026] 127.0.0.1:57640 Accepted
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57640 [302]: POST /hvk/admin/login.php
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57640 Closing
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57642 Accepted
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57642 [200]: GET /hvk/admin/index.php
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57642 Closing
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57644 Accepted
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57644 [200]: GET /hvk/admin/categories.php
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57644 Closing
+[Fri Oct 16 21:34:26 2026] 127.0.0.1:57646 Accepted
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57646 [200]: GET /hvk/admin/category-order.php
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57646 Closing
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57648 Accepted
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57648 [200]: GET /hvk/admin/products.php
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57648 Closing
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57650 Accepted
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57650 [200]: GET /hvk/admin/product-order.php
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57650 Closing
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57652 Accepted
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57652 [200]: GET /hvk/admin/bulk-prices.php
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57652 Closing
+[Fri Oct 16 21:34:27 2026] 127.0.0.1:57654 Accepted
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57654 [200]: GET /hvk/admin/import-products.php
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57654 Closing
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57656 Accepted
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57656 [200]: GET /hvk/admin/branches.php
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57656 Closing
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57658 Accepted
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57658 [200]: GET /hvk/admin/campaign.php
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57658 Closing
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57660 Accepted
+[Fri Oct 16 21:34:28 2026] 127.0.0.1:57660 [200]: GET /hvk/admin/feedbacks.php
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57660 Closing
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57664 Accepted
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57664 [200]: GET /hvk/admin/products.php
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57664 Closing
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57666 Accepted
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57666 [303]: POST /hvk/admin/products.php
+[Fri Oct 16 21:34:29 2026] 127.0.0.1:57666 Closing
+[Fri Oct 16 21:34:30 2026] 127.0.0.1:57670 Accepted
+[Fri Oct 16 21:34:30 2026] 127.0.0.1:57670 [200]: GET /hvk/admin/products.php
+[Fri Oct 16 21:34:30 2026] 127.0.0.1:57670 Closing

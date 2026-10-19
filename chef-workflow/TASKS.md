@@ -48,6 +48,7 @@ Changed files:
 Checks and evidence:
 Open defect IDs:
 Local URLs and launch command:
+Test credential file path (never its content):
 Next prompt:
 ```
 

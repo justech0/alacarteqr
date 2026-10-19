@@ -120,8 +120,8 @@ body {
   top: 0;
   z-index: 100;
   background: var(--surface-header);
-  backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border);
   transition: height var(--duration-slow) var(--easing-default);
   will-change: height;
@@ -312,10 +312,15 @@ body {
   display: flex;
   gap: var(--space-sm);
   overflow-x: auto;
-  scrollbar-width: none;
   -ms-overflow-style: none;
   scroll-snap-type: x mandatory;
   padding: 2px 0;
+}
+
+@supports (scrollbar-width: none) {
+  .category-scroll {
+    scrollbar-width: none;
+  }
 }
 
 .category-scroll::-webkit-scrollbar {
@@ -460,6 +465,7 @@ body {
   line-height: 1.4;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -822,6 +828,7 @@ body {
   font-weight: 600;
   color: var(--text-primary);
   font-family: var(--font-body);
+  -webkit-user-select: all;
   user-select: all;
 }
 

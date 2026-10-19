@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="tr" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chef À La Carte — Dijital Menü</title>
+  <meta name="description" content="Chef À La Carte restoran dijital QR menüsü. Et, makarna, salata ve çocuk menüsü seçenekleri.">
+  <meta name="theme-color" content="#176023">
+  <link rel="icon" type="image/png" href="chef-logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- ═══════════════════════════════════════════ HEADER ═══════════════════════════════════════════ -->
+  <header class="site-header" id="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <img
+          src="chef-logo.svg"
+          alt="Chef À La Carte"
+          class="header-logo"
+          id="header-logo"
+          width="120"
+          height="119"
+        >
+      </div>
+      <div class="header-controls">
+        <button
+          class="control-btn"
+          id="theme-toggle"
+          type="button"
+          aria-label="Tema değiştir"
+          title="Tema değiştir"
+        >
+          <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="5"/>
+            <line x1="12" y1="1" x2="12" y2="3"/>
+            <line x1="12" y1="21" x2="12" y2="23"/>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+            <line x1="1" y1="12" x2="3" y2="12"/>
+            <line x1="21" y1="12" x2="23" y2="12"/>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+          </svg>
+          <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+          </svg>
+        </button>
+        <button
+          class="control-btn"
+          id="lang-toggle"
+          type="button"
+          aria-label="Dil değiştir"
+          title="Dil değiştir"
+        >
+          <span class="lang-label" id="lang-label">TR</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════ MAIN ═══════════════════════════════════════════ -->
+  <main class="main-content" id="main-content">
+    <!-- Search -->
+    <div class="search-container">
+      <div class="search-box" id="search-box">
+        <svg class="icon search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input
+          type="search"
+          class="search-input"
+          id="search-input"
+          placeholder="Menüde ara…"
+          aria-label="Menüde ara"
+          autocomplete="off"
+        >
+        <button
+          class="search-clear"
+          id="search-clear"
+          type="button"
+          aria-label="Aramayı temizle"
+          hidden
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <nav class="category-nav" id="category-nav" aria-label="Menü kategorileri">
+      <div class="category-scroll">
+        <!-- Populated by JS -->
+      </div>
+    </nav>
+
+    <!-- Menu Items -->
+    <section class="menu-section" id="menu-section" aria-label="Menü">
+      <div class="menu-list" id="menu-list">
+        <!-- Populated by JS -->
+      </div>
+      <div class="empty-state" id="empty-state" hidden>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          <line x1="8" y1="11" x2="14" y2="11"/>
+        </svg>
+        <p class="empty-text" id="empty-text">Sonuç bulunamadı</p>
+      </div>
+    </section>
+
+    <!-- Campaign Banner -->
+    <section class="campaign-banner" id="campaign-banner" hidden>
+      <div class="campaign-inner">
+        <p class="campaign-text" id="campaign-text"></p>
+        <button
+          class="campaign-close"
+          id="campaign-close"
+          type="button"
+          aria-label="Kampanya bildirimini kapat"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Info Bar -->
+    <footer class="info-bar" id="info-bar">
+      <p class="info-text">Fiyatlar 28.09.2026 tarihinden itibaren geçerlidir. KDV dahildir.</p>
+      <div class="info-actions">
+        <button class="info-btn" id="wifi-btn" type="button" aria-label="WiFi bilgileri">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+            <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+            <line x1="12" y1="20" x2="12.01" y2="20"/>
+          </svg>
+          <span>WiFi</span>
+        </button>
+        <button class="info-btn" id="feedback-btn" type="button" aria-label="Geri bildirim">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span>Görüş</span>
+        </button>
+      </div>
+    </footer>
+  </main>
+
+  <!-- ═══════════════════════════════════════════ PRODUCT DETAIL DIALOG ═══════════════════════════════════════════ -->
+  <div class="dialog-overlay" id="detail-overlay" hidden>
+    <dialog class="detail-dialog" id="detail-dialog" aria-labelledby="detail-title">
+      <div class="detail-header">
+        <h2 class="detail-title" id="detail-title"></h2>
+        <button
+          class="dialog-close"
+          id="detail-close"
+          type="button"
+          aria-label="Detayı kapat"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="detail-body" id="detail-body">
+        <div class="detail-image-container" id="detail-image-container"></div>
+        <div class="detail-meta">
+          <span class="detail-price" id="detail-price"></span>
+          <span class="detail-calories" id="detail-calories"></span>
+        </div>
+        <p class="detail-description" id="detail-description"></p>
+        <div class="detail-ingredients" id="detail-ingredients"></div>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ WIFI DIALOG ═══════════════════════════════════════════ -->
+  <div class="dialog-overlay" id="wifi-overlay" hidden>
+    <dialog class="info-dialog" id="wifi-dialog" aria-labelledby="wifi-title">
+      <div class="detail-header">
+        <h2 class="detail-title" id="wifi-title">WiFi Bilgileri</h2>
+        <button
+          class="dialog-close"
+          id="wifi-close"
+          type="button"
+          aria-label="WiFi bilgilerini kapat"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="detail-body">
+        <div class="wifi-info">
+          <div class="wifi-row">
+            <span class="wifi-label">Ağ Adı</span>
+            <span class="wifi-value" id="wifi-ssid">Chef_Guest</span>
+          </div>
+          <div class="wifi-row">
+            <span class="wifi-label">Şifre</span>
+            <span class="wifi-value" id="wifi-pass">chefalacarte2026</span>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  </div>
+
+  <!-- ═══════════════════════════════════════════ FEEDBACK DIALOG ═══════════════════════════════════════════ -->
+  <div class="dialog-overlay" id="feedback-overlay" hidden>
+    <dialog class="info-dialog" id="feedback-dialog" aria-labelledby="feedback-title">
+      <div class="detail-header">
+        <h2 class="detail-title" id="feedback-title">Görüş Bildirin</h2>
+        <button
+          class="dialog-close"
+          id="feedback-close"
+          type="button"
+          aria-label="Görüş formunu kapat"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="detail-body">
+        <form class="feedback-form" id="feedback-form">
+          <textarea
+            class="feedback-textarea"
+            id="feedback-textarea"
+            placeholder="Düşüncelerinizi paylaşın…"
+            rows="4"
+            aria-label="Geri bildirim mesajı"
+          ></textarea>
+          <button type="submit" class="feedback-submit">Gönder</button>
+        </form>
+      </div>
+    </dialog>
+  </div>
+
+  <script src="menu-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

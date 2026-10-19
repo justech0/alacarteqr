@@ -1,0 +1,13 @@
+﻿{
+    "review_partial":  true,
+    "five_not_run":  true,
+    "project_partial":  true,
+    "task06_pending":  true,
+    "task12_pending":  true,
+    "environment_access":  true,
+    "parity_integration_not_run":  true,
+    "install_backup":  true,
+    "install_php_test":  true,
+    "manifest_htaccess":  true,
+    "archives_exist":  true
+}

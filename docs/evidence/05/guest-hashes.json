@@ -1,0 +1,20 @@
+﻿[
+    {
+        "path":  "index.html",
+        "sha256":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "expected":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "status":  "PASS"
+    },
+    {
+        "path":  "chef-onizleme.html",
+        "sha256":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "expected":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "status":  "PASS"
+    },
+    {
+        "path":  "public_html/index.html",
+        "sha256":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "expected":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+        "status":  "PASS"
+    }
+]

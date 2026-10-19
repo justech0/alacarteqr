@@ -10,8 +10,8 @@ No public benchmark proves one model wins every PHP or browser task here.
 | Work | Client and model | Effort | Reason |
 |---|---|---|---|
 | Main implementation | Codex, GPT-6.1 Sol | Default or Medium | Keep code ownership and context stable |
-| Database, authentication, media, security | Codex, GPT-6.1 Sol | High when needed | Spend more reasoning on consistency and access controls |
-| Bounded Chrome checks | Antigravity, Gemini 3.8 Flash | Default or Medium | Use existing browser integration for observable workflows |
+| Database, authentication, media, admin catalog, security | Codex, GPT-6.1 Sol | High | Spend more reasoning on consistency and access controls |
+| Bounded Chrome checks | Antigravity, Gemini 3.8 Flash | Default or Medium | Use `browser_subagent` DOM and screenshots for observable workflows |
 | Difficult visual diagnosis | Antigravity, Gemini 3.1 Pro | Available deeper setting | Escalate an unresolved problem with evidence |
 | Exceptional hard security decision | Codex, GPT-6 Astra | Available setting | Optional escalation after a specific blocker |
 | Simple repeated documentation edits | Codex, GPT-6 Luna | Default or High | Optional focused task only |

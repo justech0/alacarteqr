@@ -1,0 +1,7 @@
+﻿{
+    "command":  "npm.cmd run build:admin-css",
+    "exit_code":  0,
+    "before_sha256":  "fd6d4b5332870adf291a3d043d5be64124661765c92cce771083e6cd3e60a8af",
+    "after_sha256":  "fd6d4b5332870adf291a3d043d5be64124661765c92cce771083e6cd3e60a8af",
+    "status":  "PASS"
+}

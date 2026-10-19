@@ -5,8 +5,8 @@ Escalation: Gemini 3.1 Pro for unclear visual or interaction defects.
 Prerequisite: Task 10 security fixes are complete and the local build runs.
 
 Read AGENTS.md, PROJECT.md, and chef-workflow/CONTRACT.md.
-Read the design lock and the latest security report.
-Use Antigravity Chrome for interaction checks.
+Read the design lock, BROWSER_TESTING.md, and the latest security report.
+Use `browser_subagent` for interaction and DOM checks.
 Use Chrome DevTools MCP for measured performance and network evidence.
 Use Impeccable and web-design-guidelines for focused visual and accessibility review.
 Do not change application source during this review.
@@ -37,7 +37,8 @@ Check screen-reader names and dynamic status announcements through the accessibi
 Check Turkish, English, Arabic, light mode, and dark mode.
 Check reduced motion and consistent close buttons.
 Check text contrast, missing-image behavior, and control spacing.
-Compare the result against the approved reference screenshots.
+Compare the result against docs/evidence/ref-rev1/.
+Do not compare dark mode with docs/evidence/01/04-390px-dark.png. Revision 1 replaced it.
 Report functional changes that unintentionally changed the visual design.
 
 ## Handoff

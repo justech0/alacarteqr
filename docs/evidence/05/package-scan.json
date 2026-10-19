@@ -1,0 +1,43 @@
+﻿{
+    "status":  "PASS",
+    "scanner":  "decompressed entries",
+    "historical_candidate_source":  "local execution history; git database/tests history is absent",
+    "historical_literal_candidates":  6,
+    "runtime_password_candidates":  1,
+    "extraction_cleanup":  "PASS",
+    "archives":  [
+                     {
+                         "archive":  "public_html.zip",
+                         "sha256":  "577a2318af0eb3df472905a199a6d7e9b3ed38e1014d2eabfc8b5e3e88a96fa3",
+                         "files":  33,
+                         "positive_control":  "PASS",
+                         "secret_scan":  "PASS",
+                         "credential_name_scan":  "PASS",
+                         "exclusion_scan":  "PASS",
+                         "htaccess":  [
+                                          "hvk/admin/.htaccess",
+                                          "media/.htaccess"
+                                      ],
+                         "admin_htaccess":  "PASS",
+                         "media_htaccess":  "PASS",
+                         "guest_index_sha256":  "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+                         "guest_hash_matches_current_revision":  true
+                     },
+                     {
+                         "archive":  "chef-private-setup.zip",
+                         "sha256":  "bbc2769eb7ef914d2a5351beabb2f60888a9e12a55b0e0217471aedfb0260c61",
+                         "files":  9,
+                         "positive_control":  "PASS",
+                         "secret_scan":  "PASS",
+                         "credential_name_scan":  "PASS",
+                         "exclusion_scan":  "PASS",
+                         "htaccess":  [
+
+                                      ],
+                         "admin_htaccess":  "NOT_APPLICABLE",
+                         "media_htaccess":  "NOT_APPLICABLE",
+                         "guest_index_sha256":  null,
+                         "guest_hash_matches_current_revision":  null
+                     }
+                 ]
+}

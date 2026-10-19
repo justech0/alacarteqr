@@ -20,11 +20,16 @@ Resolve missing required functions before packaging.
 
 ## Reproducible build
 
-Use the existing lockfile and verified local runtime versions.
+Use package-lock.json from Task 05 and verified local runtime versions.
 Build assets locally. Do not require Node on Hostinger for normal requests.
 Package only required runtime files under public_html.
 Include required dependency license notices.
 Exclude source archives, private data, tests, reports, node_modules, credentials, and repository metadata.
+Exclude workflow and agent files: chef-workflow, .agents, .impeccable, .vscode, docs/evidence, and test credentials.
+Exclude legacy HVK files: hvk/assets, hvk/components, hvk/index.html, hvk/admin/uploads, hvk/logo.jpeg, and hvk/thk.png.
+Exclude preview-era files: chef-onizleme.html, root app.js, style.css, menu-data.js, menuler, and cheflogo.pdf.
+Keep a legacy file only when Task 04 evidence shows that Chef owns it.
+List every excluded path group in RELEASE_MANIFEST.md.
 Keep private configuration, private uploads, logs, and migrations outside the public document root.
 Provide placeholders instead of real production secrets.
 Document the required directory layout and ownership assumptions.

@@ -1,0 +1,9 @@
+Options -Indexes
+
+<FilesMatch "(?i)^(?:config|functions|security|media-service|header|footer)\.php$">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "(?i)\.(?:bak|dist|ini|log|sql|swp)$">
+    Require all denied
+</FilesMatch>

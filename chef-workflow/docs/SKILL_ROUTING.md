@@ -27,9 +27,9 @@ Do not apply Humanizer to code, data, or raw logs.
 | UI UX Pro Max | Resolve a specific design question only |
 | Motion AI Kit | Resolve Motion JavaScript behavior when needed |
 | Context7 | Resolve a specific dependency API or version question |
-| Antigravity Chrome | Primary browser route for Gemini review tasks |
-| Playwright CLI | Browser fallback and repeatable regression scripts |
-| Chrome DevTools MCP | Network, layout, and performance evidence |
+| Antigravity browser (`browser_subagent`) | Primary DOM, interaction, and screenshot route for Gemini review tasks |
+| Playwright CLI | Repeatable regression scripts only. Not review evidence |
+| Chrome DevTools MCP | Network status and performance evidence only |
 | Semgrep and code-security | Changed-code security review and result triage |
 | GitHub MCP | Repository metadata when local Git is insufficient |
 | Figma MCP | Optional existing design references only |

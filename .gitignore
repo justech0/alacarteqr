@@ -1,0 +1,31 @@
+# Local source map and environment
+.local-sourcemap.json
+local.sourcemap.json
+.env
+*.local
+
+# Database and secrets
+*.sql
+tokens.txt
+
+# Archives
+*.zip
+*.tar.gz
+
+# Dependencies and caches
+node_modules/
+.cache/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Test credentials and generated evidence
+*.credentials
+test-admin*
+*.har
+
+# Runtime uploads and editor settings
+hvk/admin/uploads/
+.vscode/

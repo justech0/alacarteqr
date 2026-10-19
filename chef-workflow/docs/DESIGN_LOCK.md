@@ -37,7 +37,7 @@ Do not add cart controls or purchase actions.
 Do not regenerate food photos to imply unavailable ingredients.
 Keep square close icons inside touch targets of at least 44 pixels.
 Record the reason and screenshot for every visible correction.
-Keep the reference screenshot set unchanged after task 01.
+Keep the original reference set in docs/evidence/01/ unchanged. Task 06 step 0 adds docs/evidence/ref-rev1/ for revision 1.
 
 ## Baseline limits
 
@@ -48,3 +48,19 @@ The preview bundle measured 12,550 gzip bytes before backend integration.
 That byte count is not a speed or Core Web Vitals result.
 Seven Node checks passed before user approval.
 Browser verification and PHP integration remained pending.
+
+## Approved revisions
+
+Revision 1 is active. The user requested and reviewed it between 2026-10-14 and 2026-10-16.
+It replaces the matching parts of the original preview. Later tasks must keep it.
+Hashes are in APPROVED_BASELINE.json under current_revision.
+
+- Dark mode uses neutral tokens: page #0F1210, card #171B18, raised #1E231F, dialog #1B201C, line #2A312B.
+- Dark text uses #F1F3EE and muted #9BA59C. Accent text uses #5BC46C. Button fill uses #1F7A2E.
+- The Chef logo stays inside a white circular badge in dark mode.
+- Search is one bordered box. The input has no second border, fill, or outline ring.
+- The search placeholder reads "Menüde lezzet ara". English and Arabic translations exist.
+- The language control is a custom popover with inline SVG flags for TR, EN, and AR. It uses no emoji.
+- Card body padding and price badge spacing keep the price off the card edge.
+- The active category button shows the hover effect while the guest scrolls.
+- Admin dark and light themes reuse the same tokens. Use #176023 for fills only, never for text on dark.
