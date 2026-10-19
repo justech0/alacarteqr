@@ -48,8 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="color-scheme" content="light dark">
     <title>Chef À La Carte | Giriş</title>
     <link rel="icon" href="assets/chef-logo.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="assets/admin.css">
-    <script src="assets/admin.js" defer></script>
+    <link rel="stylesheet" href="assets/admin.css?v=<?php echo (int)@filemtime(__DIR__ . '/assets/admin.css'); ?>">
+    <script src="assets/admin.js?v=<?php echo (int)@filemtime(__DIR__ . '/assets/admin.js'); ?>" defer></script>
 </head>
 <body class="admin-shell flex min-h-screen items-center justify-center p-4">
     <main class="admin-panel w-full max-w-md rounded-2xl p-6 shadow-xl sm:p-8">

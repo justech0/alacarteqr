@@ -234,6 +234,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $pdo->commit();
             flash_message('success', 'Ürün kategorisi güncellendi.');
+        } elseif ($action === 'remove_image') {
+            $productId = chef_canonical_id($_POST['id'] ?? '');
+            if ($productId === null) {
+                throw new DomainException('Ürün kimliği geçersiz.');
+            }
+            $pdo->beginTransaction();
+            $productStmt = $pdo->prepare('SELECT id, image_path FROM products WHERE id = :id FOR UPDATE');
+            $productStmt->execute([':id' => $productId]);
+            $row = $productStmt->fetch();
+            if (!$row) {
+                throw new DomainException('Ürün bulunamadı.');
+            }
+            if (!empty($row['image_path'])) {
+                chef_media_mark_owner_deletion($pdo, 'product', $productId);
+                $pdo->prepare('UPDATE products SET image_path = NULL WHERE id = :id')->execute([':id' => $productId]);
+                bump_menu_version($pdo);
+            }
+            $pdo->commit();
+            chef_media_cleanup($pdo);
+            flash_message('success', 'Ürün görseli kaldırıldı.');
         } elseif ($action === 'delete') {
             $productId = chef_canonical_id($_POST['id'] ?? '');
             if ($productId === null) {
@@ -393,6 +413,9 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
                     <label for="product-image" class="mb-1 block text-sm font-semibold">Ürün görseli</label>
                     <input id="product-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="w-full text-sm" data-image-input data-testid="product-image">
                     <p class="admin-muted mt-1 text-xs">Kare kırpılır. En iyi sonuç: 1200 × 1200 piksel, ürün ortada, düz arka plan.</p>
+                    <?php if ($currentImage): ?>
+                        <button type="submit" form="product-image-remove-form" class="admin-button admin-button-danger mt-2 min-h-9 py-1.5 text-sm" data-testid="product-image-remove">Görseli kaldır</button>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -471,5 +494,14 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
             <a href="<?php echo sanitize($closeHref); ?>" class="admin-button admin-button-secondary" data-keep-scroll data-drawer-close>Vazgeç</a>
         </div>
     </form>
+    <?php if ($editProduct && !empty($editProduct['image_path'])): ?>
+        <form id="product-image-remove-form" method="POST" class="hidden" data-mutation-form data-keep-scroll data-confirm-name="<?php echo sanitize($editProduct['name']); ?>" data-confirm-detail="Ürün görseli silinir. Ürün menüde görselsiz görünür.">
+            <input type="hidden" name="csrf_token" value="<?php echo sanitize(chef_csrf_token()); ?>">
+            <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
+            <input type="hidden" name="action" value="remove_image">
+            <input type="hidden" name="id" value="<?php echo (int)$editProduct['id']; ?>">
+            <input type="hidden" name="redirect_category" value="<?php echo $selectedCategory ?: ''; ?>">
+        </form>
+    <?php endif; ?>
 </dialog>
 <?php include __DIR__ . '/footer.php'; ?>

@@ -15,7 +15,7 @@ Options -Indexes
     # Run "npm test" after each guest change. database/tests/security-headers-static.mjs checks these hashes.
     # PHP admin responses send their own policy from admin/security.php.
     <Files "index.html">
-        Header always set Content-Security-Policy "default-src 'none'; script-src 'sha256-nG4JXsklVKS3gwv/QklGeIflVPAzwkiATFDwa7JfwSE='; style-src 'sha256-gWQBQM1mvt+kfEmhxCpNVVWpYrM3mLKn9YYI/owasH8='; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
+        Header always set Content-Security-Policy "default-src 'none'; script-src 'sha256-oAKRjPvW6zjIH0W/UZHzbJWP74ycmezFX2P69kqH3k8='; style-src 'sha256-gWQBQM1mvt+kfEmhxCpNVVWpYrM3mLKn9YYI/owasH8='; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
         Header always set X-Frame-Options "DENY"
         Header always set Cross-Origin-Opener-Policy "same-origin"
     </Files>

@@ -61,8 +61,8 @@ $pageTitle = $sections[$activeSection]['label'];
     <meta name="color-scheme" content="light dark">
     <title><?php echo sanitize($pageTitle); ?> | Chef yönetimi</title>
     <link rel="icon" href="assets/chef-logo.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="assets/admin.css">
-    <script src="assets/admin.js" defer></script>
+    <link rel="stylesheet" href="assets/admin.css?v=<?php echo (int)@filemtime(__DIR__ . '/assets/admin.css'); ?>">
+    <script src="assets/admin.js?v=<?php echo (int)@filemtime(__DIR__ . '/assets/admin.js'); ?>" defer></script>
 </head>
 <body class="admin-shell min-h-screen overflow-x-hidden">
 <div class="admin-progress" data-admin-progress hidden></div>

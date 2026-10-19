@@ -126,13 +126,36 @@
           "bytes": 135268
         }
       ]
+    },
+    {
+      "id": "rev3-ux",
+      "date": "2026-10-19",
+      "description": "User-requested: Wi-Fi dialog with copy button, campaign as session pop-up, single-animation dialogs with animated close, thumbnails in grid, layered product photo. Colors unchanged.",
+      "verify_rule": "Recompute these hashes after guest changes. Preserve the revision 1 design.",
+      "files": [
+        {
+          "relative_path": "chef-onizleme.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "index.html",
+          "sha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
+          "bytes": 141236
+        },
+        {
+          "relative_path": "public_html/index.html",
+          "sha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
+          "bytes": 141236
+        }
+      ]
     }
   ],
   "current_revision": {
-    "id": "rev3-ux",
-    "date": "2026-10-19",
-    "description": "User-requested: Wi-Fi dialog with copy button, campaign as session pop-up, single-animation dialogs with animated close, thumbnails in grid, layered product photo. Colors unchanged.",
-    "verify_rule": "Recompute these hashes after guest changes. Preserve the revision 1 design.",
+    "id": "rev4-scrollspy",
+    "date": "2026-10-20",
+    "description": "Category highlight reaches short last sections; tap keeps selection; dialog reopen guard. Colors unchanged.",
+    "verify_rule": "Recompute these hashes after guest changes.",
     "files": [
       {
         "relative_path": "chef-onizleme.html",
@@ -141,13 +164,13 @@
       },
       {
         "relative_path": "index.html",
-        "sha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
-        "bytes": 141236
+        "sha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
+        "bytes": 142029
       },
       {
         "relative_path": "public_html/index.html",
-        "sha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
-        "bytes": 141236
+        "sha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
+        "bytes": 142029
       }
     ]
   }

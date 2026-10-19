@@ -11,7 +11,7 @@ $safeCategoryFields = [
 ];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = is_scalar($_POST['action'] ?? null) ? (string)$_POST['action'] : '';
-    $categoryId = in_array($action, ['update', 'delete'], true) ? chef_canonical_id($_POST['id'] ?? '') : null;
+    $categoryId = in_array($action, ['update', 'delete', 'remove_image'], true) ? chef_canonical_id($_POST['id'] ?? '') : null;
     $formKey = $action === 'update' ? 'category-edit-' . ($categoryId ?? 'invalid') : 'category-create';
     $redirect = 'categories.php' . ($categoryId && $action === 'update' ? '?edit=' . $categoryId : '');
 
@@ -79,6 +79,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $pdo->commit();
                 flash_message('success', 'Kategori güncellendi.');
             }
+        } elseif ($action === 'remove_image') {
+            if ($categoryId === null) throw new DomainException('Kategori kimliği geçersiz.');
+            $pdo->beginTransaction();
+            $row = $pdo->prepare('SELECT image_path FROM categories WHERE id = :id FOR UPDATE');
+            $row->execute([':id' => $categoryId]);
+            $imagePath = $row->fetchColumn();
+            if ($imagePath === false) throw new DomainException('Kategori bulunamadı.');
+            if ((string)$imagePath !== '') {
+                chef_media_mark_owner_deletion($pdo, 'category', $categoryId);
+                $pdo->prepare('UPDATE categories SET image_path = NULL WHERE id = :id')->execute([':id' => $categoryId]);
+                bump_menu_version($pdo);
+            }
+            $pdo->commit();
+            chef_media_cleanup($pdo);
+            flash_message('success', 'Kategori görseli kaldırıldı.');
         } elseif ($action === 'delete') {
             if ($categoryId === null) throw new DomainException('Kategori kimliği geçersiz.');
             $pdo->beginTransaction();
@@ -211,13 +226,22 @@ $error = static fn(string $field): ?string => chef_field_error($formState, $fiel
             <div>
                 <label for="category-image" class="admin-muted mb-1 block text-sm">Kategori görseli</label>
                 <input id="category-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="w-full rounded-lg p-2 text-sm" data-testid="category-image">
-                <?php if ($editCategory && $editCategory['image_path']): ?><p class="admin-muted mt-1 text-xs">Yeni dosya seçmezseniz mevcut görsel korunur.</p><?php endif; ?>
+                <p class="admin-muted mt-1 text-xs">Kare kırpılır. En iyi sonuç: 600 × 600 piksel.</p>
+                <?php if ($editCategory && $editCategory['image_path']): ?><button type="submit" form="category-image-remove-form" class="admin-button admin-button-danger mt-2 min-h-9 py-1.5 text-sm" data-testid="category-image-remove">Görseli kaldır</button><?php endif; ?>
             </div>
             <div class="flex gap-3">
                 <button type="submit" class="admin-button admin-button-primary flex-1" data-testid="category-save"><?php echo $editCategory ? 'Değişiklikleri kaydet' : 'Kategoriyi ekle'; ?></button>
                 <?php if ($editCategory): ?><a href="categories.php" class="admin-button admin-button-secondary">Vazgeç</a><?php endif; ?>
             </div>
         </form>
+        <?php if ($editCategory && $editCategory['image_path']): ?>
+            <form id="category-image-remove-form" method="POST" class="hidden" data-mutation-form data-confirm-name="<?php echo sanitize($editCategory['name']); ?>" data-confirm-detail="Kategori görseli silinir.">
+                <input type="hidden" name="csrf_token" value="<?php echo sanitize(chef_csrf_token()); ?>">
+                <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
+                <input type="hidden" name="action" value="remove_image">
+                <input type="hidden" name="id" value="<?php echo (int)$editCategory['id']; ?>">
+            </form>
+        <?php endif; ?>
     </aside>
 </div>
 <?php include __DIR__ . '/footer.php'; ?>

@@ -54,14 +54,13 @@
 
   // ── Unsaved changes ──
   const dirtyForms = new Set();
-  document.addEventListener('input', (event) => {
-    const form = event.target.closest?.('form[data-warn-unsaved]');
-    if (form) dirtyForms.add(form);
-  });
-  document.addEventListener('change', (event) => {
-    const form = event.target.closest?.('form[data-warn-unsaved]');
-    if (form) dirtyForms.add(form);
-  });
+  // Fields may sit outside their form and point at it with the form attribute.
+  const trackDirty = (event) => {
+    const form = event.target.form || event.target.closest?.('form');
+    if (form?.hasAttribute('data-warn-unsaved')) dirtyForms.add(form);
+  };
+  document.addEventListener('input', trackDirty);
+  document.addEventListener('change', trackDirty);
   const hasDirty = (except) => [...dirtyForms].some((form) => form !== except && form.isConnected);
   const guardDirty = async (except) => {
     if (!hasDirty(except)) return true;
@@ -338,14 +337,16 @@
 
   // ── Product page: instant filters, drawer, image preview ──
   const productState = { category: null, query: '' };
+  // Same folding as the guest search: case, Turkish dotless i and accents.
+  const fold = (value) => String(value || '').toLocaleLowerCase('tr-TR').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/ı/g, 'i');
   const applyProductFilter = (scope) => {
     const cards = $$('[data-product-grid] > article', scope);
     if (!cards.length && !$('[data-product-grid]', scope)) return;
-    const query = productState.query.toLocaleLowerCase('tr');
+    const query = fold(productState.query);
     let visible = 0;
     cards.forEach((card) => {
       const show = (!productState.category || card.dataset.category === productState.category)
-        && (!query || (card.dataset.search || '').includes(query));
+        && (!query || fold(card.dataset.search).includes(query));
       card.hidden = !show;
       if (show) visible += 1;
     });
