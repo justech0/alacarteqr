@@ -13,7 +13,8 @@ No public benchmark proves one model wins every PHP or browser task here.
 | Database, authentication, media, admin catalog, security | Codex, GPT-6.1 Sol | High | Spend more reasoning on consistency and access controls |
 | Bounded Chrome checks | Antigravity, Gemini 3.8 Flash | Default or Medium | Use `browser_subagent` DOM and screenshots for observable workflows |
 | Difficult visual diagnosis | Antigravity, Gemini 3.1 Pro | Available deeper setting | Escalate an unresolved problem with evidence |
-| Exceptional hard security decision | Codex, GPT-6 Astra | Available setting | Optional escalation after a specific blocker |
+| Independent security review (Task 10) | Antigravity, newest Claude Opus | Default | A different model reviews Codex code |
+| UI repairs (R1) | Antigravity, newest Claude Sonnet | Default | Strong frontend edits within the design lock |
 | Simple repeated documentation edits | Codex, GPT-6 Luna | Default or High | Optional focused task only |
 
 OpenAI recommends GPT-6.1 Sol for complex coding when available.

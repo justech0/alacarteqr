@@ -106,7 +106,7 @@ Task 12 durumu değiştirilmedi. Staging sonrası Remote MySQL kaydı kaldırıl
 | 07 | Codex | 07_MENU_INTEGRATION.md | Pending | Database menu, WiFi, campaigns, imports, and cache behavior |
 | 08 | Codex | 08_FEEDBACK.md | Pending | Persistent feedback and proven physical image deletion |
 | 09 | Gemini | 09_END_TO_END.md | Pending | Guest and admin workflows verified together |
-| 10 | Codex | 10_SECURITY_REVIEW.md | Pending | Reviewed findings, fixes, and regression evidence |
+| 10 | Claude (Fallback: Codex) | 10_SECURITY_REVIEW.md | Pending | Reviewed findings, fixes, and regression evidence |
 | 11 | Gemini | 11_PERFORMANCE_A11Y.md | Pending | Measured performance and browser accessibility review |
 | 12 | Codex | 12_RELEASE.md | Pending | Fresh installation test and clean release packages |
 

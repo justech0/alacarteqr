@@ -59,6 +59,7 @@ Do not paste full files, complete DOM snapshots, or complete logs into chat.
 Use one browser tool for routine checks.
 Read docs/BROWSER_TESTING.md before any browser check.
 Gemini runs visual and DOM checks. Codex runs code, HTTP, and database checks.
+Claude runs the independent security review and UI repairs.
 Use Context7 only for unresolved version-specific APIs.
 Reuse a known result until its inputs change.
 Repeat a check only for changed behavior, a failed check, or a required release gate.

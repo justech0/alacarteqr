@@ -11,6 +11,8 @@ Use Ponytail and code-security. Use Humanizer only for short interface messages.
 ## Guest flow
 
 Preserve the approved feedback window and its compact layout.
+Do not change CSS rules, color values, design tokens, or fonts.
+Update current_revision hashes for guest files you change. Keep the old entry in previous_revisions.
 Ask for topic, rating, and message.
 Keep contact and photo optional.
 Use the HVK topics: taste, service, staff, hygiene, and other.

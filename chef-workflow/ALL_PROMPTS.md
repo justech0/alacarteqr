@@ -87,7 +87,6 @@ Update PROJECT.md with actual checks and blocked requirements.
 Return the local preview URL, model label, setup result, and next prompt filename.
 Stop after task 00. Task 01 belongs to Gemini.
 
-
 ---
 
 File: 01_BROWSER_BASELINE.md
@@ -142,7 +141,6 @@ Keep the approved design direction unchanged.
 Update PROJECT.md and list the evidence paths.
 If blockers exist, route them to R1_REPAIR.md before task 02.
 Otherwise set task 02 as the next action.
-
 
 ---
 
@@ -214,7 +212,6 @@ Verify row counts, price precision, foreign keys, and Turkish and Arabic round t
 Write docs/DATABASE.md, docs/API_CONTRACT.md, and a safe configuration example.
 Update PROJECT.md with server version, migration version, checks, and next task 03.
 
-
 ---
 
 File: 03_ADMIN_AUTH.md
@@ -279,7 +276,6 @@ Run focused Semgrep checks and inspect each relevant finding.
 Write docs/reviews/03-auth.md with evidence and unresolved risks.
 Update PROJECT.md and set task 04 as the next action.
 
-
 ---
 
 File: 04_MEDIA_LIFECYCLE.md
@@ -343,7 +339,6 @@ Confirm unauthenticated private image requests fail.
 Record filesystem and database evidence for each lifecycle test.
 Write docs/MEDIA_LIFECYCLE.md and docs/reviews/04-media.md.
 Update PROJECT.md and set task 05 as the next action.
-
 
 ---
 
@@ -489,7 +484,6 @@ Update PROJECT.md. Set Task 05 to PASS and Task 06 to Pending.
 Name the docs/ENVIRONMENT.md section "Admin test access" and the credentials file path. Never include the password.
 Name Gemini as the next owner and 06_ADMIN_BROWSER.md as the next prompt.
 
-
 ---
 
 File: 06_ADMIN_BROWSER.md
@@ -569,7 +563,6 @@ Update docs/FUNCTION_PARITY.md Browser Check Status only for verified rows.
 Set Task 07 as next only when blocking catalog defects are resolved.
 Update PROJECT.md and return a compact handoff.
 
-
 ---
 
 File: 07_MENU_INTEGRATION.md
@@ -584,8 +577,20 @@ Read docs/API_CONTRACT.md and the current function parity table.
 Use Ponytail. Use Context7 or Motion documentation only for unresolved implementation details.
 Preserve the approved guest design while connecting real data.
 Preserve revision 1 in DESIGN_LOCK.md, Approved revisions.
-Compare the guest files with current_revision in APPROVED_BASELINE.json before and after each edit.
+Compare the guest files with current_revision in APPROVED_BASELINE.json before the first edit.
+This task changes guest data loading. The guest hashes will change.
+Do not change CSS rules, color values, design tokens, fonts, spacing, or markup structure.
+Before handoff, inspect the guest diff. Confirm it touches data loading and states only.
+Move rev1 to previous_revisions in APPROVED_BASELINE.json. Do not delete it.
+Record the new guest hashes as current_revision with id "rev1-data".
 Do not run visual checks. Gemini verifies the live menu in Task 09.
+
+## Session split
+
+Run this task in two sessions to protect usage limits.
+Part A: Guest menu, and Settings and caching. Record a checkpoint in PROJECT.md.
+Part B: Imports, prices, and translations, then Check and finish.
+Start Part B through R2_RESUME.md when the session or model changes.
 
 ## Guest menu
 
@@ -645,7 +650,6 @@ Verify public responses and cache invalidation after each mutation class.
 Update docs/API_CONTRACT.md and docs/reviews/07-integration.md.
 Update PROJECT.md and set task 08 as the next action.
 
-
 ---
 
 File: 08_FEEDBACK.md
@@ -663,6 +667,8 @@ Use Ponytail and code-security. Use Humanizer only for short interface messages.
 ## Guest flow
 
 Preserve the approved feedback window and its compact layout.
+Do not change CSS rules, color values, design tokens, or fonts.
+Update current_revision hashes for guest files you change. Keep the old entry in previous_revisions.
 Ask for topic, rating, and message.
 Keep contact and photo optional.
 Use the HVK topics: taste, service, staff, hygiene, and other.
@@ -715,7 +721,6 @@ Simulate database failure and file deletion failure.
 Verify orphan cleanup, visible pending state, and successful retry.
 Write docs/reviews/08-feedback.md with database and filesystem evidence.
 Update PROJECT.md and hand off to Gemini for task 09.
-
 
 ---
 
@@ -788,15 +793,16 @@ Update PROJECT.md.
 Route blockers through R1_REPAIR.md, then repeat their failed checks.
 Set task 10 as next when core workflows pass.
 
-
 ---
 
 File: 10_SECURITY_REVIEW.md
 
 # Task 10: Review and fix release security risks
 
-Owner: Codex. Preferred model: GPT-6.1 Sol. Effort: High.
-Escalation: Available GPT-6 Astra for a specific unresolved high-impact finding.
+Owner: Claude in Antigravity. Preferred model: Claude Opus. Use the newest Opus in the picker.
+Reason: Codex wrote Tasks 02-08. An independent model reviews them.
+Fallback: Codex, GPT-6.1 Sol, High effort, when Claude usage is exhausted.
+Do not change guest CSS, color values, or design tokens.
 Prerequisite: Task 09 has no unresolved core workflow blockers.
 
 Read AGENTS.md, PROJECT.md, and chef-workflow/CONTRACT.md.
@@ -815,6 +821,7 @@ Check CSRF protection and server authorization on every admin endpoint.
 Check record ownership and direct private image requests.
 Check upload validation, execution prevention, path containment, deletion, and failure recovery.
 Check clickjacking controls, MIME sniffing protection, and appropriate referrer policy.
+Run the auth and media HTTP suites. PROJECT.md lists them as NOT RUN after Task 05.
 Build a Content Security Policy from the application's actual resources.
 Verify that the policy does not break the approved interface or Motion behavior.
 Prefer local assets and explicit directives over broad unsafe allowances.
@@ -849,7 +856,6 @@ Record dependency changes and their concrete reason.
 Avoid claims of complete security or guaranteed attack prevention.
 Block release for unresolved critical or high-impact exploitable findings.
 Update PROJECT.md and hand off to Gemini for task 11.
-
 
 ---
 
@@ -906,7 +912,6 @@ Separate measured failures, unmeasured risks, and optional polish.
 Route required fixes through R1_REPAIR.md.
 Repeat affected measurements with the same conditions after fixes.
 Update PROJECT.md and permit task 12 only when required checks pass.
-
 
 ---
 
@@ -985,15 +990,16 @@ Update PROJECT.md with release status and the exact remaining deployment action.
 Do not call the live deployment complete.
 Stop after delivering the local release artifacts.
 
-
 ---
 
 File: R1_REPAIR.md
 
 # Conditional repair prompt
 
-Owner: Codex. Model: GPT-6.1 Sol.
-Use default effort for bounded UI fixes and High for security or data consistency fixes.
+Owner by defect type:
+- Guest or admin UI defect: Claude in Antigravity, newest Sonnet. Use Opus for difficult layout causes.
+- Backend, data, or security defect: Codex, GPT-6.1 Sol, High effort.
+Never change approved color values or design tokens unless the defect report names them.
 
 Read AGENTS.md, PROJECT.md, and chef-workflow/CONTRACT.md.
 Read only the defect report named in PROJECT.md and its relevant source files.
@@ -1011,9 +1017,9 @@ Run affected checks and record their actual results.
 Do not remove failing assertions merely to obtain a pass.
 Update the original defect status without deleting its evidence.
 Update PROJECT.md with changed files, model, checks, and next reviewer.
-Return the task to Gemini for the affected browser checks.
+Return the task to Gemini only when the defect affects browser-visible behavior.
+Otherwise return it to the task that reported the defect.
 Do not restart unrelated successful work.
-
 
 ---
 

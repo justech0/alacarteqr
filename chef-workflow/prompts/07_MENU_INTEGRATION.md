@@ -8,8 +8,20 @@ Read docs/API_CONTRACT.md and the current function parity table.
 Use Ponytail. Use Context7 or Motion documentation only for unresolved implementation details.
 Preserve the approved guest design while connecting real data.
 Preserve revision 1 in DESIGN_LOCK.md, Approved revisions.
-Compare the guest files with current_revision in APPROVED_BASELINE.json before and after each edit.
+Compare the guest files with current_revision in APPROVED_BASELINE.json before the first edit.
+This task changes guest data loading. The guest hashes will change.
+Do not change CSS rules, color values, design tokens, fonts, spacing, or markup structure.
+Before handoff, inspect the guest diff. Confirm it touches data loading and states only.
+Move rev1 to previous_revisions in APPROVED_BASELINE.json. Do not delete it.
+Record the new guest hashes as current_revision with id "rev1-data".
 Do not run visual checks. Gemini verifies the live menu in Task 09.
+
+## Session split
+
+Run this task in two sessions to protect usage limits.
+Part A: Guest menu, and Settings and caching. Record a checkpoint in PROJECT.md.
+Part B: Imports, prices, and translations, then Check and finish.
+Start Part B through R2_RESUME.md when the session or model changes.
 
 ## Guest menu
 

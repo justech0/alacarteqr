@@ -1,7 +1,9 @@
 # Task 10: Review and fix release security risks
 
-Owner: Codex. Preferred model: GPT-6.1 Sol. Effort: High.
-Escalation: Available GPT-6 Astra for a specific unresolved high-impact finding.
+Owner: Claude in Antigravity. Preferred model: Claude Opus. Use the newest Opus in the picker.
+Reason: Codex wrote Tasks 02-08. An independent model reviews them.
+Fallback: Codex, GPT-6.1 Sol, High effort, when Claude usage is exhausted.
+Do not change guest CSS, color values, or design tokens.
 Prerequisite: Task 09 has no unresolved core workflow blockers.
 
 Read AGENTS.md, PROJECT.md, and chef-workflow/CONTRACT.md.
@@ -20,6 +22,7 @@ Check CSRF protection and server authorization on every admin endpoint.
 Check record ownership and direct private image requests.
 Check upload validation, execution prevention, path containment, deletion, and failure recovery.
 Check clickjacking controls, MIME sniffing protection, and appropriate referrer policy.
+Run the auth and media HTTP suites. PROJECT.md lists them as NOT RUN after Task 05.
 Build a Content Security Policy from the application's actual resources.
 Verify that the policy does not break the approved interface or Motion behavior.
 Prefer local assets and explicit directives over broad unsafe allowances.
