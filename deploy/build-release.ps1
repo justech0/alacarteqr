@@ -81,6 +81,7 @@ $public = [ordered]@{
     'admin/.htaccess' = Repo 'admin\.htaccess'
     'admin/api/menu.php' = Repo 'admin\api\menu.php'
     'admin/api/feedback.php' = Repo 'admin\api\feedback.php'
+    'admin/api/translate.php' = Repo 'admin\api\translate.php'
     'admin/assets/admin.css' = Repo 'admin\assets\admin.css'
     'admin/assets/admin.js' = Repo 'admin\assets\admin.js'
     'admin/assets/chef-logo.svg' = Repo 'admin\assets\chef-logo.svg'

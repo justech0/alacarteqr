@@ -15,6 +15,9 @@
     });
   };
   setTheme(getTheme() || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+  document.addEventListener('click', (event) => {
+    if (event.target.closest('[data-theme-toggle]')) setTheme(root.classList.contains('dark') ? 'light' : 'dark');
+  });
 
   const main = () => $('[data-admin-main]');
   const announce = (message, isError = false) => {
@@ -70,6 +73,56 @@
     if (!hasDirty()) return;
     event.preventDefault();
     event.returnValue = '';
+  });
+
+  // ── Automatic translation (Turkish source fields fill *_en and *_ar fields) ──
+  const translateForm = async (form, overwrite) => {
+    const status = $('[data-translate-status]', form);
+    const texts = {};
+    ['name', 'description', 'ingredients'].forEach((key) => {
+      const source = form.elements[key];
+      if (!source || !source.value.trim()) return;
+      const needs = ['en', 'ar'].some((target) => {
+        const field = form.elements[`${key}_${target}`];
+        return field && (overwrite || !field.value.trim());
+      });
+      if (needs) texts[key] = source.value.trim();
+    });
+    if (!Object.keys(texts).length) {
+      if (overwrite && status) status.textContent = 'Önce Türkçe ad veya açıklama yazın.';
+      return;
+    }
+    if (status) status.textContent = 'Çevriliyor…';
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch(new URL('api/translate.php', location.href), {
+        method: 'POST',
+        credentials: 'same-origin',
+        signal: controller.signal,
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': form.elements.csrf_token?.value || '' },
+        body: JSON.stringify({ texts, targets: ['en', 'ar'] }),
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok || !payload.translations) throw new Error(payload.error || 'Çeviri yapılamadı.');
+      Object.entries(payload.translations).forEach(([name, value]) => {
+        const field = form.elements[name];
+        if (field && typeof value === 'string' && (overwrite || !field.value.trim())) field.value = value;
+      });
+      if (status) status.textContent = 'Çeviriler dolduruldu. Kontrol edip düzeltebilirsiniz.';
+      if (form.hasAttribute('data-warn-unsaved')) dirtyForms.add(form);
+    } catch (error) {
+      if (status) status.textContent = error.name === 'AbortError' ? 'Çeviri servisi yanıt vermedi.' : error.message;
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+  document.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-translate-now]');
+    if (!button?.form) return;
+    button.disabled = true;
+    await translateForm(button.form, true);
+    button.disabled = false;
   });
 
   // ── Page swap: fetch the next page and replace only the main area ──
@@ -196,6 +249,10 @@
     }
     event.preventDefault();
     if (!(await guardDirty(form))) return;
+    if (method === 'POST' && form.hasAttribute('data-auto-translate') && ['create', 'update'].includes(form.elements.action?.value)) {
+      form.querySelectorAll('button[type="submit"]').forEach((button) => { button.disabled = true; });
+      await translateForm(form, false);
+    }
     const data = new FormData(form, event.submitter || undefined);
     form.querySelectorAll('button[type="submit"], input[type="submit"]').forEach((button) => {
       button.disabled = true;

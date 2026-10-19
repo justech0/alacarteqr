@@ -42,6 +42,7 @@
   }
 
   * { border-color: var(--line); }
+  [hidden] { display: none !important; }
   html { background: var(--surface-page); scrollbar-gutter: stable; }
   body {
     margin: 0;

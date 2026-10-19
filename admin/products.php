@@ -369,7 +369,7 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
 </section>
 
 <dialog class="admin-drawer" aria-labelledby="product-form-title" data-product-drawer data-close-href="<?php echo sanitize($closeHref); ?>" <?php echo $openDrawer ? 'data-open-on-load' : ''; ?>>
-    <form method="POST" enctype="multipart/form-data" class="flex h-full flex-col" data-mutation-form data-keep-scroll data-warn-unsaved data-testid="product-form">
+    <form method="POST" enctype="multipart/form-data" class="flex h-full flex-col" data-mutation-form data-keep-scroll data-warn-unsaved data-auto-translate data-testid="product-form">
         <div class="flex items-center justify-between gap-3 border-b px-5 py-4">
             <h2 id="product-form-title" class="text-xl"><?php echo $editProduct ? sanitize($editProduct['name']) : 'Yeni ürün'; ?></h2>
             <a href="<?php echo sanitize($closeHref); ?>" class="icon-button" aria-label="Kapat" data-keep-scroll data-drawer-close>
@@ -447,7 +447,7 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
             </details>
 
             <details class="admin-raised rounded-xl px-4 py-3">
-                <summary class="cursor-pointer text-sm font-semibold">Çeviriler <span class="admin-muted font-normal">(İngilizce, Arapça)</span></summary>
+                <summary class="cursor-pointer text-sm font-semibold">Çeviriler <span class="admin-muted font-normal">(otomatik)</span></summary>
                 <div class="mt-3 space-y-3">
                     <?php foreach ([
                         ['name_en', 'İngilizce ürün adı', 200, 1],
@@ -461,7 +461,8 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
                             <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
                         </div>
                     <?php endforeach; ?>
-                    <p class="admin-muted text-xs">Boş çeviriler menüde Türkçe metni kullanır.</p>
+                    <button type="button" class="admin-button admin-button-secondary w-full" data-translate-now>Türkçeden otomatik çevir</button>
+                    <p class="admin-muted text-xs" data-translate-status>Kaydederken boş çeviriler Türkçeden otomatik doldurulur. İsterseniz düzeltebilirsiniz.</p>
                 </div>
             </details>
         </div>

@@ -177,7 +177,7 @@ $error = static fn(string $field): ?string => chef_field_error($formState, $fiel
 
     <aside class="admin-panel h-fit rounded-xl p-5 lg:sticky lg:top-24" aria-labelledby="category-form-title">
         <h2 id="category-form-title" class="text-xl"><?php echo $editCategory ? 'Kategoriyi düzenle' : 'Yeni kategori'; ?></h2>
-        <form method="POST" enctype="multipart/form-data" class="mt-5 space-y-4" data-mutation-form <?php echo $editCategory ? 'data-warn-unsaved' : ''; ?> data-testid="category-form">
+        <form method="POST" enctype="multipart/form-data" class="mt-5 space-y-4" data-mutation-form data-auto-translate <?php echo $editCategory ? 'data-warn-unsaved' : ''; ?> data-testid="category-form">
             <input type="hidden" name="csrf_token" value="<?php echo sanitize(chef_csrf_token()); ?>">
             <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
             <input type="hidden" name="action" value="<?php echo $editCategory ? 'update' : 'create'; ?>">

@@ -77,7 +77,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="admin-button admin-button-primary w-full" data-testid="login-save">Giriş yap</button>
         </form>
-        <p class="admin-muted mt-5 text-center text-xs">Hesap kurtarma yalnız yetkili sunucu terminalinden yapılır.</p>
     </main>
 </body>
 </html>
