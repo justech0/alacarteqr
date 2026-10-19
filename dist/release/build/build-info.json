@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "2026101501",
+  "guestIndexSha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
+  "testSecretMarkersChecked": 3,
+  "archives": [
+    {
+      "file": "public_html.zip",
+      "entries": 30,
+      "sha256": "8464878737d01fa6b5292a6a2c7cfecfe2e401c047dff7c5efe477aa2a04bfd5",
+      "bytes": 121714
+    },
+    {
+      "file": "chef-private-setup.zip",
+      "entries": 14,
+      "sha256": "89afe469567dde69ca24728a416781537f3cd16312cd9722a916fb9cbc409d3b",
+      "bytes": 40348
+    },
+    {
+      "file": "INSTALL_TR.md",
+      "entries": 1,
+      "sha256": "dec52a1edc3fccfdb1bd082d06e098e4da867ecad7d347d4e287c9944072fd2d",
+      "bytes": 10195
+    }
+  ],
+  "files": {
+    "public": {
+      ".htaccess": "649445a36a994c83ae42d19d8717513c9d2e557439cde0c5a09703cee9579c45",
+      "database/lib.php": "0d7743c1116feee58588169cac2267704d96f7c8793c0697b666e4bc0a44a48d",
+      "hvk/admin/.htaccess": "7f95b43d20f288f5d9c56a003d2171309940b2afe79e4ac9a93f0c2ec29e16ad",
+      "hvk/admin/api/feedback.php": "87d73effa1ff7aa2d0cbf5a590c3882e65cfc9fc1d11a7d1c086459972bb8c4b",
+      "hvk/admin/api/menu.php": "35b3e2a378123621a493ad92604bb96a76176e1dab41d35445273982acfde460",
+      "hvk/admin/assets/admin.css": "3568f41279d9001e429905fef135bd2c9d90361093bdad4fcec4e209a085ac66",
+      "hvk/admin/assets/admin.js": "12f2aed64c6fb4ffc73f161827a7b4d11d38d932f1f3731e24522061fa91746f",
+      "hvk/admin/assets/chef-logo.svg": "d522d37fdbf028fecdabb5abf91f6dbbc9e995c1e5f13ad3341db2350e8c3ac5",
+      "hvk/admin/assets/THIRD_PARTY_NOTICES.txt": "24866f764be402a561954c535eb0a9fc3d774985f40e7f866a78a9e6690e13fb",
+      "hvk/admin/branches.php": "dcd36c20beaae2fa67d29f09bc96e5e8004ff097e6925a13e591936a69564856",
+      "hvk/admin/bulk-prices.php": "13f24765ee50a7451ab745780f31d39d3d5ba36b5b49aaeb7574810834d549cb",
+      "hvk/admin/campaign.php": "b2af781f8834af991f343b991a30e89e106fd7edef16d6f2378c6d5d0cf6bc94",
+      "hvk/admin/categories.php": "6c4b507f967b909e97e3b88240590fc5961ee18f9ff6c7aecf6f82c784ea2230",
+      "hvk/admin/category-order.php": "bd704475baffd9dd4c6f14eb1d31bf84e45aa10146d0884a9a2d84dba609d013",
+      "hvk/admin/config.php": "97b38c3426b9c3857252f8bf88b7e510471829e74b2d798c27e93eef02fc0e8e",
+      "hvk/admin/feedbacks.php": "d5e385df41652f1db9ea8699c0b43677a41e94f418921684a286b177e1cc47d5",
+      "hvk/admin/footer.php": "ff3aacd2394f1f8e66cd1e7ecb496469f3f4a10f653671c06b694d55bf870d4b",
+      "hvk/admin/functions.php": "96fea0e354d9149b36ee09d0715680bbb4f2f2353bf81f8d22b68ea1775f8de8",
+      "hvk/admin/header.php": "f70be5c0ca9fdc0139c96f14a513ed34ac5fc5dafd4c9cd0900b65e203131a53",
+      "hvk/admin/import-products.php": "d6b9c5c5f3eb044e95660d437271c96faad1e0244ee1681aa8643da5141f9a66",
+      "hvk/admin/index.php": "8c730962f7773d98b4f84a5542cf0006070ff2f1efa121600ed60eb94d1ff9e8",
+      "hvk/admin/login.php": "3d8d799826b62d26fe3854fcde835f9cdadbaa4cb6bbf666683b680b8f3aae93",
+      "hvk/admin/logout.php": "f8f76826d96d3df7ae9fc53616d0b384fe78ea86e95d8b8500ffad55766967f3",
+      "hvk/admin/media-service.php": "c79dad2ccc7e55e18a718aaf37241a26a5fb6af2b0f99650650085c0f001777c",
+      "hvk/admin/private-image.php": "978c2263c7c9747ee3cbfdca0067f18c1b66de313a2a6394050e59e4fa416e9e",
+      "hvk/admin/product-order.php": "b9f04869f0a8ef92f989e4ea057d86a592b017424450f382630c5d7f37c26561",
+      "hvk/admin/products.php": "40c388dd3c78f2ad89287f14ea324bd7dea020246cf4796001a542b0b8aa80e1",
+      "hvk/admin/security.php": "4943e4d253a445a8639007ddd08681e4fa8f3bd783cdd0c53b053954a0334654",
+      "index.html": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
+      "media/.htaccess": "34e5851682c6e610e10176f9658101125ede909dbac8661d2e0d015ea2385fe8"
+    },
+    "private": {
+      "config.production.example.php": "63c658f124ac015eee30889a5a6e92a55c6b771dacf1041a12c51241f4c55b31",
+      "database/cli.php": "dd02bf047f542f5622ac6be100e7a67d0015f60826fc31926730b2bfe0b34de7",
+      "database/lib.php": "0d7743c1116feee58588169cac2267704d96f7c8793c0697b666e4bc0a44a48d",
+      "database/media-cli.php": "56731c082811c4ffa5d5f0f261c9de114f657a7943829d32b57bba4c1cd9ee1d",
+      "database/migrations/2026101401_foundation.php": "6aca3e4438da196daa900b52964254b51534e9f529626319e37ddaffe290aa5b",
+      "database/migrations/2026101402_operational_support.php": "97975b79997fb91057227b7fec3c896162ccbb8c470a6f63af59a83a866eb704",
+      "database/migrations/2026101501_media_lifecycle.php": "2819346217e1e51d9fdbbeee9943ef46968b7bf2da85b2cf7442cf3b9ba2ae37",
+      "database/recover-owner.php": "dc211fca093c8fe5071fa6f4977420d9e2bff7eba4ebe1004d3c1390af30efac",
+      "database/seed-data.php": "8b468bfb4d13977f3baec751fdac0d875619c81c1036a78c02f2bcb2188c0c56",
+      "hvk/admin/media-service.php": "c79dad2ccc7e55e18a718aaf37241a26a5fb6af2b0f99650650085c0f001777c",
+      "hvk/admin/security.php": "4943e4d253a445a8639007ddd08681e4fa8f3bd783cdd0c53b053954a0334654",
+      "INSTALL_TR.md": "dec52a1edc3fccfdb1bd082d06e098e4da867ecad7d347d4e287c9944072fd2d",
+      "sql/chef-install-2026101501.sql": "3168a659a4b02553930dc947c54d267b7633c5904af6167c78719aa33a753d87",
+      "THIRD_PARTY_NOTICES.txt": "24866f764be402a561954c535eb0a9fc3d774985f40e7f866a78a9e6690e13fb"
+    }
+  }
+}

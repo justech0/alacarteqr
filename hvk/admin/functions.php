@@ -207,117 +207,6 @@ function chef_normalize_category_order(PDO $pdo): void
     }
 }
 
-function fetch_url(string $url, int $timeout = 12): ?string
-{
-    if (function_exists('curl_init')) {
-        $ch = curl_init($url);
-        curl_setopt_array($ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CONNECTTIMEOUT => $timeout,
-            CURLOPT_TIMEOUT => $timeout,
-            CURLOPT_USERAGENT => 'HVK QR Menu Translation',
-            CURLOPT_SSL_VERIFYPEER => true,
-        ]);
-        $body = curl_exec($ch);
-        $status = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($body !== false && $status >= 200 && $status < 300) {
-            return $body;
-        }
-
-        return null;
-    }
-
-    $context = stream_context_create([
-        'http' => [
-            'method' => 'GET',
-            'timeout' => $timeout,
-            'header' => "User-Agent: HVK QR Menu Translation\r\n",
-        ],
-    ]);
-    $body = @file_get_contents($url, false, $context);
-
-    return $body === false ? null : $body;
-}
-
-function translate_text(string $text, string $targetLang, ?array &$warnings = null): string
-{
-    $source = trim($text);
-    if ($source === '') {
-        return '';
-    }
-
-    if (!in_array($targetLang, ['en', 'ar'], true)) {
-        return $source;
-    }
-
-    $url = 'https://api.mymemory.translated.net/get?q=' . rawurlencode($source) . '&langpair=tr|' . rawurlencode($targetLang);
-    $body = fetch_url($url);
-    if ($body === null) {
-        $warnings[] = 'Çeviri servisine ulaşılamadı; bazı alanlarda Türkçe metin kullanılacak.';
-        return $source;
-    }
-
-    $payload = json_decode($body, true);
-    $translated = trim((string)($payload['responseData']['translatedText'] ?? ''));
-    $status = (int)($payload['responseStatus'] ?? 0);
-
-    if ($status !== 200 || $translated === '') {
-        $message = trim((string)($payload['responseDetails'] ?? 'Çeviri servisi sonuç döndürmedi.'));
-        $warnings[] = $message . ' Bazı alanlarda Türkçe metin kullanılacak.';
-        return $source;
-    }
-
-    return html_entity_decode($translated, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-}
-
-function build_translations(string $name, string $description, ?array &$warnings = null): array
-{
-    return [
-        'name_en' => translate_text($name, 'en', $warnings),
-        'name_ar' => translate_text($name, 'ar', $warnings),
-        'description_en' => translate_text($description, 'en', $warnings),
-        'description_ar' => translate_text($description, 'ar', $warnings),
-    ];
-}
-
-function update_product_translations(PDO $pdo, int $id, string $name, string $description, ?array &$warnings = null): void
-{
-    $translations = build_translations($name, $description, $warnings);
-    $stmt = $pdo->prepare('UPDATE products SET name_en = :name_en, name_ar = :name_ar, description_en = :description_en, description_ar = :description_ar WHERE id = :id LIMIT 1');
-    $stmt->execute([
-        ':name_en' => $translations['name_en'],
-        ':name_ar' => $translations['name_ar'],
-        ':description_en' => $translations['description_en'],
-        ':description_ar' => $translations['description_ar'],
-        ':id' => $id,
-    ]);
-}
-
-function update_category_translations(PDO $pdo, int $id, string $name, string $description, ?array &$warnings = null): void
-{
-    $translations = build_translations($name, $description, $warnings);
-    $stmt = $pdo->prepare('UPDATE categories SET name_en = :name_en, name_ar = :name_ar, description_en = :description_en, description_ar = :description_ar WHERE id = :id LIMIT 1');
-    $stmt->execute([
-        ':name_en' => $translations['name_en'],
-        ':name_ar' => $translations['name_ar'],
-        ':description_en' => $translations['description_en'],
-        ':description_ar' => $translations['description_ar'],
-        ':id' => $id,
-    ]);
-}
-
-function append_translation_warning(array $warnings): void
-{
-    $warnings = array_values(array_unique(array_filter($warnings)));
-    if (!$warnings) {
-        return;
-    }
-
-    flash_message('error', 'Kayıt yapıldı ancak çeviri uyarısı var: ' . $warnings[0]);
-}
-
 function sanitize(string $value): string
 {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
@@ -334,20 +223,69 @@ function parse_price_input(string $raw): ?string
         return null;
     }
 
-    $lastComma = strrpos($clean, ',');
-    $lastDot   = strrpos($clean, '.');
-    $decimalPos = max($lastComma === false ? -1 : $lastComma, $lastDot === false ? -1 : $lastDot);
-
-    if ($decimalPos !== -1) {
-        $intPart = preg_replace('/[\.,]/', '', substr($clean, 0, $decimalPos));
-        $fracPart = substr($clean, $decimalPos + 1);
-        $normalized = $intPart . '.' . $fracPart;
+    $commaCount = substr_count($clean, ',');
+    $dotCount = substr_count($clean, '.');
+    if ($commaCount === 0 && $dotCount === 0) {
+        $normalized = $clean;
+    } elseif ($commaCount + $dotCount === 1) {
+        $separator = $commaCount === 1 ? ',' : '.';
+        [$whole, $fraction] = explode($separator, $clean, 2);
+        if ($whole === '' || !preg_match('/^[0-9]+$/D', $whole) || !preg_match('/^[0-9]{1,2}$/D', $fraction)) {
+            return null;
+        }
+        $normalized = $whole . '.' . $fraction;
+    } elseif (($commaCount === 1 && $dotCount >= 1) || ($dotCount === 1 && $commaCount >= 1)) {
+        $decimalSeparator = strrpos($clean, ',') > strrpos($clean, '.') ? ',' : '.';
+        $groupSeparator = $decimalSeparator === ',' ? '.' : ',';
+        if (substr_count($clean, $decimalSeparator) !== 1) {
+            return null;
+        }
+        [$whole, $fraction] = explode($decimalSeparator, $clean, 2);
+        $groupPattern = '/^[0-9]{1,3}(?:' . preg_quote($groupSeparator, '/') . '[0-9]{3})+$/D';
+        if (!preg_match($groupPattern, $whole) || !preg_match('/^[0-9]{1,2}$/D', $fraction)) {
+            return null;
+        }
+        $normalized = str_replace($groupSeparator, '', $whole) . '.' . $fraction;
     } else {
-        $normalized = preg_replace('/[\.,]/', '', $clean);
+        return null;
     }
 
     $errors = [];
     return chef_validate_price($normalized, $errors);
+}
+
+function chef_import_limits(): array
+{
+    return ['bytes' => 2 * 1024 * 1024, 'rows' => 500];
+}
+
+function chef_validate_import_upload(array $file, array $extensions): array
+{
+    $error = (int)($file['error'] ?? UPLOAD_ERR_NO_FILE);
+    if ($error !== UPLOAD_ERR_OK) {
+        throw new DomainException($error === UPLOAD_ERR_INI_SIZE || $error === UPLOAD_ERR_FORM_SIZE
+            ? 'Dosya 2 MB sınırını aşıyor.'
+            : 'Dosya yüklenemedi.');
+    }
+    $tmp = is_string($file['tmp_name'] ?? null) ? $file['tmp_name'] : '';
+    $name = is_string($file['name'] ?? null) ? strtolower($file['name']) : '';
+    $size = (int)($file['size'] ?? -1);
+    $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+    if ($tmp === '' || !is_uploaded_file($tmp)) {
+        throw new DomainException('Geçerli bir yükleme seçin.');
+    }
+    if (!in_array($extension, $extensions, true)) {
+        throw new DomainException('Dosya türü desteklenmiyor.');
+    }
+    if ($size < 1 || $size > chef_import_limits()['bytes']) {
+        throw new DomainException('Dosya 1 bayt ile 2 MB arasında olmalıdır.');
+    }
+    return [$tmp, $extension];
+}
+
+function chef_spreadsheet_text(string $value): string
+{
+    return preg_match('/^[\x00-\x20]*[=+\-@]/', $value) === 1 ? "'" . $value : $value;
 }
 
 function flash_message(string $type, string $message): void

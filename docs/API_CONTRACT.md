@@ -1,11 +1,10 @@
 # Chef API Contract
 
-Status: Database contract for Task 07 and Task 08 integration.
-The current legacy menu endpoint keeps its old response until Task 07.
+Status: Task 07 menu integration contract.
 
 ## Public menu
 
-Method: `GET`.
+Route: `GET /hvk/admin/api/menu.php`.
 
 ```json
 {
@@ -30,8 +29,15 @@ Method: `GET`.
       "calories": null
     }
   ],
-  "wifi": null,
-  "campaign": null
+  "wifi": {
+    "network": "Chef Guest",
+    "password": null
+  },
+  "campaign": {
+    "enabled": true,
+    "image": "/media/campaign/chef.webp",
+    "text": { "tr": null, "en": null, "ar": null }
+  }
 }
 ```
 
@@ -40,8 +46,51 @@ Method: `GET`.
 - Unknown translations are `null`. The server does not invent text.
 - Image values are public URLs or `null`. They never contain server paths.
 - Ingredients and calories are `null` until staff verification.
+- Verified ingredients contain localized line arrays.
+- WiFi contains only the guest network name and optional password.
+- Campaign data exists only for an enabled campaign with a public image.
 - A visible menu mutation increments `menu_version` in its database transaction.
 - A menu read never changes schema or data.
+
+### Public menu caching
+
+- The cache key is the request origin and menu route.
+- The response does not vary by user, session, or language.
+- `ETag` uses the committed `menu_version`: `"chef-menu-v<version>"`.
+- `Cache-Control` is `public, no-cache, max-age=0, must-revalidate`.
+- `Vary` is `Accept-Encoding`.
+- A matching `If-None-Match` returns `304` without a body.
+- The response does not set a session cookie.
+- Admin, feedback, private media, and CSRF data never enter this cache.
+
+## Admin catalog imports
+
+Routes: `POST /hvk/admin/import-products.php` and `POST /hvk/admin/bulk-prices.php`.
+
+- Both routes require an admin session, CSRF token, and one-use submission token.
+- Each import accepts a file up to 2 MiB and 500 data rows.
+- Product CSV fields are `category_name`, `product_name`, `description`, `price`, `image_url`, and `sort_order`.
+- The CSV header is optional. The field order is fixed.
+- Product JSON must be a top-level list of flat objects using only those fields.
+- Nested values and unknown JSON fields are rejected.
+- `image_url` must be empty. Staff upload images through the product form.
+- Invalid files apply zero rows. The result reports exact applied and rejected counts.
+- Valid product imports create missing categories and increment `menu_version` once.
+- Price CSV accepts `id,price` or `id,name,price`.
+- Duplicate IDs, missing products, and invalid prices reject the complete price file.
+- A single comma or period can be the decimal separator with one or two decimal digits.
+- Grouped values such as `1.234,56` and `1,234.56` are accepted.
+- Ambiguous values such as `1.234` and `1,234` are rejected.
+- CSV exports prefix risky text cells that start with `=`, `+`, `-`, or `@`.
+
+## Editable translations
+
+- Category and product forms edit English and Arabic names and descriptions.
+- Turkish names remain required. Other translation fields are optional.
+- The public API returns missing translations as `null`.
+- The guest selects the requested language, then falls back to Turkish.
+- Translation edits increment `menu_version` in the catalog transaction.
+- The application sends no menu text to an external translation service.
 
 ## Feedback
 

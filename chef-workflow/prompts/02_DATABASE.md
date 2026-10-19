@@ -62,4 +62,4 @@ Test migration from the sanitized legacy schema.
 Test repeated migration execution and failed migration recovery.
 Verify row counts, price precision, foreign keys, and Turkish and Arabic round trips.
 Write docs/DATABASE.md, docs/API_CONTRACT.md, and a safe configuration example.
-Update PROJECT.md with server version, migration version, checks, and next task 03.
+Update PROJECT.md with server version, migration version, checks, and next ta   sk 03.

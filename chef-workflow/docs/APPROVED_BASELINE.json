@@ -34,11 +34,59 @@
     }
   ],
   "original_baseline_note": "The files list is the 2026-10-13 original. Its hashes no longer match the current guest files. public_html/style.css, public_html/app.js, and source/* entries are stale.",
+  "previous_revisions": [
+    {
+      "id": "rev1",
+      "date": "2026-10-16",
+      "description": "User-requested guest fixes applied after Task 01. See DESIGN_LOCK.md, Approved revisions.",
+      "verify_rule": "Recompute these hashes before use. Guest files must match them at the start and end of Tasks 05 and 06.",
+      "files": [
+        {
+          "relative_path": "chef-onizleme.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "index.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "public_html/index.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        }
+      ]
+    },
+    {
+      "id": "rev1-data",
+      "date": "2026-10-19",
+      "description": "Revision 1 design with Task 07 database loading, public states, WiFi, campaign, and cache revalidation.",
+      "verify_rule": "Recompute these hashes after guest data-loading changes. Preserve the revision 1 design and frozen preview.",
+      "files": [
+        {
+          "relative_path": "chef-onizleme.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "index.html",
+          "sha256": "6d04e114d2790f9e422861d2610e2472cf9dea53c0b981a47ec86799dd0f7bf6",
+          "bytes": 127442
+        },
+        {
+          "relative_path": "public_html/index.html",
+          "sha256": "6d04e114d2790f9e422861d2610e2472cf9dea53c0b981a47ec86799dd0f7bf6",
+          "bytes": 127442
+        }
+      ]
+    }
+  ],
   "current_revision": {
-    "id": "rev1",
-    "date": "2026-10-16",
-    "description": "User-requested guest fixes applied after Task 01. See DESIGN_LOCK.md, Approved revisions.",
-    "verify_rule": "Recompute these hashes before use. Guest files must match them at the start and end of Tasks 05 and 06.",
+    "id": "rev1-feedback",
+    "date": "2026-10-19",
+    "description": "Revision 1 design with Task 08 persistent feedback, multipart submission, contact limit 150, and preview notice removal.",
+    "verify_rule": "Recompute these hashes after guest feedback changes. Preserve the revision 1 design and frozen preview.",
     "files": [
       {
         "relative_path": "chef-onizleme.html",
@@ -47,13 +95,13 @@
       },
       {
         "relative_path": "index.html",
-        "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
-        "bytes": 317468
+        "sha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
+        "bytes": 130309
       },
       {
         "relative_path": "public_html/index.html",
-        "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
-        "bytes": 317468
+        "sha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
+        "bytes": 130309
       }
     ]
   }

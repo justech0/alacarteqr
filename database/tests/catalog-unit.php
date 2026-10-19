@@ -41,4 +41,20 @@ if (chef_validate_calories('0', $errors) !== 0 || chef_validate_calories('65535'
     throw new RuntimeException('Valid calorie boundary was rejected.');
 }
 
-echo json_encode(['status' => 'PASS', 'checks' => ['submission reuse', 'submission expiry', 'submission limit', 'canonical IDs', 'prices', 'calories']]) . PHP_EOL;
+$validImportedPrices = [
+    '88,50' => '88.50',
+    '91.25' => '91.25',
+    '1.234,56' => '1234.56',
+    '1,234.56' => '1234.56',
+];
+foreach ($validImportedPrices as $input => $expected) {
+    if (parse_price_input($input) !== $expected) throw new RuntimeException('Valid imported price was rejected: ' . $input);
+}
+foreach (['1.234', '1,234', '1.23.4', '1,23,4', '1e2', '-1'] as $ambiguousPrice) {
+    if (parse_price_input($ambiguousPrice) !== null) throw new RuntimeException('Ambiguous imported price was accepted: ' . $ambiguousPrice);
+}
+if (chef_spreadsheet_text('=CMD()') !== "'=CMD()" || chef_spreadsheet_text('Normal') !== 'Normal') {
+    throw new RuntimeException('Spreadsheet formula neutralization failed.');
+}
+
+echo json_encode(['status' => 'PASS', 'checks' => ['submission reuse', 'submission expiry', 'submission limit', 'canonical IDs', 'prices', 'calories', 'import prices', 'spreadsheet text']]) . PHP_EOL;

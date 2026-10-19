@@ -5,7 +5,10 @@ require_once __DIR__ . '/functions.php';
 require_login();
 chef_require_method(['GET', 'POST']);
 
-$safeCategoryFields = ['action', 'id', 'name', 'description', 'delete_dependents'];
+$safeCategoryFields = [
+    'action', 'id', 'name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar',
+    'delete_dependents',
+];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = is_scalar($_POST['action'] ?? null) ? (string)$_POST['action'] : '';
     $categoryId = in_array($action, ['update', 'delete'], true) ? chef_canonical_id($_POST['id'] ?? '') : null;
@@ -30,7 +33,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (in_array($action, ['create', 'update'], true)) {
             $errors = [];
             $name = chef_validate_required_text($_POST['name'] ?? '', 150, 'Kategori adı', $errors, 'name');
+            $nameEn = chef_validate_optional_text($_POST['name_en'] ?? '', 200, 'İngilizce kategori adı', $errors, 'name_en');
+            $nameAr = chef_validate_optional_text($_POST['name_ar'] ?? '', 200, 'Arapça kategori adı', $errors, 'name_ar');
             $description = chef_validate_optional_text($_POST['description'] ?? '', 5000, 'Kategori açıklaması', $errors, 'description');
+            $descriptionEn = chef_validate_optional_text($_POST['description_en'] ?? '', 5000, 'İngilizce açıklama', $errors, 'description_en');
+            $descriptionAr = chef_validate_optional_text($_POST['description_ar'] ?? '', 5000, 'Arapça açıklama', $errors, 'description_ar');
             if ($action === 'update' && $categoryId === null) $errors['id'] = 'Kategori kimliği geçersiz.';
             if ($errors) {
                 chef_store_form_state($formKey, $_POST, $safeCategoryFields, $errors);
@@ -44,8 +51,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->beginTransaction();
             if ($action === 'create') {
                 $nextOrder = (int)$pdo->query('SELECT COALESCE(MAX(sort_order), 0) + 1 FROM categories FOR UPDATE')->fetchColumn();
-                $stmt = $pdo->prepare('INSERT INTO categories (name, description, image_path, sort_order) VALUES (:name, :description, NULL, :sort_order)');
-                $stmt->execute([':name' => $name, ':description' => $description, ':sort_order' => max(1, $nextOrder)]);
+                $stmt = $pdo->prepare('INSERT INTO categories (name, name_en, name_ar, description, description_en, description_ar, image_path, sort_order) VALUES (:name, :name_en, :name_ar, :description, :description_en, :description_ar, NULL, :sort_order)');
+                $stmt->execute([
+                    ':name' => $name, ':name_en' => $nameEn, ':name_ar' => $nameAr,
+                    ':description' => $description, ':description_en' => $descriptionEn, ':description_ar' => $descriptionAr,
+                    ':sort_order' => max(1, $nextOrder),
+                ]);
                 $categoryId = (int)$pdo->lastInsertId();
                 if ($mediaStage !== null) {
                     $imagePath = chef_media_activate($pdo, $mediaStage, 'category', $categoryId);
@@ -58,8 +69,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $existing = chef_lock_category($pdo, $categoryId);
                 $imagePath = $existing['image_path'];
                 if ($mediaStage !== null) $imagePath = chef_media_activate($pdo, $mediaStage, 'category', $categoryId);
-                $stmt = $pdo->prepare('UPDATE categories SET name = :name, description = :description, image_path = :image_path WHERE id = :id');
-                $stmt->execute([':name' => $name, ':description' => $description, ':image_path' => $imagePath, ':id' => $categoryId]);
+                $stmt = $pdo->prepare('UPDATE categories SET name = :name, name_en = :name_en, name_ar = :name_ar, description = :description, description_en = :description_en, description_ar = :description_ar, image_path = :image_path WHERE id = :id');
+                $stmt->execute([
+                    ':name' => $name, ':name_en' => $nameEn, ':name_ar' => $nameAr,
+                    ':description' => $description, ':description_en' => $descriptionEn, ':description_ar' => $descriptionAr,
+                    ':image_path' => $imagePath, ':id' => $categoryId,
+                ]);
                 bump_menu_version($pdo);
                 $pdo->commit();
                 flash_message('success', 'Kategori güncellendi.');
@@ -177,6 +192,22 @@ $error = static fn(string $field): ?string => chef_field_error($formState, $fiel
                 <textarea id="category-description" name="description" rows="4" maxlength="5000" class="w-full rounded-lg px-3 py-2" data-testid="category-description"><?php echo sanitize($value('description', $editCategory['description'] ?? '')); ?></textarea>
                 <?php if ($error('description')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('description')); ?></p><?php endif; ?>
             </div>
+            <fieldset class="space-y-3 border-t pt-4">
+                <legend class="px-1 font-serif text-lg">Çeviriler</legend>
+                <?php foreach ([
+                    ['name_en', 'İngilizce kategori adı', 200, 1],
+                    ['name_ar', 'Arapça kategori adı', 200, 1],
+                    ['description_en', 'İngilizce açıklama', 5000, 3],
+                    ['description_ar', 'Arapça açıklama', 5000, 3],
+                ] as [$field, $label, $maximum, $rows]): ?>
+                    <div>
+                        <label for="category-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
+                        <textarea id="category-<?php echo $field; ?>" name="<?php echo $field; ?>" rows="<?php echo $rows; ?>" maxlength="<?php echo $maximum; ?>" class="w-full rounded-lg px-3 py-2" data-testid="category-<?php echo str_replace('_', '-', $field); ?>"><?php echo sanitize($value($field, $editCategory[$field] ?? '')); ?></textarea>
+                        <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+                <p class="admin-muted text-xs">Boş çeviriler misafir menüsünde Türkçe metni kullanır.</p>
+            </fieldset>
             <div>
                 <label for="category-image" class="admin-muted mb-1 block text-sm">Kategori görseli</label>
                 <input id="category-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="w-full rounded-lg p-2 text-sm" data-testid="category-image">

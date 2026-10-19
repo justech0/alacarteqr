@@ -107,7 +107,7 @@ const loginCookie = cookie(loginPage.response);
 const loginResult = await post('/hvk/admin/login.php', loginCookie, {
   ...tokens(loginPage.body), username: credentials.admin_username, password: credentials.admin_password,
 });
-assert(loginResult.response.status === 302, 'Catalog administrator login failed.');
+assert(loginResult.response.status === 302, `Catalog administrator login failed with HTTP ${loginResult.response.status}.`);
 const sessionCookie = cookie(loginResult.response) || loginCookie;
 
 const adminPages = [
@@ -297,12 +297,66 @@ priceCsv.set('csv_file', new Blob([`ID,Urun_Adi,Fiyat\n${created.id},${emptyName
 await request('/hvk/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: priceCsv });
 assert(product(emptyName).price === '91.25', 'Bulk price CSV import regressed.');
 
+pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
+const invalidPriceCsv = new FormData();
+for (const [key, value] of Object.entries({ ...pair, action: 'import_csv_prices' })) invalidPriceCsv.set(key, value);
+invalidPriceCsv.set('csv_file', new Blob([`ID,Urun_Adi,Fiyat\n${created.id},${emptyName},92,50\n99999999,Missing,10.00\n`]), 'invalid-prices.csv');
+await request('/hvk/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: invalidPriceCsv });
+assert(product(emptyName).price === '91.25', 'Atomic price CSV import changed data after a rejected row.');
+const invalidPriceReport = await page('/hvk/admin/bulk-prices.php', sessionCookie);
+assert(invalidPriceReport.body.includes('0 uygulandı') && invalidPriceReport.body.includes('reddedildi'), 'Price rejection counts are missing.');
+
+pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+const importCounts = check('row-counts');
+const invalidImport = new FormData();
+for (const [key, value] of Object.entries(pair)) invalidImport.set(key, value);
+invalidImport.set('file', new Blob([
+  'category_name,product_name,description,price,image_url,sort_order\n' +
+  'Task05 Import Category,Atomic Valid Row,Servis,"44,00",,1\n' +
+  'Task05 Import Category,Remote Image Row,Servis,45.00,https://example.com/image.jpg,2\n',
+]), 'invalid-products.csv');
+await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: invalidImport });
+assert(check('row-counts').products === importCounts.products, 'Atomic product import applied a valid row from a rejected file.');
+const invalidImportReport = await page('/hvk/admin/import-products.php', sessionCookie);
+assert(invalidImportReport.body.includes('0 uygulandı') && invalidImportReport.body.includes('2 satır reddedildi'), 'Product rejection counts are missing.');
+assert(invalidImportReport.body.includes('image_url desteklenmiyor'), 'Remote image rejection is unclear.');
+
+pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+const rowLimitImport = new FormData();
+for (const [key, value] of Object.entries(pair)) rowLimitImport.set(key, value);
+const tooManyRows = Array.from({ length: 501 }, (_, index) => `Task05 Import Category,Limit Product ${index},Servis,10.00,,`).join('\n');
+rowLimitImport.set('file', new Blob([tooManyRows]), 'too-many-products.csv');
+await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: rowLimitImport });
+assert(check('row-counts').products === importCounts.products, 'Product row limit failure changed data.');
+assert((await page('/hvk/admin/import-products.php', sessionCookie)).body.includes('en fazla 500'), 'Product row limit error is missing.');
+
+pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+const sizeLimitImport = new FormData();
+for (const [key, value] of Object.entries(pair)) sizeLimitImport.set(key, value);
+sizeLimitImport.set('file', new Blob(['x'.repeat(2 * 1024 * 1024 + 1)]), 'too-large-products.json');
+await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: sizeLimitImport });
+assert(check('row-counts').products === importCounts.products, 'Product size limit failure changed data.');
+assert((await page('/hvk/admin/import-products.php', sessionCookie)).body.includes('2 MB'), 'Product size limit error is missing.');
+
 pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
 const importCsv = new FormData();
 for (const [key, value] of Object.entries(pair)) importCsv.set(key, value);
-importCsv.set('file', new Blob(['Task05 Import Category,Task05 Imported Product,Servis,44.00,,1\n']), 'products.csv');
+importCsv.set('file', new Blob(['category_name,product_name,description,price,image_url,sort_order\nTask05 Import Category,=Task05 Imported Product,Servis,"44,00",,1\n']), 'products.csv');
 await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: importCsv });
-assert(product('Task05 Imported Product'), 'Product import route regressed.');
+assert(product('=Task05 Imported Product')?.price === '44.00', 'Product CSV import or Turkish decimal parsing regressed.');
+const importReport = await page('/hvk/admin/import-products.php', sessionCookie);
+assert(importReport.body.includes('1 uygulandı') && importReport.body.includes('Reddedilen: 0'), 'Product applied counts are missing.');
+
+pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+const importJson = new FormData();
+for (const [key, value] of Object.entries(pair)) importJson.set(key, value);
+importJson.set('file', new Blob([JSON.stringify([{ category_name: 'Task05 Import Category', product_name: 'Task05 JSON Product', description: 'JSON', price: '45.50', image_url: '', sort_order: '2' }])]), 'products.json');
+await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: importJson });
+assert(product('Task05 JSON Product')?.price === '45.50', 'Product JSON import regressed.');
+
+pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
+const priceExport = await post('/hvk/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'export_csv' });
+assert(priceExport.response.status === 200 && priceExport.body.includes("'=Task05 Imported Product"), 'CSV formula neutralization regressed.');
 
 created = product(emptyName);
 pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
@@ -316,5 +370,5 @@ for (const row of check('category-order')) {
 
 console.log(JSON.stringify({
   status: 'PASS', pages: adminPages.length,
-  checks: ['CRUD', 'duplicate submit', 'validation', 'nutrition timestamps', 'media rollback', 'dependent cleanup', 'move', 'delete', 'reorder', 'bulk prices', 'product import'],
+  checks: ['CRUD', 'duplicate submit', 'validation', 'nutrition timestamps', 'media rollback', 'dependent cleanup', 'move', 'delete', 'reorder', 'bulk prices', 'atomic imports', 'CSV formula neutralization', 'product CSV/JSON import'],
 }, null, 2));

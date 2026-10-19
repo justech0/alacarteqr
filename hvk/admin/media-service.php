@@ -14,6 +14,20 @@ final class ChefMediaStorageException extends RuntimeException
 {
 }
 
+// Must match hvk/media/.htaccess byte for byte. The release ships that file as media/.htaccess.
+// The pattern also denies double extensions such as name.php.webp.
+const CHEF_MEDIA_HARDENING_POLICY = <<<'HTACCESS'
+Options -Indexes
+
+<FilesMatch "(?i)(?:^|\.)(?:php[0-9]*|phtml|phar|cgi|pl|py|sh|exe|dll)(?:\.|$)">
+    Require all denied
+</FilesMatch>
+
+RemoveHandler .php .phtml .phar
+RemoveType .php .phtml .phar
+
+HTACCESS;
+
 function chef_media_config(): array
 {
     global $chefConfig;
@@ -129,7 +143,7 @@ function chef_media_prepare_storage(): void
             throw new ChefMediaStorageException('A media pending directory could not be created.');
         }
     }
-    $hardening = "Options -Indexes\n\n<FilesMatch \"\\.(?:php[0-9]?|phtml|phar|cgi|pl|py|sh|exe|dll)$\">\n    Require all denied\n</FilesMatch>\n\nRemoveHandler .php .phtml .phar\nRemoveType .php .phtml .phar\n";
+    $hardening = CHEF_MEDIA_HARDENING_POLICY;
     $hardeningPath = $config['public_root'] . DIRECTORY_SEPARATOR . '.htaccess';
     if (is_link($hardeningPath) || (file_exists($hardeningPath) && !is_file($hardeningPath))) {
         throw new ChefMediaStorageException('The public media hardening file is unsafe.');
@@ -753,7 +767,7 @@ function chef_media_image_url(?string $reference): ?string
         return null;
     }
     if (str_starts_with($reference, 'managed:')) {
-        return '/admin/private-image.php?id=' . (int)substr($reference, 8);
+        return 'private-image.php?id=' . (int)substr($reference, 8);
     }
     if (str_starts_with($reference, '/')) {
         return $reference;

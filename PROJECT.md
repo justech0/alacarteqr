@@ -1,8 +1,8 @@
 # Chef À La Carte project
 
-Updated: 2026-10-17. Timezone: Europe/Istanbul.
-Status: Task 05 PARTIAL (local static scope). Task 06 may start.
-Current task: Task 06 admin browser handoff. Owner: Gemini. Model label: unavailable.
+Updated: 2026-10-19. Timezone: Europe/Istanbul.
+Status: Task 12 PASS (local release artifacts). Live deployment is not done.
+Current task: None. Next: manual Hostinger deployment by the owner. Last writer: Claude Code.
 Entry point: Read this file before each session.
 
 ## Goal
@@ -69,15 +69,17 @@ All five requested skills (asd-ste100, ponytail, caveman, humanizer, frontend-de
 Task 03 passed local authentication, authorization, session, throttle, recovery, error, and logging checks.
 Task 04 passed local upload, lifecycle, cleanup, private access, legacy migration, and Apache checks.
 Task 04 `PASS` applies to the hashes recorded at its closure on 2026-10-16.
-Task 05 later changed `database/tests` files. Auth and media HTTP suites are not rerun against the current files.
-Rerun both suites before Task 10 and Task 12, or in the first environment where Docker works.
+Task 10 reran the auth (with TLS proxy), media, catalog, menu, and feedback HTTP suites on Docker MySQL 8.4.3. All PASS.
+Admin and guest responses now send CSP and clickjacking headers. Guest CSP lives in `public_html/.htaccess`.
+Recompute guest CSP hashes after any guest HTML change. `npm test` fails on stale hashes.
 The repeated Task 04 Semgrep scan checked nine PHP targets. It returned six reviewed findings and zero errors.
 The Windows junction escape test passed against the current media path validation.
 Hostinger CLI recovery and proxy checks remain deployment prerequisites.
 Hostinger LiteSpeed and cleanup scheduler checks remain deployment prerequisites.
 Task 05 local lint, CSS rebuild, rendered-page, redirect, form-state, Semgrep, password, guest-hash, and package checks passed.
-Task 05 Docker CRUD, nonce, nutrition, media, and reorder suites are NOT RUN staging prerequisites.
-Task 05 staging packages are under `dist/hostinger-staging/`.
+Task 05 Docker CRUD, nonce, nutrition, media, and reorder suites passed locally in Task 10. Hostinger staging runs remain NOT RUN.
+Task 05 staging packages under `dist/hostinger-staging/` are superseded by `dist/release/`.
+Task 12 release packages are under `dist/release/`. Build: `deploy/build-release.ps1`. Test: `node deploy/test-release.mjs`.
 
 Read chef-workflow/docs/SOURCE_REVIEW.md for historical source findings.
 Read chef-workflow/docs/DESIGN_LOCK.md for the approved visual requirements.
@@ -102,42 +104,38 @@ Task 12 durumu değiştirilmedi. Staging sonrası Remote MySQL kaydı kaldırıl
 | 03 | Codex | 03_ADMIN_AUTH.md | PASS | `docs/reviews/03-auth.md`, 12 protected routes, local HTTPS, recovery, Semgrep |
 | 04 | Codex | 04_MEDIA_LIFECYCLE.md | PASS | `docs/reviews/04-media.md`, lifecycle failures, private access, Apache hardening |
 | 05 | Codex | 05_ADMIN_CATALOG.md | PARTIAL (local static scope) | `docs/reviews/05-catalog.md`; five integration suites remain NOT RUN |
-| 06 | Gemini | 06_ADMIN_BROWSER.md | Pending | Actual admin workflows and browser evidence |
-| 07 | Codex | 07_MENU_INTEGRATION.md | Pending | Database menu, WiFi, campaigns, imports, and cache behavior |
-| 08 | Codex | 08_FEEDBACK.md | Pending | Persistent feedback and proven physical image deletion |
-| 09 | Gemini | 09_END_TO_END.md | Pending | Guest and admin workflows verified together |
-| 10 | Claude (Fallback: Codex) | 10_SECURITY_REVIEW.md | Pending | Reviewed findings, fixes, and regression evidence |
-| 11 | Gemini | 11_PERFORMANCE_A11Y.md | Pending | Measured performance and browser accessibility review |
-| 12 | Codex | 12_RELEASE.md | Pending | Fresh installation test and clean release packages |
+| 06 | Gemini | 06_ADMIN_BROWSER.md | PASS | docs/reviews/06-admin-browser.md, docs/evidence/ref-rev1/ (10 images), docs/evidence/06/ (14 images) |
+| 07 | Codex / GPT-5 | 07_MENU_INTEGRATION.md | PASS | Guest menu, imports, prices, translations, outages, and cache invalidation pass |
+| 08 | Codex / Antigravity | 08_FEEDBACK.md | PASS | docs/reviews/08-feedback.md; physical image deletion, idempotency, inbox escaping & filtering pass |
+| 09 | Gemini | 09_END_TO_END.md | PASS | docs/reviews/09-end-to-end.md, 17 screenshots in docs/evidence/09/; connected behaviors, feedback lifecycle, and failure paths pass |
+| 10 | Claude (Fallback: Codex) | 10_SECURITY_REVIEW.md | PASS | docs/reviews/10-security.md; 5 findings fixed, 2 accepted; all HTTP suites, CSP browser and Apache checks pass |
+| 11 | Gemini | 11_PERFORMANCE_A11Y.md | PASS | docs/reviews/11-performance-a11y.md, 12 screenshots, 3 traces in docs/evidence/11/ |
+| 12 | Claude Code (assigned by user; planned Codex) | 12_RELEASE.md | PASS (local) | docs/reviews/12-release.md, dist/release/RELEASE_MANIFEST.md; fresh install 40/40; hosting checks NOT RUN |
 
 ## Latest checkpoint
 
 ```text
-Task: 05 admin catalog local handoff
-Status: PARTIAL (local static scope)
-Owner and actual model: Codex CLI / model ID unavailable to the client session
-Branch and tested commit: feature/chef-redesign / 8fd4a8762eecbd3e1776219e11f427af5b24550e
-Finished:
-  - Admin shell, local stylesheet, logo, shared scripts, labels, hooks, and in-page dialogs
-  - Catalog validation, nutrition fields, submission tokens, ordering, and shared media integration
-  - Generated test credentials and named read-only checks
-  - PHP lint, CSS rebuild, rendered HTTP scan, 303 redirect, preserved form state, and unchanged database check
-  - Focused Semgrep review, password scan, guest hash verification, and staging package scans
-Unfinished:
-  - Current auth HTTP suite -> NOT RUN after Task 05 test changes; rerun before Tasks 10 and 12
-  - Current media HTTP suite -> NOT RUN after Task 05 test changes; rerun before Tasks 10 and 12
-  - Docker CRUD suite -> NOT RUN; verify on Hostinger staging
-  - Docker nonce suite -> NOT RUN; verify on Hostinger staging
-  - Docker nutrition suite -> NOT RUN; verify on Hostinger staging
-  - Docker media suite -> NOT RUN; verify on Hostinger staging
-  - Docker reorder suite -> NOT RUN; verify on Hostinger staging
-Checks and evidence:
-  - Review -> docs/reviews/05-catalog.md
-  - Evidence -> docs/evidence/05/
-  - Staging package -> dist/hostinger-staging/
-  - Guest hashes -> MATCH current_revision rev1
-Scope: Guest files remain unchanged. Task 07 and Task 12 status remain unchanged.
-Next action: Gemini runs 06_ADMIN_BROWSER.md.
+Task: 12_RELEASE.md
+Status: PASS (local release artifacts). Live deployment NOT RUN. Nothing uploaded.
+Owner and actual model: Claude Code / Claude Opus 5.5 (claude-opus-5-5), assigned by the user
+Branch and tested commit: feature/chef-redesign / 3d997a0b296d7ec59bbd95b7d1a94509aef48a81 plus recorded worktree changes
+Artifacts (dist/release/):
+  - public_html.zip 8464878737d01fa6b5292a6a2c7cfecfe2e401c047dff7c5efe477aa2a04bfd5
+  - chef-private-setup.zip 89afe469567dde69ca24728a416781537f3cd16312cd9722a916fb9cbc409d3b
+  - INSTALL_TR.md dec52a1edc3fccfdb1bd082d06e098e4da867ecad7d347d4e287c9944072fd2d
+  - RELEASE_MANIFEST.md (contents, exclusions, requirements, evidence)
+Fixed before packaging: REL-12-01 first-owner creation (--create, --hash-only), REL-12-02 CLI DOCUMENT_ROOT,
+  REL-12-03 private archive CLI files, REL-12-04 stale admin.css (6 rules), REL-12-05 session path template.
+Checks:
+  - Fresh install from archives (deploy/test-release.mjs) -> 40/40 PASS (A: MySQL 8.4.3 CLI; B: MariaDB 11.8.9 SQL import)
+  - Reproducible build (two builds, same hashes) -> PASS
+  - npm test, PHP lint, Semgrep 1.180.0 (0 findings), archive and Git secret scans -> PASS
+  - Task 10 HTTP runner on disposable MySQL -> PASS 3 of 4 runs; 1 intermittent concurrent-throttle failure
+  - Browser check of the 6 new admin.css rules -> NOT RUN (Gemini)
+  - Hostinger checks (LiteSpeed SetEnv, media exec denial, media 0700 dirs, cron, CDN, MariaDB version) -> NOT RUN
+Environment: Laragon Apache 2.4.68 + PHP 8.3.33 on https://127.0.0.1:38443 (temporary), Docker mysql:8.4.3 and mariadb:11.8.9 (disposable), schema 2026101501.
+Review: docs/reviews/12-release.md, dist/release/RELEASE_MANIFEST.md.
+Next action: The owner deploys dist/release/ manually with INSTALL_TR.md, then runs section 8 and the unresolved hosting checks.
 ```
 
 ## History
@@ -169,6 +167,15 @@ Next action: Gemini runs 06_ADMIN_BROWSER.md.
 | 2026-10-16 | Claude / prompt review | Workflow fixes | chef-workflow/docs/*, prompts 05-07, 09-12, .gitignore | Baseline hash drift, test password leak, native confirm dialogs, and browser routing corrected in prompts | Commit guest revision 1, then run Task 05 |
 | 2026-10-16 +03:00 | Codex / model ID unavailable | 05 Stage 0 | PROJECT.md and prerequisite artifacts | PASS: prior evidence, Task 04 hashes, schema, and guest hashes | Build Stage 1 admin shell |
 | 2026-10-16 +03:00 | Codex CLI / model ID unavailable | 05 local delivery | Admin, tests, docs, evidence, and staging package | PARTIAL: local checks PASS; five integration suites NOT RUN | Gemini runs Task 06; verify integration on Hostinger staging |
+| 2026-10-19 14:15 +03:00 | Gemini / Gemini 3.8 Flash (High) | 06 (Admin browser) | docs/reviews/06-admin-browser.md, docs/FUNCTION_PARITY.md, docs/evidence/ref-rev1/*, docs/evidence/06/* | PASS: guest rev1 baseline, 11 admin pages, 17 catalog workflows, seed counts preserved, 22 screenshots. Non-blocking DEF-06-01/02 routed to R1_REPAIR.md | Run Task 07 |
+| 2026-10-19 14:25 +03:00 | Gemini / Gemini 3.8 Flash (High) | R1_REPAIR (DEF-06-01) | hvk/admin/products.php, docs/reviews/06-admin-browser.md, docs/evidence/06/* | PASS: DEF-06-01 resolved via min-w-0 on section & article (scrollWidth 390px <= 390px), DEF-06-02 verified compliant via label target (334x44px), DEF-06-03 UNVERIFIED | Ready for Task 07 |
+| 2026-10-19 14:26 +03:00 | Codex / model ID unavailable | 07 Part A | index.html, public_html/index.html, hvk/admin/api/menu.php, package/tests, API and baseline docs | PASS: static, PHP, HTTP, cache invalidation, shape, hash, CSS and markup checks | Resume Part B through R2_RESUME.md |
+| 2026-10-19 +03:00 | Codex / GPT-5 | 07 Part B | Imports, prices, translations, tests, API/review docs | PASS: focused static, PHP, HTTP, outage, cache, and security checks | Run Task 08 |
+| 2026-10-19 15:12 +03:00 | Codex / Antigravity | 08 (Feedback & lifecycle) | hvk/admin/api/feedback.php, feedbacks.php, security.php, index.html, public_html/index.html, tests | PASS: 12 feedback HTTP checks, physical deletion, idempotent repeat, retry cleanup, Semgrep 0 errors | Run Task 09 |
+| 2026-10-19 16:00 +03:00 | Gemini / Gemini 3.8 Flash (High) | 09 (End-to-End) | docs/reviews/09-end-to-end.md, docs/evidence/09/* | PASS: guest rev1 regression, connected catalog/WiFi/campaign/prices, feedback lifecycle & physical file deletion, failure paths (17 screenshots). DEF-09-01/02 routed to R1_REPAIR.md | Run Task 10 |
+| 2026-10-19 +03:00 | Claude Code / Claude Opus 5.5 (claude-opus-5-5) | 10 (Security review) | hvk/admin/security.php, media-service.php, api/feedback.php, feedbacks.php, public_html/.htaccess, database/tests/security-headers-*.mjs, run-http-tests.mjs, package.json, docs/reviews/10-security.md | PASS: 5 fixed, 2 accepted; all HTTP suites, CSP browser, Apache headers, Semgrep | Run Task 11 |
+| 2026-10-19 17:38 +03:00 | Gemini / Gemini 3.8 Flash (High) | 11 (Performance & A11y) | docs/reviews/11-performance-a11y.md, docs/evidence/11/* | PASS: Median LCP 435ms, CLS 0.00, JS 15.8KiB, Lighthouse 100 A11y, 4 viewports, modals, RTL & dark tokens | Run Task 12 |
+| 2026-10-19 +03:00 | Claude Code / Claude Opus 5.5 (claude-opus-5-5) | 12 (Release) | deploy/build-release.ps1, export-install-sql.ps1, test-release.mjs, deploy/release/*, database/recover-owner.php, hvk/admin/security.php, admin.css, dist/release/*, docs/reviews/12-release.md, docs/FUNCTION_PARITY.md | PASS: fresh install 40/40 on MySQL and MariaDB, reproducible build, Semgrep 0; Hostinger NOT RUN | Owner deploys dist/release/ with INSTALL_TR.md |
 
 
 

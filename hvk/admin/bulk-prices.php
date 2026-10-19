@@ -117,106 +117,91 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($allProducts as $p) {
                 fputcsv($output, [
                     $p['id'],
-                    $p['name'],
+                    chef_spreadsheet_text((string)$p['name']),
                     number_format((float)$p['price'], 2, '.', '')
                 ]);
             }
             fclose($output);
             exit;
         } elseif ($action === 'import_csv_prices') {
-            if (empty($_FILES['csv_file']['tmp_name'])) {
-                flash_message('error', 'Lütfen bir CSV dosyası seçin.');
-                header('Location: bulk-prices.php' . ($selectedCategory ? '?category=' . $selectedCategory : ''));
-                exit;
-            }
-            
-            $tmp = $_FILES['csv_file']['tmp_name'];
-            $name = strtolower($_FILES['csv_file']['name']);
-            if (!str_ends_with($name, '.csv')) {
-                flash_message('error', 'Yalnızca CSV yükleyebilirsiniz.');
-                header('Location: bulk-prices.php' . ($selectedCategory ? '?category=' . $selectedCategory : ''));
-                exit;
-            }
-
-            $pdo->beginTransaction();
-            $selectStmt = $pdo->prepare('SELECT price FROM products WHERE id = :id LIMIT 1');
-            $updateStmt = $pdo->prepare('UPDATE products SET price = :price WHERE id = :id LIMIT 1');
-            $changed = false;
-            
-            if (($handle = fopen($tmp, 'r')) !== false) {
-                // Check BOM and remove if present
-                $bom = fread($handle, 3);
-                if ($bom !== "\xEF\xBB\xBF") {
-                    rewind($handle);
-                }
-
-                $rowNum = 0;
-                while (($row = fgetcsv($handle, 1000, ',')) !== false) {
-                    $rowNum++;
-                    if (count($row) < 2) continue;
-                    
-                    // Allow format: id, price OR id, name, price
-                    // We only care about ID and Price. Assume ID is always index 0.
-                    // Price is index 2 if there are 3+ columns and it looks like a number, else index 1.
-                    $idRaw = trim($row[0]);
-                    if ($rowNum === 1 && !is_numeric($idRaw)) {
-                        continue; // Skip header
+            [$tmp] = chef_validate_import_upload($_FILES['csv_file'] ?? [], ['csv']);
+            $handle = fopen($tmp, 'r');
+            if ($handle === false) throw new DomainException('CSV dosyası okunamadı.');
+            $rows = [];
+            $errors = [];
+            $seenIds = [];
+            $line = 0;
+            $readRows = 0;
+            try {
+                while (($row = fgetcsv($handle, 16384, ',')) !== false) {
+                    $line++;
+                    if ($line === 1 && isset($row[0])) $row[0] = preg_replace('/^\xEF\xBB\xBF/', '', (string)$row[0]);
+                    if (count($row) === 1 && trim((string)$row[0]) === '') continue;
+                    $idRaw = trim((string)($row[0] ?? ''));
+                    if ($readRows === 0 && !preg_match('/^[0-9]+$/D', $idRaw)) {
+                        $header = array_map(static fn($value) => strtolower(trim((string)$value)), $row);
+                        if (in_array($header, [['id', 'fiyat'], ['id', 'price'], ['id', 'urun_adi', 'fiyat'], ['id', 'name', 'price']], true)) {
+                            continue;
+                        }
                     }
-                    
-                    $priceRaw = count($row) >= 3 ? trim($row[2]) : trim($row[1]);
-                    
+                    $readRows++;
+                    if ($readRows > chef_import_limits()['rows']) {
+                        throw new DomainException('Dosya en fazla 500 veri satırı içerebilir.');
+                    }
+                    if (count($row) !== 2 && count($row) !== 3) {
+                        $errors[] = 'Satır ' . $line . ': 2 veya 3 kolon gerekir.';
+                        continue;
+                    }
                     $id = chef_canonical_id($idRaw);
-                    if ($id === null) {
-                        $invalid++;
+                    $price = parse_price_input(trim((string)$row[count($row) - 1]));
+                    if ($id === null || $price === null) {
+                        $errors[] = 'Satır ' . $line . ': ürün kimliği veya fiyat geçersiz ya da belirsiz.';
                         continue;
                     }
-                    
-                    if ($priceRaw === '') {
-                        $unchanged++;
+                    if (isset($seenIds[$id])) {
+                        $errors[] = 'Satır ' . $line . ': aynı ürün kimliği birden fazla kez kullanıldı.';
                         continue;
                     }
-                    
-                    $parsed = parse_price_input($priceRaw);
-                    if ($parsed === null) {
-                        $invalid++;
-                        continue;
-                    }
-
-                    $selectStmt->execute([':id' => $id]);
-                    $current = $selectStmt->fetch();
-                    if (!$current) {
-                        $invalid++;
-                        continue;
-                    }
-
-                    $currentPrice = number_format((float)$current['price'], 2, '.', '');
-                    if ($currentPrice === $parsed) {
-                        $unchanged++;
-                        continue;
-                    }
-
-                    $updateStmt->execute([
-                        ':price' => $parsed,
-                        ':id' => $id,
-                    ]);
-                    $updated++;
-                    $changed = true;
+                    $seenIds[$id] = true;
+                    $rows[] = ['id' => $id, 'price' => $price, 'line' => $line];
                 }
+            } finally {
                 fclose($handle);
             }
-            
-            if ($changed) {
-                bump_menu_version($pdo);
+            if (!$rows && !$errors) throw new DomainException('CSV dosyasında fiyat satırı bulunamadı.');
+            if ($errors) {
+                flash_message('error', sprintf('CSV uygulanmadı: 0 uygulandı, %d satır reddedildi. %s', $readRows, $errors[0]));
+            } else {
+                $pdo->beginTransaction();
+                $selectStmt = $pdo->prepare('SELECT price FROM products WHERE id = :id LIMIT 1 FOR UPDATE');
+                $updateStmt = $pdo->prepare('UPDATE products SET price = :price WHERE id = :id LIMIT 1');
+                foreach ($rows as $row) {
+                    $selectStmt->execute([':id' => $row['id']]);
+                    $current = $selectStmt->fetch();
+                    if (!$current) {
+                        $errors[] = 'Satır ' . $row['line'] . ': ürün bulunamadı.';
+                        continue;
+                    }
+                    if (number_format((float)$current['price'], 2, '.', '') === $row['price']) {
+                        $unchanged++;
+                    }
+                }
+                if ($errors) {
+                    $pdo->rollBack();
+                    flash_message('error', sprintf('CSV uygulanmadı: 0 uygulandı, %d satır reddedildi. %s', $readRows, $errors[0]));
+                } else {
+                    foreach ($rows as $row) {
+                        $selectStmt->execute([':id' => $row['id']]);
+                        $currentPrice = number_format((float)$selectStmt->fetchColumn(), 2, '.', '');
+                        if ($currentPrice === $row['price']) continue;
+                        $updateStmt->execute([':price' => $row['price'], ':id' => $row['id']]);
+                        $updated++;
+                    }
+                    if ($updated > 0) bump_menu_version($pdo);
+                    $pdo->commit();
+                    flash_message('success', sprintf('CSV içe aktarıldı: %d uygulandı, %d değişmedi, 0 reddedildi.', $updated, $unchanged));
+                }
             }
-            $pdo->commit();
-
-            $message = sprintf(
-                'CSV içe aktarıldı: %d ürün güncellendi, %d ürün değişmedi, %d satır atlandı.',
-                $updated,
-                $unchanged,
-                $invalid
-            );
-            flash_message('success', $message);
         } else {
             flash_message('error', 'Geçersiz işlem.');
         }

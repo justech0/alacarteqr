@@ -33,7 +33,8 @@ $result = match ($check) {
     ],
     'category-order' => $pdo->query('SELECT id, public_id, name, sort_order FROM categories ORDER BY sort_order, id LIMIT 100')->fetchAll(),
     'product-state' => $pdo->query(
-        'SELECT id, public_id, category_id, name, price, sort_order, image_path,
+        'SELECT id, public_id, category_id, name, name_en, name_ar,
+                description, description_en, description_ar, price, sort_order, image_path,
                 ingredients, ingredients_en, ingredients_ar, calories,
                 ingredients_verified_at, calories_verified_at
          FROM products ORDER BY id DESC LIMIT 100'

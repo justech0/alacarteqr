@@ -5,7 +5,11 @@
   "description": "Chef À La Carte QR Menu",
   "scripts": {
     "preview": "http-server . -p 8080 -c-1 --cors",
-    "test": "node --check app.js && node --check menu-data.js",
+    "build:guest": "node chef-workflow/scripts/build-guest.mjs",
+    "test": "node database/tests/guest-static.mjs && node database/tests/security-headers-static.mjs &&node --check database/tests/menu-http.mjs && node --check database/tests/feedback-http.mjs",
+    "test:catalog-http": "node database/tests/run-catalog-http-tests.mjs",
+    "test:menu-http": "node database/tests/run-menu-http-tests.mjs",
+    "test:feedback-http": "node database/tests/run-feedback-http-tests.mjs",
     "build:admin-css": "tailwindcss -c tailwind.admin.config.js -i hvk/admin/assets/admin-tailwind.css -o hvk/admin/assets/admin.css --minify"
   },
   "devDependencies": {

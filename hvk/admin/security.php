@@ -44,7 +44,14 @@ function chef_path_inside(string $path, string $parent): bool
 
 function chef_document_root(): string
 {
-    $root = $_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__, 2);
+    $root = (string)($_SERVER['DOCUMENT_ROOT'] ?? '');
+    // PHP CLI sets DOCUMENT_ROOT to an empty string. CLI tools read the environment value instead.
+    if ($root === '' && PHP_SAPI === 'cli') {
+        $root = (string)getenv('DOCUMENT_ROOT');
+    }
+    if ($root === '') {
+        $root = dirname(__DIR__, 2);
+    }
     return realpath($root) ?: $root;
 }
 
@@ -230,13 +237,34 @@ function chef_admin_error(string $event, Throwable $exception): string
     return 'İşlem tamamlanamadı. İstek kodu: ' . chef_request_id();
 }
 
+// Admin pages load only same-origin assets. Keep this list in sync with header.php and login.php.
+const CHEF_ADMIN_CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; "
+    . "connect-src 'self'; font-src 'self'; manifest-src 'self'; form-action 'self'; "
+    . "frame-ancestors 'none'; base-uri 'none'; object-src 'none'";
+
+function chef_send_security_headers(): void
+{
+    if (headers_sent()) {
+        return;
+    }
+    header('Content-Security-Policy: ' . CHEF_ADMIN_CSP);
+    header('X-Frame-Options: DENY');
+    header('X-Content-Type-Options: nosniff');
+    header('Referrer-Policy: same-origin');
+    header('Cross-Origin-Opener-Policy: same-origin');
+}
+
 function chef_bootstrap(): array
 {
     global $chefConfig, $chefLogFile;
     ini_set('display_errors', '0');
     chef_request_id();
+    chef_send_security_headers();
     try {
         $chefConfig = chef_load_web_config();
+        if (($chefConfig['security']['environment'] ?? 'production') === 'production' && chef_request_is_https() && !headers_sent()) {
+            header('Strict-Transport-Security: max-age=31536000');
+        }
         $chefLogFile = chef_prepare_log_file($chefConfig);
         $pdo = chef_connect($chefConfig);
         chef_assert_schema_current($pdo);
@@ -622,3 +650,78 @@ function chef_update_admin_password(PDO $pdo, int $adminId, string $newPassword)
         throw new RuntimeException('Administrator recovery target was not found.');
     }
 }
+
+function chef_feedback_throttle_check(PDO $pdo, string $ip, int $limit = 30, int $window = 60, int $block = 300): ?int
+{
+    $signalHash = chef_signal_hash('fb:' . $ip);
+    $now = new DateTimeImmutable('now', new DateTimeZone('UTC'));
+    $stale = 86400;
+
+    try {
+        $pdo->beginTransaction();
+        $cleanup = $pdo->prepare(
+            "DELETE FROM admin_login_throttles
+             WHERE signal_type = 'feedback' AND updated_at < :cutoff
+               AND (blocked_until IS NULL OR blocked_until < UTC_TIMESTAMP())"
+        );
+        $cleanup->execute([':cutoff' => $now->modify("-{$stale} seconds")->format('Y-m-d H:i:s')]);
+
+        $insert = $pdo->prepare(
+            "INSERT INTO admin_login_throttles (signal_type, signal_hash, window_started_at, failure_count, blocked_until)
+             VALUES ('feedback', :hash, UTC_TIMESTAMP(), 0, NULL)
+             ON DUPLICATE KEY UPDATE signal_hash = VALUES(signal_hash)"
+        );
+        $insert->execute([':hash' => $signalHash]);
+
+        $select = $pdo->prepare(
+            "SELECT window_started_at, failure_count, blocked_until
+             FROM admin_login_throttles
+             WHERE signal_type = 'feedback' AND signal_hash = :hash FOR UPDATE"
+        );
+        $select->execute([':hash' => $signalHash]);
+        $row = $select->fetch();
+
+        if (!empty($row['blocked_until'])) {
+            $until = new DateTimeImmutable($row['blocked_until'], new DateTimeZone('UTC'));
+            $diff = $until->getTimestamp() - $now->getTimestamp();
+            if ($diff > 0) {
+                $pdo->commit();
+                return $diff;
+            }
+        }
+
+        $started = new DateTimeImmutable($row['window_started_at'] ?? 'now', new DateTimeZone('UTC'));
+        $expired = ($now->getTimestamp() - $started->getTimestamp()) >= $window;
+        $count = $expired ? 1 : ((int)($row['failure_count'] ?? 0) + 1);
+        $windowStart = $expired ? $now : $started;
+        $blockedUntil = null;
+        $retryAfter = null;
+
+        if ($count > $limit) {
+            $blockedUntil = $now->modify("+{$block} seconds")->format('Y-m-d H:i:s');
+            $retryAfter = $block;
+        }
+
+        $update = $pdo->prepare(
+            "UPDATE admin_login_throttles
+             SET window_started_at = :window_start, failure_count = :count, blocked_until = :blocked_until
+             WHERE signal_type = 'feedback' AND signal_hash = :hash"
+        );
+        $update->execute([
+            ':window_start' => $windowStart->format('Y-m-d H:i:s'),
+            ':count' => $count,
+            ':blocked_until' => $blockedUntil,
+            ':hash' => $signalHash,
+        ]);
+        $pdo->commit();
+
+        return $retryAfter;
+    } catch (Throwable $e) {
+        if ($pdo->inTransaction()) {
+            $pdo->rollBack();
+        }
+        chef_log('error', 'feedback_throttle_failed', 500, $e);
+        return null;
+    }
+}
+

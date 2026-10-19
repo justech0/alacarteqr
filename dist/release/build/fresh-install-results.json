@@ -1,0 +1,255 @@
+{
+  "date": "2026-10-19T15:37:23.204Z",
+  "archives": [
+    {
+      "name": "public_html.zip",
+      "sha256": "8464878737d01fa6b5292a6a2c7cfecfe2e401c047dff7c5efe477aa2a04bfd5"
+    },
+    {
+      "name": "chef-private-setup.zip",
+      "sha256": "89afe469567dde69ca24728a416781537f3cd16312cd9722a916fb9cbc409d3b"
+    }
+  ],
+  "results": [
+    {
+      "variant": "A",
+      "check": "Disposable database",
+      "status": "PASS",
+      "detail": "8.4.3"
+    },
+    {
+      "variant": "A",
+      "check": "CLI migrate",
+      "status": "PASS",
+      "detail": "Applied: 2026101401, 2026101402, 2026101501"
+    },
+    {
+      "variant": "A",
+      "check": "CLI seed",
+      "status": "PASS",
+      "detail": "Seed complete: 4 categories, 24 products."
+    },
+    {
+      "variant": "A",
+      "check": "CLI verify",
+      "status": "PASS",
+      "detail": "Schema valid: 2026101401, 2026101402, 2026101501"
+    },
+    {
+      "variant": "A",
+      "check": "Media prepare",
+      "status": "PASS",
+      "detail": "PASS"
+    },
+    {
+      "variant": "A",
+      "check": "Owner create (--create)",
+      "status": "PASS",
+      "detail": "Owner creation complete."
+    },
+    {
+      "variant": "A",
+      "check": "Second --create refused",
+      "status": "PASS",
+      "detail": "exit 1"
+    },
+    {
+      "variant": "A",
+      "check": "Seed counts",
+      "status": "PASS",
+      "detail": "4 categories, 24 products, 0 feedback"
+    },
+    {
+      "variant": "A",
+      "check": "Guest index",
+      "status": "PASS",
+      "detail": "rev1 hash, CSP"
+    },
+    {
+      "variant": "A",
+      "check": "Guest menu API",
+      "status": "PASS",
+      "detail": "version 1"
+    },
+    {
+      "variant": "A",
+      "check": "Admin login",
+      "status": "PASS",
+      "detail": "Secure, HttpOnly, no-store"
+    },
+    {
+      "variant": "A",
+      "check": "Catalog price edit",
+      "status": "PASS",
+      "detail": "price 321.5, version 1 -> 2"
+    },
+    {
+      "variant": "A",
+      "check": "Public media upload and delivery",
+      "status": "PASS",
+      "detail": "/media/campaigns/<file>.webp"
+    },
+    {
+      "variant": "A",
+      "check": "Feedback with image",
+      "status": "PASS",
+      "detail": "2 private file(s)"
+    },
+    {
+      "variant": "A",
+      "check": "Private image access control",
+      "status": "PASS",
+      "detail": "anonymous 302, owner 200"
+    },
+    {
+      "variant": "A",
+      "check": "Feedback deletion removes files",
+      "status": "PASS",
+      "detail": "0 files, image 404"
+    },
+    {
+      "variant": "A",
+      "check": "Denied private paths",
+      "status": "PASS",
+      "detail": "13 paths"
+    },
+    {
+      "variant": "A",
+      "check": "Upload execution denied",
+      "status": "PASS",
+      "detail": "probe.php=403, probe.phtml=403, probe.phar=403, image.php.webp=403"
+    },
+    {
+      "variant": "A",
+      "check": "Logout ends session",
+      "status": "PASS",
+      "detail": "redirect to login"
+    },
+    {
+      "variant": "A",
+      "check": "Private log outside public root",
+      "status": "PASS",
+      "detail": "no secret in log"
+    },
+    {
+      "variant": "B",
+      "check": "Disposable database",
+      "status": "PASS",
+      "detail": "11.8.9-MariaDB-ubu2404"
+    },
+    {
+      "variant": "B",
+      "check": "SQL import into empty database",
+      "status": "PASS",
+      "detail": "chef-install-2026101501.sql"
+    },
+    {
+      "variant": "B",
+      "check": "SQL import refused on populated database",
+      "status": "PASS",
+      "detail": "table exists error"
+    },
+    {
+      "variant": "B",
+      "check": "CLI verify after SQL import",
+      "status": "PASS",
+      "detail": "Schema valid: 2026101401, 2026101402, 2026101501"
+    },
+    {
+      "variant": "B",
+      "check": "Migration checksums match SQL",
+      "status": "PASS",
+      "detail": "No pending migrations."
+    },
+    {
+      "variant": "B",
+      "check": "Manual owner insert",
+      "status": "PASS",
+      "detail": "admins 1 row"
+    },
+    {
+      "variant": "B",
+      "check": "Manual media directories",
+      "status": "PASS",
+      "detail": "PASS"
+    },
+    {
+      "variant": "B",
+      "check": "Seed counts",
+      "status": "PASS",
+      "detail": "4 categories, 24 products, 0 feedback"
+    },
+    {
+      "variant": "B",
+      "check": "Guest index",
+      "status": "PASS",
+      "detail": "rev1 hash, CSP"
+    },
+    {
+      "variant": "B",
+      "check": "Guest menu API",
+      "status": "PASS",
+      "detail": "version 1"
+    },
+    {
+      "variant": "B",
+      "check": "Admin login",
+      "status": "PASS",
+      "detail": "Secure, HttpOnly, no-store"
+    },
+    {
+      "variant": "B",
+      "check": "Catalog price edit",
+      "status": "PASS",
+      "detail": "price 321.5, version 1 -> 2"
+    },
+    {
+      "variant": "B",
+      "check": "Public media upload and delivery",
+      "status": "PASS",
+      "detail": "/media/campaigns/<file>.webp"
+    },
+    {
+      "variant": "B",
+      "check": "Feedback with image",
+      "status": "PASS",
+      "detail": "2 private file(s)"
+    },
+    {
+      "variant": "B",
+      "check": "Private image access control",
+      "status": "PASS",
+      "detail": "anonymous 302, owner 200"
+    },
+    {
+      "variant": "B",
+      "check": "Feedback deletion removes files",
+      "status": "PASS",
+      "detail": "0 files, image 404"
+    },
+    {
+      "variant": "B",
+      "check": "Denied private paths",
+      "status": "PASS",
+      "detail": "13 paths"
+    },
+    {
+      "variant": "B",
+      "check": "Upload execution denied",
+      "status": "PASS",
+      "detail": "probe.php=403, probe.phtml=403, probe.phar=403, image.php.webp=403"
+    },
+    {
+      "variant": "B",
+      "check": "Logout ends session",
+      "status": "PASS",
+      "detail": "redirect to login"
+    },
+    {
+      "variant": "B",
+      "check": "Private log outside public root",
+      "status": "PASS",
+      "detail": "no secret in log"
+    }
+  ]
+}

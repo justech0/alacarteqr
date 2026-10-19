@@ -6,7 +6,8 @@ require_login();
 chef_require_method(['GET', 'POST']);
 
 $safeProductFields = [
-    'action', 'id', 'name', 'description', 'price', 'category_id', 'redirect_category',
+    'action', 'id', 'name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar',
+    'price', 'category_id', 'redirect_category',
     'ingredients', 'ingredients_en', 'ingredients_ar', 'calories',
     'ingredients_verified', 'calories_verified', 'new_category_id',
 ];
@@ -40,7 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (in_array($action, ['create', 'update'], true)) {
             $errors = [];
             $name = chef_validate_required_text($_POST['name'] ?? '', 200, 'Ürün adı', $errors, 'name');
+            $nameEn = chef_validate_optional_text($_POST['name_en'] ?? '', 200, 'İngilizce ürün adı', $errors, 'name_en');
+            $nameAr = chef_validate_optional_text($_POST['name_ar'] ?? '', 200, 'Arapça ürün adı', $errors, 'name_ar');
             $description = chef_validate_optional_text($_POST['description'] ?? '', 5000, 'Servis açıklaması', $errors, 'description');
+            $descriptionEn = chef_validate_optional_text($_POST['description_en'] ?? '', 5000, 'İngilizce açıklama', $errors, 'description_en');
+            $descriptionAr = chef_validate_optional_text($_POST['description_ar'] ?? '', 5000, 'Arapça açıklama', $errors, 'description_ar');
             $ingredients = chef_validate_optional_text($_POST['ingredients'] ?? '', 5000, 'Türkçe içerik', $errors, 'ingredients');
             $ingredientsEn = chef_validate_optional_text($_POST['ingredients_en'] ?? '', 5000, 'İngilizce içerik', $errors, 'ingredients_en');
             $ingredientsAr = chef_validate_optional_text($_POST['ingredients_ar'] ?? '', 5000, 'Arapça içerik', $errors, 'ingredients_ar');
@@ -79,11 +84,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $now = gmdate('Y-m-d H:i:s');
                 $stmt = $pdo->prepare(
                     'INSERT INTO products (
-                        category_id, name, description, price, sort_order, image_path,
+                        category_id, name, name_en, name_ar, description, description_en, description_ar,
+                        price, sort_order, image_path,
                         ingredients, ingredients_en, ingredients_ar, calories,
                         ingredients_verified_at, calories_verified_at
                     ) VALUES (
-                        :category_id, :name, :description, :price, :sort_order, NULL,
+                        :category_id, :name, :name_en, :name_ar, :description, :description_en, :description_ar,
+                        :price, :sort_order, NULL,
                         :ingredients, :ingredients_en, :ingredients_ar, :calories,
                         :ingredients_verified_at, :calories_verified_at
                     )'
@@ -91,7 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([
                     ':category_id' => $categoryId,
                     ':name' => $name,
+                    ':name_en' => $nameEn,
+                    ':name_ar' => $nameAr,
                     ':description' => $description,
+                    ':description_en' => $descriptionEn,
+                    ':description_ar' => $descriptionAr,
                     ':price' => $price,
                     ':sort_order' => $sortOrder,
                     ':ingredients' => $ingredients,
@@ -148,7 +159,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 $stmt = $pdo->prepare(
                     'UPDATE products SET
-                        category_id = :category_id, name = :name, description = :description,
+                        category_id = :category_id, name = :name, name_en = :name_en, name_ar = :name_ar,
+                        description = :description, description_en = :description_en, description_ar = :description_ar,
                         price = :price, sort_order = :sort_order, image_path = :image_path,
                         ingredients = :ingredients, ingredients_en = :ingredients_en,
                         ingredients_ar = :ingredients_ar, calories = :calories,
@@ -159,7 +171,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt->execute([
                     ':category_id' => $categoryId,
                     ':name' => $name,
+                    ':name_en' => $nameEn,
+                    ':name_ar' => $nameAr,
                     ':description' => $description,
+                    ':description_en' => $descriptionEn,
+                    ':description_ar' => $descriptionAr,
                     ':price' => $price,
                     ':sort_order' => $sortOrder,
                     ':image_path' => $imagePath,
@@ -298,7 +314,7 @@ $error = static fn(string $field): ?string => chef_field_error($formState, $fiel
 $testId = static fn(array $row): string => sanitize((string)($row['public_id'] ?: $row['id']));
 ?>
 <div class="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)]">
-    <section class="space-y-4" aria-labelledby="products-title">
+    <section class="min-w-0 space-y-4" aria-labelledby="products-title">
         <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
                 <h2 id="products-title" class="text-2xl">Ürünler</h2>
@@ -324,7 +340,7 @@ $testId = static fn(array $row): string => sanitize((string)($row['public_id'] ?
 
         <div class="grid gap-4 md:grid-cols-2">
             <?php foreach ($products as $product): $publicId = $testId($product); ?>
-                <article class="admin-panel flex flex-col gap-3 rounded-xl p-4" data-testid="product-row-<?php echo $publicId; ?>">
+                <article class="admin-panel min-w-0 flex flex-col gap-3 rounded-xl p-4" data-testid="product-row-<?php echo $publicId; ?>">
                     <div class="flex gap-4">
                         <div class="admin-raised h-24 w-28 shrink-0 overflow-hidden rounded-lg">
                             <?php if (!empty($product['image_path'])): ?>
@@ -416,6 +432,23 @@ $testId = static fn(array $row): string => sanitize((string)($row['public_id'] ?
                 <textarea id="product-description" name="description" rows="3" maxlength="5000" class="w-full rounded-lg px-3 py-2" data-testid="product-description"><?php echo sanitize($value('description', $editProduct['description'] ?? '')); ?></textarea>
                 <?php if ($error('description')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('description')); ?></p><?php endif; ?>
             </div>
+
+            <fieldset class="space-y-3 border-t pt-4">
+                <legend class="px-1 font-serif text-lg">Çeviriler</legend>
+                <?php foreach ([
+                    ['name_en', 'İngilizce ürün adı', 200, 1],
+                    ['name_ar', 'Arapça ürün adı', 200, 1],
+                    ['description_en', 'İngilizce açıklama', 5000, 3],
+                    ['description_ar', 'Arapça açıklama', 5000, 3],
+                ] as [$field, $label, $maximum, $rows]): ?>
+                    <div>
+                        <label for="product-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
+                        <textarea id="product-<?php echo $field; ?>" name="<?php echo $field; ?>" rows="<?php echo $rows; ?>" maxlength="<?php echo $maximum; ?>" class="w-full rounded-lg px-3 py-2" data-testid="product-<?php echo str_replace('_', '-', $field); ?>"><?php echo sanitize($value($field, $editProduct[$field] ?? '')); ?></textarea>
+                        <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
+                    </div>
+                <?php endforeach; ?>
+                <p class="admin-muted text-xs">Boş çeviriler misafir menüsünde Türkçe metni kullanır.</p>
+            </fieldset>
 
             <fieldset class="space-y-3 border-t pt-4">
                 <legend class="px-1 font-serif text-lg">İçerikler</legend>
