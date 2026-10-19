@@ -18,25 +18,25 @@ function assertHeaders(response, label) {
   assert.equal(response.headers.get('referrer-policy'), 'same-origin', `${label}: Referrer-Policy is missing.`);
 }
 
-const login = await request(devBase, '/hvk/admin/login.php');
+const login = await request(devBase, '/admin/login.php');
 assert.equal(login.status, 200, 'Login page failed.');
 assertHeaders(login, 'login.php');
 assert.equal(login.headers.get('strict-transport-security'), null, 'HSTS must not be sent over plain development HTTP.');
 
-const protectedPage = await request(devBase, '/hvk/admin/products.php');
+const protectedPage = await request(devBase, '/admin/products.php');
 assert.equal(protectedPage.status, 302, 'Protected page did not redirect.');
 assertHeaders(protectedPage, 'products.php redirect');
 
-const menu = await request(devBase, '/hvk/admin/api/menu.php');
+const menu = await request(devBase, '/admin/api/menu.php');
 assert.equal(menu.status, 200, 'Menu API failed.');
 assertHeaders(menu, 'api/menu.php');
 assert.match(menu.headers.get('cache-control') ?? '', /public/, 'Menu API cache policy changed.');
 
-const privateImage = await request(devBase, '/hvk/admin/private-image.php?id=1');
+const privateImage = await request(devBase, '/admin/private-image.php?id=1');
 assert.equal(privateImage.status, 302, 'Anonymous private image request was not redirected.');
 assertHeaders(privateImage, 'private-image.php');
 
-const feedback = (base, origin) => request(base, '/hvk/admin/api/feedback.php', {
+const feedback = (base, origin) => request(base, '/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json', Origin: origin },
   body: JSON.stringify({ topic: 'other', rating: 5, message: 'Origin test.' }),

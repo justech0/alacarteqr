@@ -63,6 +63,31 @@
 .star-btn.is-filled svg { fill: var(--star-color); stroke: var(--star-color); }
 #rating-hint { display: none !important; }
 
+/* Step-by-step feedback */
+.fb-progress { display: flex; gap: 6px; margin: 4px 0 18px; }
+.fb-progress span { flex: 1; height: 3px; border-radius: 2px; background: var(--line); transition: background .25s ease; }
+.fb-progress span.is-done { background: var(--green); }
+.fb-step[hidden] { display: none; }
+.fb-step { animation: fbIn .22s ease-out; }
+@keyframes fbIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.fb-step fieldset { border: 0; padding: 0; margin: 0; }
+.fb-step legend { width: 100%; text-align: center; font-size: 16px; font-weight: 600; margin-bottom: 16px; padding: 0; }
+.topic-list { display: grid; gap: 10px; }
+.topic-btn { width: 100%; min-height: 56px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); font-size: 16px; font-weight: 600; letter-spacing: .02em; text-align: center; transition: border-color .18s, background .18s, color .18s, transform .12s; }
+.topic-btn:hover { border-color: var(--green); color: var(--green); background: var(--soft); }
+.topic-btn:active { transform: scale(.98); }
+.topic-btn.is-selected { border-color: var(--green); color: var(--green); background: var(--soft); }
+.topic-btn:focus-visible, .fb-back:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+.fb-step .star-rating-row { gap: 10px; padding: 8px 0 4px; }
+.fb-step .star-btn { width: 52px; height: 52px; }
+.fb-step .star-btn svg { width: 38px; height: 38px; }
+.fb-chosen { text-align: center; font-size: 13px; color: var(--muted); margin: -8px 0 14px; }
+.fb-back { display: block; margin: 18px auto 0; padding: 8px 12px; border: 0; background: none; color: var(--muted); font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.fb-recovery { margin: 0 0 16px; padding: 12px 14px; border: 1px solid #fecaca; border-radius: 10px; background: #fef2f2; color: #991b1b; font-size: 14px; }
+html[data-theme=dark] .fb-recovery { border-color: #7f1d1d; background: rgba(127, 29, 29, .25); color: #fecaca; }
+html[data-theme=dark] .topic-btn { background: transparent; }
+@media (prefers-reduced-motion: reduce) { .fb-step { animation: none; } }
+
 
 #result-count { display: none !important; }
 
@@ -1000,15 +1025,26 @@ SOFTWARE.
   </dialog>
   <dialog id="feedback-dialog" class="dialog feedback-dialog" aria-labelledby="feedback-title">
     <button class="icon-button close-button" type="button" data-close aria-label="Kapat"><span data-icon="close"></span></button>
-    <div class="dialog-content"><p class="eyebrow">CHEF À LA CARTE</p><h2 id="feedback-title" data-text="feedback">Görüş ve öneri bildirin</h2><p class="form-intro" data-text="feedbackHint">Deneyiminizi bizimle paylaşın.</p>
-      <form id="feedback-form">
-        <fieldset><legend data-text="topicQuestion">Hangi konuda görüş bildirmek istersiniz?</legend><div class="topic-options" id="topic-options"></div></fieldset>
-        <fieldset class="rating-fieldset"><legend data-text="ratingQuestion">Deneyiminizi nasıl değerlendirirsiniz?</legend><div class="star-rating-row" id="rating-options" role="radiogroup" aria-label="Deneyim puanı"></div></fieldset>
+    <div class="dialog-content"><p class="eyebrow">CHEF À LA CARTE</p><h2 id="feedback-title" data-text="feedback">Görüş ve öneri bildirin</h2><p class="form-intro" data-text="feedbackHint" hidden>Deneyiminizi bizimle paylaşın.</p>
+      <form id="feedback-form" data-step="1" novalidate>
+        <div class="fb-progress" aria-hidden="true"><span class="is-done"></span><span></span><span></span></div>
+        <input type="hidden" id="feedback-topic" name="topic" value="">
+        <section class="fb-step" data-step-panel="1">
+          <fieldset><legend data-text="topicQuestion">Hangi konuda görüş bildirmek istersiniz?</legend><div class="topic-list" id="topic-options"></div></fieldset>
+        </section>
+        <section class="fb-step" data-step-panel="2" hidden>
+          <fieldset class="rating-fieldset"><legend data-text="ratingQuestion">Deneyiminizi nasıl değerlendirirsiniz?</legend><p class="fb-chosen" id="fb-chosen-topic"></p><div class="star-rating-row" id="rating-options" role="radiogroup" aria-label="Deneyim puanı"></div></fieldset>
+          <button type="button" class="fb-back" data-fb-back="1" data-text="stepBack">Geri</button>
+        </section>
+        <section class="fb-step" data-step-panel="3" hidden>
+        <p class="fb-recovery" id="fb-recovery" role="note" hidden data-text="recovery"></p>
         <label class="field"><span data-text="messageQuestion">Neyi iyileştirebiliriz?</span><textarea id="feedback-message" name="message" rows="3" maxlength="2000" required></textarea></label>
         <label class="field"><span data-text="contactQuestion">Size nasıl ulaşabiliriz? (İsteğe bağlı)</span><input id="feedback-contact" name="contact" type="text" maxlength="150" autocomplete="off"></label>
         <div class="upload-row"><label class="upload-label"><span data-icon="image"></span><span data-text="addPhoto">Fotoğraf ekle (isteğe bağlı)</span><input id="feedback-image" type="file" accept="image/jpeg,image/png,image/webp" class="sr-only"></label><small data-text="fileHint">JPG, PNG, WebP · En fazla 4 MB</small></div>
         <div id="attachment" class="attachment" hidden><img id="attachment-image" alt=""><span id="attachment-name"></span><button type="button" class="icon-button" id="remove-attachment" aria-label="Fotoğrafı kaldır"><span data-icon="close"></span></button></div>
         <p id="feedback-status" role="status" aria-live="polite"></p><button type="submit" class="primary-button" id="feedback-submit" data-text="sendFeedback">Gönder</button>
+        <button type="button" class="fb-back" data-fb-back="2" data-text="stepBack">Geri</button>
+        </section>
       </form>
     </div>
   </dialog>
@@ -1022,6 +1058,9 @@ SOFTWARE.
 }function Le(e){B.matches||O(e,{opacity:[.6,1],transform:["translateY(8px)","translateY(0px)"]},{duration:.2,ease:"easeOut"})}G=e=>e.caloriesVerified===!0&&Number.isFinite(e.calories)&&e.calories>=0;Object.assign(Pe.tr,{menuLoading:"Menü yükleniyor",menuLoadingHint:"Lütfen bekleyin.",menuFailed:"Menü yüklenemedi",menuFailedHint:"Bağlantınızı kontrol edip tekrar deneyin.",retry:"Tekrar dene",menuEmpty:"Menü henüz boş",menuEmptyHint:"Ürünler eklendiğinde burada görünecek.",sendFeedback:"Gönder",feedbackSuccess:"Geri bildiriminiz için teşekkürler.",feedbackFailed:"Gönderilemedi. Lütfen tekrar deneyin.",feedbackThrottled:"Çok fazla istek. Lütfen bir süre sonra tekrar deneyin.",sending:"Gönderiliyor..."});
 Object.assign(Pe.en,{menuLoading:"Loading menu",menuLoadingHint:"Please wait.",menuFailed:"Menu could not load",menuFailedHint:"Check your connection and try again.",retry:"Try again",menuEmpty:"The menu is empty",menuEmptyHint:"Items will appear here when added.",sendFeedback:"Send",feedbackSuccess:"Thank you for your feedback.",feedbackFailed:"Submission failed. Please try again.",feedbackThrottled:"Too many requests. Please try again later.",sending:"Sending..."});
 Object.assign(Pe.ar,{menuLoading:"جارٍ تحميل القائمة",menuLoadingHint:"يرجى الانتظار.",menuFailed:"تعذر تحميل القائمة",menuFailedHint:"تحقق من اتصالك وحاول مرة أخرى.",retry:"حاول مرة أخرى",menuEmpty:"القائمة فارغة حالياً",menuEmptyHint:"ستظهر الأطباق هنا عند إضافتها.",sendFeedback:"إرسال",feedbackSuccess:"شكراً لملاحظاتك.",feedbackFailed:"فشل الإرسال. يرجى المحاولة مرة أخرى.",feedbackThrottled:"طلبات كثيرة جداً. يرجى المحاولة لاحقاً.",sending:"جارٍ الإرسال..."});
+Object.assign(Pe.tr,{stepBack:"← Geri",taste:"Lezzet ve kalite",service:"Hizmet hızı",staff:"Personel",hygiene:"Hijyen",other:"Diğer (görüş, öneri)",topicQuestion:"Konu seçiniz",ratingQuestion:"Deneyiminizi puanlayın",recovery:"Üzgünüz. Ne olduğunu yazarsanız hemen ilgileniriz."});
+Object.assign(Pe.en,{stepBack:"← Back",taste:"Taste and quality",service:"Service speed",staff:"Staff",hygiene:"Hygiene",other:"Other (feedback, suggestion)",topicQuestion:"Choose a topic",ratingQuestion:"Rate your experience",recovery:"We are sorry. Tell us what happened and we will take care of it."});
+Object.assign(Pe.ar,{stepBack:"رجوع →",taste:"المذاق والجودة",service:"سرعة الخدمة",staff:"الموظفون",hygiene:"النظافة",other:"أخرى (رأي، اقتراح)",topicQuestion:"اختر الموضوع",ratingQuestion:"قيّم تجربتك",recovery:"نعتذر. أخبرنا بما حدث وسنهتم بالأمر."});
 var menuRequestState="loading";
 
 let isScrollSpyLocked = false;
@@ -1098,62 +1137,81 @@ function qe() {
   title.textContent=l(menuEmpty?"menuEmpty":"empty");hint.textContent=l(menuEmpty?"menuEmptyHint":"emptyHint");action.textContent=l("reset");
   grid.replaceChildren();t.forEach((o,s)=>{let f=p("button","product-card");f.type="button",f.dataset.id=o.id,f.dataset.category=o.category,f.setAttribute("aria-haspopup","dialog");let x=p("span","card-photo");x.append(W(o,s<2));let c=p("span","card-body");c.append(p("h3","",b(o.name)),p("p","",b(o.description).replace(/\s*\+\s*/g," · ")));let m=p("span","card-bottom"),u=p("span","price",De(o.price));u.append(p("b","","₺")),m.append(u),G(o)&&m.append(p("span","card-calories",String(o.calories)+" "+l("kcal"))),c.append(m),f.append(x,c),f.addEventListener("click",()=>{n.product=o,Ne(),oe(a("#product-dialog"))}),grid.append(f)}),e&&Le(grid)
 }function Ne(){let e=n.product;if(!e)return;a("#product-photo").replaceChildren(W(e,!0)),a("#product-title").textContent=b(e.name),a("#product-price").textContent=`${De(e.price)} \u20BA`,a("#product-category").textContent=b(h.categories.find(r=>r.id===e.category)?.name),a("#product-description").textContent=b(e.description).replace(/\s*\+\s*/g," \xB7 ");let t=e.ingredientsVerified===!0&&Array.isArray(e.ingredients?.[n.lang])?e.ingredients[n.lang]:[];a("#ingredients").hidden=!t.length,a("#ingredient-list").replaceChildren(...t.map(r=>p("li","",r))),a("#product-calories").hidden=!G(e),a("#product-calories").textContent=G(e)?`${e.calories} ${l("kcal")}`:""}var selectedRating = 0;
+var feedbackStep = 1;
+function goFeedbackStep(step) {
+  feedbackStep = step;
+  let form = a("#feedback-form");
+  form.dataset.step = String(step);
+  P("[data-step-panel]").forEach(panel => { panel.hidden = panel.dataset.stepPanel !== String(step); });
+  P(".fb-progress span").forEach((bar, index) => bar.classList.toggle("is-done", index < step));
+  let topic = a("#feedback-topic").value;
+  a("#fb-chosen-topic").textContent = topic ? l(topic) : "";
+  a("#fb-recovery").hidden = !(step === 3 && selectedRating > 0 && selectedRating <= 2);
+  a("#feedback-status").textContent = "";
+  let focusTarget = step === 1 ? a(".topic-btn.is-selected") || a(".topic-btn") : step === 2 ? a(".star-btn.is-active") || a(".star-btn") : a("#feedback-message");
+  focusTarget?.focus({ preventScroll: !0 });
+}
 function _e() {
-  let e = a('input[name="topic"]:checked')?.value;
+  let current = a("#feedback-topic").value;
   a("#topic-options").replaceChildren();
   ["taste","service","staff","hygiene","other"].forEach(r => {
-    let i = p("label","choice"), o = p("input");
-    o.type = "radio", o.name = "topic", o.value = r, o.required = !0, o.checked = r === e;
-    i.append(o, p("span","",l(r)));
-    a("#topic-options").append(i);
+    let btn = p("button", "topic-btn", l(r));
+    btn.type = "button";
+    btn.dataset.topic = r;
+    btn.setAttribute("aria-pressed", String(r === current));
+    if (r === current) btn.classList.add("is-selected");
+    btn.addEventListener("click", () => {
+      a("#feedback-topic").value = r;
+      _e();
+      goFeedbackStep(2);
+    });
+    a("#topic-options").append(btn);
   });
   renderStarRating();
+  a("#fb-chosen-topic").textContent = current ? l(current) : "";
 }
-function renderStarRating(hoverVal = 0) {
+P("[data-fb-back]").forEach(btn => btn.addEventListener("click", () => goFeedbackStep(Number(btn.dataset.fbBack))));
+function resetFeedbackWizard() {
+  a("#feedback-topic").value = "";
+  selectedRating = 0;
+  _e();
+  goFeedbackStep(1);
+}
+// Builds the stars once. Hover only repaints, so a tap never lands on a replaced button.
+function paintStars(level) {
+  let container = a("#rating-options");
+  if (!container) return;
+  container.dataset.level = String(level);
+  container.querySelectorAll(".star-btn").forEach(btn => {
+    let star = Number(btn.dataset.value);
+    btn.classList.toggle("is-filled", star <= level);
+    btn.classList.toggle("is-active", star === selectedRating);
+    btn.setAttribute("aria-checked", String(star === selectedRating));
+  });
+}
+function renderStarRating() {
   let container = a("#rating-options");
   if (!container) return;
   container.replaceChildren();
-  let activeLevel = hoverVal || selectedRating || 0;
-  container.dataset.level = String(activeLevel);
-  
-  // Hidden input for form submission
-  let hiddenInput = p("input");
-  hiddenInput.type = "hidden";
-  hiddenInput.name = "rating";
-  hiddenInput.value = selectedRating ? String(selectedRating) : "";
-  hiddenInput.required = !0;
-  container.append(hiddenInput);
-
   for (let star = 1; star <= 5; star++) {
     let btn = p("button", "star-btn");
     btn.type = "button";
     btn.dataset.value = String(star);
+    btn.setAttribute("role", "radio");
     btn.setAttribute("aria-label", star + " / 5");
     btn.innerHTML = C("star");
-    if (star <= activeLevel) {
-      btn.classList.add("is-filled");
-    }
-    if (star === selectedRating) {
-      btn.classList.add("is-active");
-    }
-    btn.addEventListener("pointerenter", () => renderStarRating(star));
-    btn.addEventListener("pointerleave", () => renderStarRating(0));
+    btn.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") paintStars(star); });
+    btn.addEventListener("pointerleave", () => paintStars(selectedRating));
     btn.addEventListener("click", () => {
       selectedRating = star;
-      renderStarRating(0);
-      let statusEl = a("#feedback-status");
-      if (statusEl) {
-        if (star <= 2) {
-          statusEl.textContent = l("recovery");
-        } else if (statusEl.textContent === l("recovery")) {
-          statusEl.textContent = "";
-        }
-      }
+      paintStars(star);
+      setTimeout(() => goFeedbackStep(3), B.matches ? 0 : 220);
     });
     container.append(btn);
   }
+  paintStars(selectedRating);
 }
-function Ce() {}function Ke(){updateLangUI();document.documentElement.lang=n.lang,document.documentElement.dir=n.lang==="ar"?"rtl":"ltr",a("#language").value=n.lang,P("[data-text]").forEach(e=>e.textContent=l(e.dataset.text)),P("[data-close],#campaign-close").forEach(e=>e.setAttribute("aria-label",l("close"))),a("#search").placeholder=l("search"),a("#search").setAttribute("aria-label",l("search")),a("#clear-search").setAttribute("aria-label",l("reset")),a(".category-nav").setAttribute("aria-label",l("categories")),a("#remove-attachment").setAttribute("aria-label",l("removePhoto")),a("#attachment-image").alt=l("photoAlt"),Re(),qe(),H(),Ne(),_e(),Ue(),renderCampaign(),document.title=`Chef \xC0 La Carte \xB7 ${l("menu")}`,a("#feedback-status").textContent="",a("#wifi-status").textContent=""}function Re(){document.documentElement.dataset.theme=n.theme;document.querySelector('meta[name="theme-color"]')?.setAttribute("content",n.theme==="dark"?"#0F1210":"#176023");let e=a("#theme-button");e.innerHTML=C(n.theme==="light"?"moon":"sun"),e.setAttribute("aria-label",l(n.theme==="light"?"dark":"light")),e.setAttribute("aria-pressed",String(n.theme==="dark"))}var Ie=null;function oe(e){Ie=document.activeElement,e.showModal(),document.body.style.overflow="hidden",Le(e)}function Be(e){e.close()}P("dialog").forEach(e=>{e.addEventListener("close",()=>{document.body.style.overflow="",e.id==="feedback-dialog"&&ne(),Ie?.focus({preventScroll:!0})}),e.querySelector("[data-close]").addEventListener("click",()=>Be(e)),e.addEventListener("click",t=>{if(t.target!==e)return;let r=e.getBoundingClientRect();(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom)&&Be(e)})});function Ue(){let e=!!(h.wifi?.ssid&&h.wifi?.verified);a("#wifi-details").hidden=!e,a("#wifi-unavailable").hidden=e,a("#copy-wifi").hidden=!e||!h.wifi.password,a("#wifi-network").textContent=e?h.wifi.ssid:"",a("#wifi-password").textContent=e&&h.wifi.password||""}a("#wifi-button").addEventListener("click",()=>oe(a("#wifi-dialog")));a("#copy-wifi").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(h.wifi.password),a("#wifi-status").textContent=l("copied")}catch{a("#wifi-status").textContent=l("copyFailed")}});a("#feedback-button").addEventListener("click",()=>oe(a("#feedback-dialog")));var feedbackIdempotencyKey=null;function getFeedbackKey(){if(!feedbackIdempotencyKey){feedbackIdempotencyKey=(typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():("fb-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2))}return feedbackIdempotencyKey}function resetFeedbackKey(){feedbackIdempotencyKey=null}var isFeedbackSubmitting=!1;a("#feedback-form").addEventListener("submit",async e=>{e.preventDefault();if(isFeedbackSubmitting)return;if(!e.currentTarget.reportValidity())return;var topicInput=a('input[name="topic"]:checked');if(!topicInput){a("#feedback-status").textContent=l("topicQuestion");return}if(!selectedRating||selectedRating<1||selectedRating>5){a("#feedback-status").textContent=l("ratingQuestion");return}var messageVal=a("#feedback-message")?.value?.trim()||"";if(!messageVal){a("#feedback-status").textContent=l("messageQuestion");return}var submitBtn=a("#feedback-submit")||a('#feedback-form button[type="submit"]');isFeedbackSubmitting=!0;if(submitBtn)submitBtn.disabled=!0;a("#feedback-status").textContent=l("sending");try{var formData=new FormData();formData.set("topic",topicInput.value);formData.set("rating",String(selectedRating));formData.set("message",messageVal);var contactVal=a("#feedback-contact")?.value?.trim()||"";if(contactVal)formData.set("contact",contactVal);formData.set("language",n.lang);var file=a("#feedback-image")?.files?.[0];if(file){var err=we(file);if(err){a("#feedback-status").textContent=l(err);if(submitBtn)submitBtn.disabled=!1;isFeedbackSubmitting=!1;return}formData.set("image",file)}var key=getFeedbackKey();var res=await fetch("hvk/admin/api/feedback.php",{method:"POST",body:formData,headers:{"Idempotency-Key":key}});if(res.status===201||res.status===200){a("#feedback-status").textContent=l("feedbackSuccess");resetFeedbackKey();e.currentTarget.reset();selectedRating=0;renderStarRating(0);_e();ne();setTimeout(()=>{Be(a("#feedback-dialog"));a("#feedback-status").textContent=""},1500)}else if(res.status===429){a("#feedback-status").textContent=l("feedbackThrottled")}else{a("#feedback-status").textContent=l("feedbackFailed")}}catch(err){a("#feedback-status").textContent=l("feedbackFailed")}finally{isFeedbackSubmitting=!1;if(submitBtn)submitBtn.disabled=!1}});var S=null;function ne(){S&&URL.revokeObjectURL(S),S=null,a("#feedback-image").value="",a("#attachment-image").removeAttribute("src"),a("#attachment-name").textContent="",a("#attachment").hidden=!0}a("#feedback-image").addEventListener("change",()=>{let e=a("#feedback-image").files[0],t=we(e);if(S&&URL.revokeObjectURL(S),S=null,t||!e){ne(),a("#feedback-status").textContent=t?l(t):"";return}S=URL.createObjectURL(e),a("#attachment-image").src=S,a("#attachment-name").textContent=e.name,a("#attachment").hidden=!1,a("#feedback-status").textContent=""});a("#remove-attachment").addEventListener("click",ne);a("#search").addEventListener("input",e=>{n.query=e.target.value,H()});a(".search").addEventListener("submit",e=>e.preventDefault());function Oe(){n.query="",a("#search").value="",H(),a("#search").focus()}a("#clear-search").addEventListener("click",Oe);a("#reset-search").addEventListener("click",()=>menuRequestState==="error"?loadMenu():Oe());
+function Ce() {}function Ke(){updateLangUI();document.documentElement.lang=n.lang,document.documentElement.dir=n.lang==="ar"?"rtl":"ltr",a("#language").value=n.lang,P("[data-text]").forEach(e=>e.textContent=l(e.dataset.text)),P("[data-close],#campaign-close").forEach(e=>e.setAttribute("aria-label",l("close"))),a("#search").placeholder=l("search"),a("#search").setAttribute("aria-label",l("search")),a("#clear-search").setAttribute("aria-label",l("reset")),a(".category-nav").setAttribute("aria-label",l("categories")),a("#remove-attachment").setAttribute("aria-label",l("removePhoto")),a("#attachment-image").alt=l("photoAlt"),Re(),qe(),H(),Ne(),_e(),Ue(),renderCampaign(),document.title=`Chef \xC0 La Carte \xB7 ${l("menu")}`,a("#feedback-status").textContent="",a("#wifi-status").textContent=""}function Re(){document.documentElement.dataset.theme=n.theme;document.querySelector('meta[name="theme-color"]')?.setAttribute("content",n.theme==="dark"?"#0F1210":"#176023");let e=a("#theme-button");e.innerHTML=C(n.theme==="light"?"moon":"sun"),e.setAttribute("aria-label",l(n.theme==="light"?"dark":"light")),e.setAttribute("aria-pressed",String(n.theme==="dark"))}var Ie=null;function oe(e){Ie=document.activeElement,e.showModal(),document.body.style.overflow="hidden",Le(e)}function Be(e){e.close()}P("dialog").forEach(e=>{e.addEventListener("close",()=>{document.body.style.overflow="",e.id==="feedback-dialog"&&ne(),Ie?.focus({preventScroll:!0})}),e.querySelector("[data-close]").addEventListener("click",()=>Be(e)),e.addEventListener("click",t=>{if(t.target!==e)return;let r=e.getBoundingClientRect();(t.clientX<r.left||t.clientX>r.right||t.clientY<r.top||t.clientY>r.bottom)&&Be(e)})});function Ue(){let e=!!(h.wifi?.ssid&&h.wifi?.verified);a("#wifi-details").hidden=!e,a("#wifi-unavailable").hidden=e,a("#copy-wifi").hidden=!e||!h.wifi.password,a("#wifi-network").textContent=e?h.wifi.ssid:"",a("#wifi-password").textContent=e&&h.wifi.password||""}a("#wifi-button").addEventListener("click",()=>oe(a("#wifi-dialog")));a("#copy-wifi").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(h.wifi.password),a("#wifi-status").textContent=l("copied")}catch{a("#wifi-status").textContent=l("copyFailed")}});a("#feedback-button").addEventListener("click",()=>oe(a("#feedback-dialog")));var feedbackIdempotencyKey=null;function getFeedbackKey(){if(!feedbackIdempotencyKey){feedbackIdempotencyKey=(typeof crypto!=="undefined"&&crypto.randomUUID)?crypto.randomUUID():("fb-"+Date.now().toString(36)+"-"+Math.random().toString(36).slice(2))}return feedbackIdempotencyKey}function resetFeedbackKey(){feedbackIdempotencyKey=null}var isFeedbackSubmitting=!1;a("#feedback-form").addEventListener("submit",async e=>{e.preventDefault();if(isFeedbackSubmitting)return;if(!e.currentTarget.reportValidity())return;var topicInput=a("#feedback-topic");if(!topicInput.value){goFeedbackStep(1);return}if(!selectedRating||selectedRating<1||selectedRating>5){goFeedbackStep(2);return}var messageVal=a("#feedback-message")?.value?.trim()||"";if(!messageVal){a("#feedback-status").textContent=l("messageQuestion");return}var submitBtn=a("#feedback-submit")||a('#feedback-form button[type="submit"]');isFeedbackSubmitting=!0;if(submitBtn)submitBtn.disabled=!0;a("#feedback-status").textContent=l("sending");try{var formData=new FormData();formData.set("topic",topicInput.value);formData.set("rating",String(selectedRating));formData.set("message",messageVal);var contactVal=a("#feedback-contact")?.value?.trim()||"";if(contactVal)formData.set("contact",contactVal);formData.set("language",n.lang);var file=a("#feedback-image")?.files?.[0];if(file){var err=we(file);if(err){a("#feedback-status").textContent=l(err);if(submitBtn)submitBtn.disabled=!1;isFeedbackSubmitting=!1;return}formData.set("image",file)}var key=getFeedbackKey();var res=await fetch("admin/api/feedback.php",{method:"POST",body:formData,headers:{"Idempotency-Key":key}});if(res.status===201||res.status===200){a("#feedback-status").textContent=l("feedbackSuccess");resetFeedbackKey();a("#feedback-form").reset();ne();setTimeout(()=>{Be(a("#feedback-dialog"));resetFeedbackWizard()},1500)}else if(res.status===429){a("#feedback-status").textContent=l("feedbackThrottled")}else{a("#feedback-status").textContent=l("feedbackFailed")}}catch(err){a("#feedback-status").textContent=l("feedbackFailed")}finally{isFeedbackSubmitting=!1;if(submitBtn)submitBtn.disabled=!1}});var S=null;function ne(){S&&URL.revokeObjectURL(S),S=null,a("#feedback-image").value="",a("#attachment-image").removeAttribute("src"),a("#attachment-name").textContent="",a("#attachment").hidden=!0}a("#feedback-image").addEventListener("change",()=>{let e=a("#feedback-image").files[0],t=we(e);if(S&&URL.revokeObjectURL(S),S=null,t||!e){ne(),a("#feedback-status").textContent=t?l(t):"";return}S=URL.createObjectURL(e),a("#attachment-image").src=S,a("#attachment-name").textContent=e.name,a("#attachment").hidden=!1,a("#feedback-status").textContent=""});a("#remove-attachment").addEventListener("click",ne);a("#search").addEventListener("input",e=>{n.query=e.target.value,H()});a(".search").addEventListener("submit",e=>e.preventDefault());function Oe(){n.query="",a("#search").value="",H(),a("#search").focus()}a("#clear-search").addEventListener("click",Oe);a("#reset-search").addEventListener("click",()=>menuRequestState==="error"?loadMenu():Oe());
 // ── LANGUAGE POPOVER LOGIC ──
 const FLAG_SVGS = {
   tr: '<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><defs><clipPath id="flag-tr-clip"><circle cx="12" cy="12" r="12"/></clipPath></defs><g clip-path="url(#flag-tr-clip)"><rect width="24" height="24" fill="#E30A17"/><circle cx="9.5" cy="12" r="5.5" fill="#fff"/><circle cx="11.2" cy="12" r="4.4" fill="#E30A17"/><polygon points="14.8,12 18,13.1 16.8,9.7 16.8,14.3 18,10.9" fill="#fff"/></g></svg>',
@@ -1264,7 +1322,7 @@ if (langBtn && langPopover) {
     }
   });
 }
-const MENU_API_URL="hvk/admin/api/menu.php",MENU_RESPONSE_LIMIT=1024*1024;
+const MENU_API_URL="admin/api/menu.php",MENU_RESPONSE_LIMIT=1024*1024;
 function menuLocalized(value,requireTurkish=!1){
   return !!value&&typeof value==="object"&&["tr","en","ar"].every(key=>value[key]===null||typeof value[key]==="string")&&(!requireTurkish||typeof value.tr==="string"&&value.tr.trim()!=="")
 }

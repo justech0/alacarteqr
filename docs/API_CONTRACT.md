@@ -4,7 +4,7 @@ Status: Task 07 menu integration contract.
 
 ## Public menu
 
-Route: `GET /hvk/admin/api/menu.php`.
+Route: `GET /admin/api/menu.php`.
 
 ```json
 {
@@ -65,7 +65,7 @@ Route: `GET /hvk/admin/api/menu.php`.
 
 ## Admin catalog imports
 
-Routes: `POST /hvk/admin/import-products.php` and `POST /hvk/admin/bulk-prices.php`.
+Routes: `POST /admin/import-products.php` and `POST /admin/bulk-prices.php`.
 
 - Both routes require an admin session, CSRF token, and one-use submission token.
 - Each import accepts a file up to 2 MiB and 500 data rows.

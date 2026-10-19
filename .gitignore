@@ -27,6 +27,6 @@ test-admin*
 *.har
 
 # Runtime uploads and editor settings
-hvk/admin/uploads/
+admin/uploads/
 .vscode/
 scratch/

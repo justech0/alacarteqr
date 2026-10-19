@@ -1,8 +1,8 @@
 # Chef À La Carte project
 
 Updated: 2026-10-19. Timezone: Europe/Istanbul.
-Status: Task 12 PASS (local release artifacts). Live deployment is not done.
-Current task: None. Next: manual Hostinger deployment by the owner. Last writer: Claude Code.
+Status: LIVE at https://chefalacarte.com.tr (rev2-feedback-steps). Admin: /admin/login.php.
+Current task: None. Next: owner adds the media cleanup cron in hPanel. Last writer: Claude Code.
 Entry point: Read this file before each session.
 
 ## Goal
@@ -177,6 +177,7 @@ Next action: The owner deploys dist/release/ manually with INSTALL_TR.md, then r
 | 2026-10-19 17:38 +03:00 | Gemini / Gemini 3.8 Flash (High) | 11 (Performance & A11y) | docs/reviews/11-performance-a11y.md, docs/evidence/11/* | PASS: Median LCP 435ms, CLS 0.00, JS 15.8KiB, Lighthouse 100 A11y, 4 viewports, modals, RTL & dark tokens | Run Task 12 |
 | 2026-10-19 +03:00 | Claude Code / Claude Opus 5.5 (claude-opus-5-5) | 12 (Release) | deploy/build-release.ps1, export-install-sql.ps1, test-release.mjs, deploy/release/*, database/recover-owner.php, hvk/admin/security.php, admin.css, dist/release/*, docs/reviews/12-release.md, docs/FUNCTION_PARITY.md | PASS: fresh install 40/40 on MySQL and MariaDB, reproducible build, Semgrep 0; Hostinger NOT RUN | Owner deploys dist/release/ with INSTALL_TR.md |
 
+| 2026-10-19 19:35 +03:00 | Claude Code / Opus 5.5 | Live deploy + R1 user request | admin/ (was hvk/admin), media/, index.html, tests, deploy | Removed all HVK names and legacy HVK files. Step-by-step feedback (topic, rating, message). HTTP suites PASS, fresh install 40/40 PASS, live checks PASS | Add cleanup cron in hPanel |
 
 
 ## Session record template

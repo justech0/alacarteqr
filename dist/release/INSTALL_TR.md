@@ -29,7 +29,7 @@ Bu collation değerleri eski ve yeni MariaDB ile MySQL sürümlerinde vardır.
 │   ├── .htaccess
 │   ├── media/                        <- herkese açık ürün, kategori, kampanya görselleri
 │   ├── database/lib.php              <- admin kodu kullanır. .htaccess 404 döndürür
-│   └── hvk/admin/                    <- admin paneli ve API
+│   └── admin/                    <- admin paneli ve API
 └── chef-private/                     <- chef-private-setup.zip içeriği (belge kökü dışında)
     ├── config.php                    <- gerçek ayarlar, izin 0600
     ├── logs/                         <- uygulama günlüğü
@@ -37,7 +37,7 @@ Bu collation değerleri eski ve yeni MariaDB ile MySQL sürümlerinde vardır.
     ├── tmp/media/                    <- geçici yükleme dosyaları
     ├── legacy-uploads/               <- boş klasör. Temiz kurulumda eski yükleme yoktur
     ├── database/                     <- CLI, migration, seed, kurtarma araçları
-    ├── hvk/admin/                    <- CLI araçlarının kullandığı iki PHP dosyası
+    ├── admin/                    <- CLI araçlarının kullandığı iki PHP dosyası
     └── sql/chef-install-2026101501.sql  <- phpMyAdmin kurulum dosyası
 ```
 
@@ -141,12 +141,12 @@ Kalıcı `cleanup_pending` kayıtlarını `php database/media-cli.php status` il
 ## 8. Kurulum sonrası kontroller
 
 1. `https://<alan-adi>/` adresi menüyü 4 kategori ve 24 ürünle gösterir.
-2. `https://<alan-adi>/hvk/admin/login.php` giriş sayfasını açar.
+2. `https://<alan-adi>/admin/login.php` giriş sayfasını açar.
 3. Oluşturduğunuz owner hesabı ile giriş yapın. Bir fiyatı değiştirip menüde kontrol edin.
 4. Görselli bir geri bildirim gönderin. Admin gelen kutusundan silin.
 5. Şu adresler içerik göstermemelidir (403 veya 404):
    - `https://<alan-adi>/database/lib.php`
-   - `https://<alan-adi>/hvk/admin/config.php`
+   - `https://<alan-adi>/admin/config.php`
    - `https://<alan-adi>/media/`
 6. `media` klasörüne geçici `test.php` koyun. İstek `403` döndürmelidir. Dosyayı hemen silin.
 7. Ürün görseli yükleyin. Görsel adresi tarayıcıda `200` ile açılmalıdır.
@@ -155,7 +155,7 @@ Kalıcı `cleanup_pending` kayıtlarını `php database/media-cli.php status` il
 
 Hostinger CDN etkinse şu yolları önbellek dışında tutun:
 
-- `/hvk/admin/*` (admin sayfaları, API ve özel görseller)
+- `/admin/*` (admin sayfaları, API ve özel görseller)
 - `/index.html` ve `/` için kısa veya sıfır önbellek süresi kullanın.
 
 Admin yanıtları `Cache-Control: no-store` gönderir. Menü API `no-cache` ve `ETag` kullanır.
@@ -165,6 +165,8 @@ Admin yanıtları `Cache-Control: no-store` gönderir. Menü API `no-cache` ve `
 
 1. Bölüm 3'teki yedekleri alın.
 2. Yeni `public_html.zip` içeriğini belge köküne çıkarın. `media/` klasörünü silmeyin.
+   Paket dosyalarının tarihi sabittir. LiteSpeed eski sayfayı önbellekten verebilir.
+   SSH ile şu komutu çalıştırın: `find <belge-koku> -path '<belge-koku>/media' -prune -o -type f -exec touch {} +`
 3. Yeni `chef-private-setup.zip` içeriğini çıkarın. `config.php`, `logs/` ve `media/` klasörlerini koruyun.
 4. `.htaccess` içindeki `SetEnv` satırını tekrar ekleyin.
 5. `php database/cli.php migrate` ve `php database/cli.php verify` komutlarını çalıştırın.

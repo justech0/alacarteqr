@@ -55,7 +55,7 @@ $notice = Join-Path $buildRoot 'THIRD_PARTY_NOTICES.txt'
 $noticeText = @(
     'Chef A La Carte third-party notices',
     '',
-    "hvk/admin/assets/admin.css contains generated output of Tailwind CSS $($tailwindPackage.version).",
+    "admin/assets/admin.css contains generated output of Tailwind CSS $($tailwindPackage.version).",
     'Source: https://github.com/tailwindlabs/tailwindcss',
     '',
     (Get-Content -Raw (Repo 'node_modules\tailwindcss\LICENSE')).Trim()
@@ -68,25 +68,25 @@ $adminPhp = @(
     'functions', 'header', 'import-products', 'index', 'login', 'logout', 'media-service', 'private-image',
     'product-order', 'products', 'security'
 )
-$actualAdminPhp = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'hvk\admin') -Filter '*.php' -File | ForEach-Object BaseName | Sort-Object)
+$actualAdminPhp = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'admin') -Filter '*.php' -File | ForEach-Object BaseName | Sort-Object)
 if ((Compare-Object $actualAdminPhp ($adminPhp | Sort-Object)) -ne $null) {
-    throw 'hvk/admin/*.php differs from the release allowlist. Review the new or removed file.'
+    throw 'admin/*.php differs from the release allowlist. Review the new or removed file.'
 }
 
 $public = [ordered]@{
     'index.html' = Repo 'public_html\index.html'
     '.htaccess' = Repo 'public_html\.htaccess'
-    'media/.htaccess' = Repo 'hvk\media\.htaccess'
+    'media/.htaccess' = Repo 'media\.htaccess'
     'database/lib.php' = Repo 'database\lib.php'
-    'hvk/admin/.htaccess' = Repo 'hvk\admin\.htaccess'
-    'hvk/admin/api/menu.php' = Repo 'hvk\admin\api\menu.php'
-    'hvk/admin/api/feedback.php' = Repo 'hvk\admin\api\feedback.php'
-    'hvk/admin/assets/admin.css' = Repo 'hvk\admin\assets\admin.css'
-    'hvk/admin/assets/admin.js' = Repo 'hvk\admin\assets\admin.js'
-    'hvk/admin/assets/chef-logo.svg' = Repo 'hvk\admin\assets\chef-logo.svg'
-    'hvk/admin/assets/THIRD_PARTY_NOTICES.txt' = $notice
+    'admin/.htaccess' = Repo 'admin\.htaccess'
+    'admin/api/menu.php' = Repo 'admin\api\menu.php'
+    'admin/api/feedback.php' = Repo 'admin\api\feedback.php'
+    'admin/assets/admin.css' = Repo 'admin\assets\admin.css'
+    'admin/assets/admin.js' = Repo 'admin\assets\admin.js'
+    'admin/assets/chef-logo.svg' = Repo 'admin\assets\chef-logo.svg'
+    'admin/assets/THIRD_PARTY_NOTICES.txt' = $notice
 }
-foreach ($name in $adminPhp) { $public["hvk/admin/$name.php"] = Repo "hvk\admin\$name.php" }
+foreach ($name in $adminPhp) { $public["admin/$name.php"] = Repo "admin\$name.php" }
 
 $private = [ordered]@{
     'config.production.example.php' = Repo 'deploy\release\config.production.example.php'
@@ -97,9 +97,9 @@ $private = [ordered]@{
     'database/media-cli.php' = Repo 'database\media-cli.php'
     'database/recover-owner.php' = Repo 'database\recover-owner.php'
     'database/seed-data.php' = Repo 'database\seed-data.php'
-    # The CLI tools load these two files through dirname(__DIR__) . '/hvk/admin/...'.
-    'hvk/admin/security.php' = Repo 'hvk\admin\security.php'
-    'hvk/admin/media-service.php' = Repo 'hvk\admin\media-service.php'
+    # The CLI tools load these two files through dirname(__DIR__) . '/admin/...'.
+    'admin/security.php' = Repo 'admin\security.php'
+    'admin/media-service.php' = Repo 'admin\media-service.php'
     "sql/chef-install-$schemaVersion.sql" = $installSql
 }
 foreach ($migration in Get-ChildItem -LiteralPath (Join-Path $repoRoot 'database\migrations') -Filter '*.php' -File) {

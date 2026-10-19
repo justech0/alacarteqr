@@ -97,14 +97,14 @@ function assertLabeledControls(html, route) {
   }
 }
 
-const loginPage = await request('/hvk/admin/login.php');
+const loginPage = await request('/admin/login.php');
 assert(loginPage.response.status === 200, 'Login page did not return HTTP 200.');
 assert(!/(?:src|href)="https?:\/\//i.test(loginPage.body), 'External browser resource found: login.php');
 assert(!/\b(?:confirm|alert|prompt)\s*\(/.test(loginPage.body), 'Native dialog call found: login.php');
 assert(loginPage.body.includes('data-testid="login-form"'), 'Stable login hooks are missing.');
 assertLabeledControls(loginPage.body, 'login.php');
 const loginCookie = cookie(loginPage.response);
-const loginResult = await post('/hvk/admin/login.php', loginCookie, {
+const loginResult = await post('/admin/login.php', loginCookie, {
   ...tokens(loginPage.body), username: credentials.admin_username, password: credentials.admin_password,
 });
 assert(loginResult.response.status === 302, `Catalog administrator login failed with HTTP ${loginResult.response.status}.`);
@@ -115,7 +115,7 @@ const adminPages = [
   'bulk-prices.php', 'import-products.php', 'branches.php', 'campaign.php', 'feedbacks.php',
 ];
 for (const route of adminPages) {
-  const html = (await page(`/hvk/admin/${route}`, sessionCookie)).body;
+  const html = (await page(`/admin/${route}`, sessionCookie)).body;
   assert(!/(?:src|href)="https?:\/\//i.test(html), `External browser resource found: ${route}`);
   assert(!/\b(?:confirm|alert|prompt)\s*\(/.test(html), `Native dialog call found: ${route}`);
   assert(html.includes('data-testid='), `Stable hooks are missing: ${route}`);
@@ -129,8 +129,8 @@ if (renderedOnly) {
   const preservedName = 'Task05 Preserved Validation Value';
   const preservedPrice = '1e2';
   const productCountBefore = Number(check('row-counts').products);
-  const pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-  const result = await post('/hvk/admin/products.php', sessionCookie, {
+  const pair = await tokenPair('/admin/products.php', sessionCookie);
+  const result = await post('/admin/products.php', sessionCookie, {
     ...pair,
     action: 'create',
     name: preservedName,
@@ -145,7 +145,7 @@ if (renderedOnly) {
   assert(result.response.status === 303, 'Invalid product validation did not return HTTP 303.');
   assert(result.response.headers.get('location') === 'products.php', 'Invalid product redirect location is invalid.');
   assert(Number(check('row-counts').products) === productCountBefore, 'Invalid product validation changed the database.');
-  const validationPage = await page('/hvk/admin/products.php', sessionCookie);
+  const validationPage = await page('/admin/products.php', sessionCookie);
   assert(validationPage.body.includes(`value="${preservedName}"`), 'Product name did not survive validation.');
   assert(validationPage.body.includes(`value="${preservedPrice}"`), 'Product price did not survive validation.');
   assert(validationPage.body.includes('role="alert"'), 'Validation error message is missing.');
@@ -160,43 +160,43 @@ if (renderedOnly) {
   process.exit(0);
 }
 const emptyName = 'Task05 Empty Nutrition';
-let pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
+let pair = await tokenPair('/admin/products.php', sessionCookie);
 const createForm = {
   ...pair, action: 'create', name: emptyName, description: 'Servis açıklaması', price: '12.34',
   category_id: String(firstCategory.id), ingredients: '', ingredients_en: '', ingredients_ar: '', calories: '',
 };
-let result = await post('/hvk/admin/products.php', sessionCookie, createForm);
+let result = await post('/admin/products.php', sessionCookie, createForm);
 assert([302, 303].includes(result.response.status), 'Product creation failed.');
-result = await post('/hvk/admin/products.php', sessionCookie, createForm);
+result = await post('/admin/products.php', sessionCookie, createForm);
 assert([302, 303].includes(result.response.status), 'Duplicate submission lacked a controlled response.');
 let created = product(emptyName);
 assert(created && check('product-state').filter(row => row.name === emptyName).length === 1, 'Duplicate submission created more than one product.');
 assert(created.ingredients === null && created.calories === null && created.ingredients_verified_at === null && created.calories_verified_at === null, 'Empty nutrition state is invalid.');
 
-pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-await post('/hvk/admin/products.php', sessionCookie, {
+pair = await tokenPair('/admin/products.php', sessionCookie);
+await post('/admin/products.php', sessionCookie, {
   ...pair, action: 'create', name: 'Task05 Invalid Price', price: '1e2', category_id: String(firstCategory.id),
 });
 assert(!product('Task05 Invalid Price'), 'Invalid price created a product.');
-const invalidPage = await page('/hvk/admin/products.php', sessionCookie);
+const invalidPage = await page('/admin/products.php', sessionCookie);
 assert(invalidPage.body.includes('Task05 Invalid Price') && invalidPage.body.includes('role="alert"'), 'Validation did not preserve safe product values.');
 
-pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-await post('/hvk/admin/products.php', sessionCookie, {
+pair = await tokenPair('/admin/products.php', sessionCookie);
+await post('/admin/products.php', sessionCookie, {
   ...pair, action: 'create', name: 'Task05 Missing Category', price: '10.00', category_id: '99999999',
 });
 assert(!product('Task05 Missing Category'), 'Missing category created a product.');
 
 const beforeMalformed = created.category_id;
-pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-await post('/hvk/admin/products.php', sessionCookie, {
+pair = await tokenPair('/admin/products.php', sessionCookie);
+await post('/admin/products.php', sessionCookie, {
   ...pair, action: 'move_category', id: '01', new_category_id: String(firstCategory.id),
 });
 assert(product(emptyName).category_id === beforeMalformed, 'Malformed product ID changed data.');
 
 async function updateProduct(fields, fixture = null) {
   const current = product(emptyName);
-  const route = `/hvk/admin/products.php?edit=${current.id}`;
+  const route = `/admin/products.php?edit=${current.id}`;
   const currentTokens = await tokenPair(route, sessionCookie);
   const baseFields = {
     ...currentTokens, action: 'update', id: current.id, category_id: current.category_id,
@@ -205,8 +205,8 @@ async function updateProduct(fields, fixture = null) {
     ...fields,
   };
   return fixture
-    ? postFile('/hvk/admin/products.php', sessionCookie, baseFields, 'image', fixture)
-    : post('/hvk/admin/products.php', sessionCookie, baseFields);
+    ? postFile('/admin/products.php', sessionCookie, baseFields, 'image', fixture)
+    : post('/admin/products.php', sessionCookie, baseFields);
 }
 
 await updateProduct({ ingredients: 'Su, tuz', calories: '0', ingredients_verified: '1', calories_verified: '1' });
@@ -232,24 +232,24 @@ await updateProduct({}, 'malformed.png');
 assert(product(emptyName).image_path === activeImage, 'Failed image replacement changed the active image.');
 
 const deleteCategoryName = 'Task05 Delete Category';
-pair = await tokenPair('/hvk/admin/categories.php', sessionCookie);
-await postFile('/hvk/admin/categories.php', sessionCookie, {
+pair = await tokenPair('/admin/categories.php', sessionCookie);
+await postFile('/admin/categories.php', sessionCookie, {
   ...pair, action: 'create', name: deleteCategoryName, description: 'Silme deneyi',
 }, 'image', 'valid.png');
 const deleteCategory = category(deleteCategoryName);
 assert(deleteCategory, 'Cleanup category was not created.');
-pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-await postFile('/hvk/admin/products.php', sessionCookie, {
+pair = await tokenPair('/admin/products.php', sessionCookie);
+await postFile('/admin/products.php', sessionCookie, {
   ...pair, action: 'create', name: 'Task05 Delete Product', description: '', price: '25.00',
   category_id: deleteCategory.id, ingredients: '', ingredients_en: '', ingredients_ar: '', calories: '',
 }, 'image', 'valid.jpg');
 const deleteProduct = product('Task05 Delete Product');
 assert(deleteProduct, 'Cleanup product was not created.');
-pair = await tokenPair('/hvk/admin/categories.php', sessionCookie);
-await post('/hvk/admin/categories.php', sessionCookie, { ...pair, action: 'delete', id: deleteCategory.id, delete_dependents: '' });
+pair = await tokenPair('/admin/categories.php', sessionCookie);
+await post('/admin/categories.php', sessionCookie, { ...pair, action: 'delete', id: deleteCategory.id, delete_dependents: '' });
 assert(category(deleteCategoryName) && product('Task05 Delete Product'), 'Category deletion ignored the dependent confirmation contract.');
-pair = await tokenPair('/hvk/admin/categories.php', sessionCookie);
-await post('/hvk/admin/categories.php', sessionCookie, { ...pair, action: 'delete', id: deleteCategory.id, delete_dependents: '1' });
+pair = await tokenPair('/admin/categories.php', sessionCookie);
+await post('/admin/categories.php', sessionCookie, { ...pair, action: 'delete', id: deleteCategory.id, delete_dependents: '1' });
 assert(!category(deleteCategoryName) && !product('Task05 Delete Product'), 'Confirmed category cleanup left database rows.');
 const cleanupMedia = check('media-file-presence').filter(row =>
   (row.owner_type === 'category' && row.owner_id === Number(deleteCategory.id))
@@ -260,53 +260,53 @@ assert(cleanupMedia.length >= 4 && cleanupMedia.every(row => row.state === 'dele
 const categories = check('category-order');
 const secondCategory = categories.find(row => row.id !== firstCategory.id);
 assert(secondCategory, 'A second category is required.');
-pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-await post('/hvk/admin/products.php', sessionCookie, {
+pair = await tokenPair('/admin/products.php', sessionCookie);
+await post('/admin/products.php', sessionCookie, {
   ...pair, action: 'move_category', id: String(created.id), new_category_id: String(secondCategory.id),
 });
 assert(product(emptyName).category_id === secondCategory.id, 'Product move failed.');
 
 const categoryOrder = check('category-order');
-pair = await tokenPair('/hvk/admin/category-order.php', sessionCookie);
+pair = await tokenPair('/admin/category-order.php', sessionCookie);
 const reverseCategories = [...categoryOrder].reverse().map(row => String(row.id));
-await post('/hvk/admin/category-order.php', sessionCookie, { ...pair, 'order[]': reverseCategories });
+await post('/admin/category-order.php', sessionCookie, { ...pair, 'order[]': reverseCategories });
 const reorderedCategories = check('category-order');
 assert(reorderedCategories.every((row, index) => Number(row.sort_order) === index + 1), 'Category order was not normalized.');
 
 const categoryProducts = check('catalog-order').filter(row => row.category_id === secondCategory.id);
 if (categoryProducts.length > 1) {
-  pair = await tokenPair(`/hvk/admin/product-order.php?category=${secondCategory.id}`, sessionCookie);
-  await post('/hvk/admin/product-order.php', sessionCookie, {
+  pair = await tokenPair(`/admin/product-order.php?category=${secondCategory.id}`, sessionCookie);
+  await post('/admin/product-order.php', sessionCookie, {
     ...pair, category_id: String(secondCategory.id), 'order[]': [...categoryProducts].reverse().map(row => String(row.id)),
   });
   const reorderedProducts = check('catalog-order').filter(row => row.category_id === secondCategory.id);
   assert(reorderedProducts.every((row, index) => Number(row.sort_order) === index + 1), 'Product order was not normalized.');
 }
 
-pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
-await post('/hvk/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'bulk_update_prices', [`price[${created.id}]`]: '88,50' });
+pair = await tokenPair('/admin/bulk-prices.php', sessionCookie);
+await post('/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'bulk_update_prices', [`price[${created.id}]`]: '88,50' });
 assert(product(emptyName).price === '88.50', 'Bulk price update regressed.');
-pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
-await post('/hvk/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'bulk_update_prices', [`price[${created.id}]`]: '1e2' });
+pair = await tokenPair('/admin/bulk-prices.php', sessionCookie);
+await post('/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'bulk_update_prices', [`price[${created.id}]`]: '1e2' });
 assert(product(emptyName).price === '88.50', 'Invalid bulk price changed data.');
 
-pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
+pair = await tokenPair('/admin/bulk-prices.php', sessionCookie);
 const priceCsv = new FormData();
 for (const [key, value] of Object.entries({ ...pair, action: 'import_csv_prices' })) priceCsv.set(key, value);
 priceCsv.set('csv_file', new Blob([`ID,Urun_Adi,Fiyat\n${created.id},${emptyName},91.25\n`]), 'prices.csv');
-await request('/hvk/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: priceCsv });
+await request('/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: priceCsv });
 assert(product(emptyName).price === '91.25', 'Bulk price CSV import regressed.');
 
-pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
+pair = await tokenPair('/admin/bulk-prices.php', sessionCookie);
 const invalidPriceCsv = new FormData();
 for (const [key, value] of Object.entries({ ...pair, action: 'import_csv_prices' })) invalidPriceCsv.set(key, value);
 invalidPriceCsv.set('csv_file', new Blob([`ID,Urun_Adi,Fiyat\n${created.id},${emptyName},92,50\n99999999,Missing,10.00\n`]), 'invalid-prices.csv');
-await request('/hvk/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: invalidPriceCsv });
+await request('/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: invalidPriceCsv });
 assert(product(emptyName).price === '91.25', 'Atomic price CSV import changed data after a rejected row.');
-const invalidPriceReport = await page('/hvk/admin/bulk-prices.php', sessionCookie);
+const invalidPriceReport = await page('/admin/bulk-prices.php', sessionCookie);
 assert(invalidPriceReport.body.includes('0 uygulandı') && invalidPriceReport.body.includes('reddedildi'), 'Price rejection counts are missing.');
 
-pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+pair = await tokenPair('/admin/import-products.php', sessionCookie);
 const importCounts = check('row-counts');
 const invalidImport = new FormData();
 for (const [key, value] of Object.entries(pair)) invalidImport.set(key, value);
@@ -315,52 +315,52 @@ invalidImport.set('file', new Blob([
   'Task05 Import Category,Atomic Valid Row,Servis,"44,00",,1\n' +
   'Task05 Import Category,Remote Image Row,Servis,45.00,https://example.com/image.jpg,2\n',
 ]), 'invalid-products.csv');
-await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: invalidImport });
+await request('/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: invalidImport });
 assert(check('row-counts').products === importCounts.products, 'Atomic product import applied a valid row from a rejected file.');
-const invalidImportReport = await page('/hvk/admin/import-products.php', sessionCookie);
+const invalidImportReport = await page('/admin/import-products.php', sessionCookie);
 assert(invalidImportReport.body.includes('0 uygulandı') && invalidImportReport.body.includes('2 satır reddedildi'), 'Product rejection counts are missing.');
 assert(invalidImportReport.body.includes('image_url desteklenmiyor'), 'Remote image rejection is unclear.');
 
-pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+pair = await tokenPair('/admin/import-products.php', sessionCookie);
 const rowLimitImport = new FormData();
 for (const [key, value] of Object.entries(pair)) rowLimitImport.set(key, value);
 const tooManyRows = Array.from({ length: 501 }, (_, index) => `Task05 Import Category,Limit Product ${index},Servis,10.00,,`).join('\n');
 rowLimitImport.set('file', new Blob([tooManyRows]), 'too-many-products.csv');
-await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: rowLimitImport });
+await request('/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: rowLimitImport });
 assert(check('row-counts').products === importCounts.products, 'Product row limit failure changed data.');
-assert((await page('/hvk/admin/import-products.php', sessionCookie)).body.includes('en fazla 500'), 'Product row limit error is missing.');
+assert((await page('/admin/import-products.php', sessionCookie)).body.includes('en fazla 500'), 'Product row limit error is missing.');
 
-pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+pair = await tokenPair('/admin/import-products.php', sessionCookie);
 const sizeLimitImport = new FormData();
 for (const [key, value] of Object.entries(pair)) sizeLimitImport.set(key, value);
 sizeLimitImport.set('file', new Blob(['x'.repeat(2 * 1024 * 1024 + 1)]), 'too-large-products.json');
-await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: sizeLimitImport });
+await request('/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: sizeLimitImport });
 assert(check('row-counts').products === importCounts.products, 'Product size limit failure changed data.');
-assert((await page('/hvk/admin/import-products.php', sessionCookie)).body.includes('2 MB'), 'Product size limit error is missing.');
+assert((await page('/admin/import-products.php', sessionCookie)).body.includes('2 MB'), 'Product size limit error is missing.');
 
-pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+pair = await tokenPair('/admin/import-products.php', sessionCookie);
 const importCsv = new FormData();
 for (const [key, value] of Object.entries(pair)) importCsv.set(key, value);
 importCsv.set('file', new Blob(['category_name,product_name,description,price,image_url,sort_order\nTask05 Import Category,=Task05 Imported Product,Servis,"44,00",,1\n']), 'products.csv');
-await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: importCsv });
+await request('/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: importCsv });
 assert(product('=Task05 Imported Product')?.price === '44.00', 'Product CSV import or Turkish decimal parsing regressed.');
-const importReport = await page('/hvk/admin/import-products.php', sessionCookie);
+const importReport = await page('/admin/import-products.php', sessionCookie);
 assert(importReport.body.includes('1 uygulandı') && importReport.body.includes('Reddedilen: 0'), 'Product applied counts are missing.');
 
-pair = await tokenPair('/hvk/admin/import-products.php', sessionCookie);
+pair = await tokenPair('/admin/import-products.php', sessionCookie);
 const importJson = new FormData();
 for (const [key, value] of Object.entries(pair)) importJson.set(key, value);
 importJson.set('file', new Blob([JSON.stringify([{ category_name: 'Task05 Import Category', product_name: 'Task05 JSON Product', description: 'JSON', price: '45.50', image_url: '', sort_order: '2' }])]), 'products.json');
-await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: importJson });
+await request('/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: importJson });
 assert(product('Task05 JSON Product')?.price === '45.50', 'Product JSON import regressed.');
 
-pair = await tokenPair('/hvk/admin/bulk-prices.php', sessionCookie);
-const priceExport = await post('/hvk/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'export_csv' });
+pair = await tokenPair('/admin/bulk-prices.php', sessionCookie);
+const priceExport = await post('/admin/bulk-prices.php', sessionCookie, { ...pair, action: 'export_csv' });
 assert(priceExport.response.status === 200 && priceExport.body.includes("'=Task05 Imported Product"), 'CSV formula neutralization regressed.');
 
 created = product(emptyName);
-pair = await tokenPair('/hvk/admin/products.php', sessionCookie);
-await post('/hvk/admin/products.php', sessionCookie, { ...pair, action: 'delete', id: String(created.id) });
+pair = await tokenPair('/admin/products.php', sessionCookie);
+await post('/admin/products.php', sessionCookie, { ...pair, action: 'delete', id: String(created.id) });
 assert(!product(emptyName), 'Product delete failed.');
 const finalOrder = check('catalog-order');
 for (const row of check('category-order')) {

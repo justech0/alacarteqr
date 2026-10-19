@@ -65,7 +65,7 @@ try {
     windowsHide: true,
     stdio: 'ignore',
   });
-  await waitFor('http://127.0.0.1:38086/hvk/admin/api/feedback.php');
+  await waitFor('http://127.0.0.1:38086/admin/api/feedback.php');
   run(process.execPath, [path.join(repo, 'database/tests/feedback-http.mjs')], {
     ...commonEnv,
     CHEF_HTTP_BASE: 'http://127.0.0.1:38086',

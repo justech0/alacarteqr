@@ -83,7 +83,7 @@ function submission(body) {
 }
 
 async function login() {
-  const page = await request('/hvk/admin/login.php');
+  const page = await request('/admin/login.php');
   const loginCookie = cookie(page.response);
   const form = new URLSearchParams({
     csrf_token: csrf(page.body),
@@ -91,7 +91,7 @@ async function login() {
     username: credentials.admin_username,
     password: credentials.admin_password,
   });
-  const result = await request('/hvk/admin/login.php', {
+  const result = await request('/admin/login.php', {
     method: 'POST',
     cookie: loginCookie,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -105,15 +105,15 @@ async function login() {
 sqlExec("DELETE FROM admin_login_throttles WHERE signal_type = 'feedback'");
 
 // ── 1. HTTP Methods and Content-Type Checks ──
-let res = await request('/hvk/admin/api/feedback.php', { method: 'OPTIONS' });
+let res = await request('/admin/api/feedback.php', { method: 'OPTIONS' });
 assert.equal(res.response.status, 200, 'OPTIONS did not return 200.');
 assert(res.response.headers.get('access-control-allow-methods')?.includes('POST'), 'OPTIONS Allow header missing.');
 
-res = await request('/hvk/admin/api/feedback.php', { method: 'GET' });
+res = await request('/admin/api/feedback.php', { method: 'GET' });
 assert.equal(res.response.status, 405, 'GET did not return 405.');
 assert(res.response.headers.get('allow')?.includes('POST'), 'GET 405 Allow header missing.');
 
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'text/plain' },
   body: 'plain text payload',
@@ -121,7 +121,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 415, 'text/plain did not return 415.');
 
 // ── 2. Origin Control Check ──
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ assert.equal(res.response.status, 403, 'Untrusted remote origin was not rejected
 
 // ── 3. Field & Scalar Type Validations ──
 // Empty message
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 5, message: '' }),
@@ -141,7 +141,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Empty message was not rejected.');
 
 // Array rating
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: [5], message: 'Valid message' }),
@@ -149,14 +149,14 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Array rating was not rejected.');
 
 // Out of range rating (0 and 6)
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 0, message: 'Valid message' }),
 });
 assert.equal(res.response.status, 422, 'Rating 0 was not rejected.');
 
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 6, message: 'Valid message' }),
@@ -164,7 +164,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Rating 6 was not rejected.');
 
 // Non-integer rating (3.5)
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 3.5, message: 'Valid message' }),
@@ -172,7 +172,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Float rating 3.5 was not rejected.');
 
 // Invalid topic
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'accounting', rating: 5, message: 'Valid message' }),
@@ -180,7 +180,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Invalid topic was not rejected.');
 
 // Message too long (> 2000 chars)
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 5, message: 'a'.repeat(2001) }),
@@ -188,7 +188,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Overlong message (>2000) was not rejected.');
 
 // Contact too long (> 150 chars per contract)
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 5, message: 'Good food', contact: 'a'.repeat(151) }),
@@ -196,7 +196,7 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 422, 'Overlong contact (>150) was not rejected.');
 
 // Invalid language
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({ topic: 'taste', rating: 5, message: 'Good food', language: 'de' }),
@@ -214,7 +214,7 @@ const idempPayload = {
 };
 
 // First submission -> 201 Created
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -229,7 +229,7 @@ assert.equal(createdData.duplicate, false, 'First submission duplicate must be f
 const feedbackId = createdData.id;
 
 // Second identical submission -> 200 OK with duplicate: true and same ID
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ assert.equal(dupeData.id, feedbackId, 'Duplicate submission did not return same 
 assert.equal(dupeData.duplicate, true, 'Duplicate submission duplicate flag must be true.');
 
 // Third submission with same key but DIFFERENT message -> 409 Conflict
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -264,7 +264,7 @@ form.set('message', 'Clean restaurant, image attached test');
 form.set('language', 'tr');
 form.set('image', new Blob([fs.readFileSync(imageFixture)]), 'hygiene.png');
 
-res = await request('/hvk/admin/api/feedback.php', { method: 'POST', body: form });
+res = await request('/admin/api/feedback.php', { method: 'POST', body: form });
 assert.equal(res.response.status, 201, 'Multipart feedback with image failed.');
 
 const mediaFeedback = JSON.parse(control('feedback-json'));
@@ -289,12 +289,12 @@ for (const upload of activeUploads) {
 }
 
 // Anonymous access to private image -> redirected to login
-res = await request(`/hvk/admin/private-image.php?id=${uploadId}`);
+res = await request(`/admin/private-image.php?id=${uploadId}`);
 assert([302, 303].includes(res.response.status), 'Anonymous private image access was not redirected to login.');
 
 // Authenticated access with admin session
 const sessionCookie = await login();
-res = await request(`/hvk/admin/private-image.php?id=${uploadId}`, { cookie: sessionCookie, binary: true });
+res = await request(`/admin/private-image.php?id=${uploadId}`, { cookie: sessionCookie, binary: true });
 assert.equal(res.response.status, 200, 'Authenticated private image access failed.');
 assert.equal(res.response.headers.get('content-type'), 'image/webp', 'Private image Content-Type is not image/webp.');
 assert.equal(res.response.headers.get('x-content-type-options'), 'nosniff', 'Private image nosniff header missing.');
@@ -310,7 +310,7 @@ const xssPayload = {
   contact: '<img src=x onerror=alert(1)>',
   language: 'tr',
 };
-res = await request('/hvk/admin/api/feedback.php', {
+res = await request('/admin/api/feedback.php', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(xssPayload),
@@ -318,25 +318,25 @@ res = await request('/hvk/admin/api/feedback.php', {
 assert.equal(res.response.status, 201, 'XSS test submission failed.');
 
 // Read admin inbox
-res = await request('/hvk/admin/feedbacks.php', { cookie: sessionCookie });
+res = await request('/admin/feedbacks.php', { cookie: sessionCookie });
 assert.equal(res.response.status, 200, 'Admin feedbacks page did not load.');
 assert(!res.body.includes('<script>alert("xss")</script>'), 'Unescaped script tag present in admin HTML.');
 assert(res.body.includes('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;') || res.body.includes('&lt;script&gt;'), 'HTML escaping is missing.');
 assert(!res.body.includes('<img src=x onerror=alert(1)>'), 'Unescaped img XSS tag present in admin HTML.');
 
 // Filter by topic
-res = await request('/hvk/admin/feedbacks.php?topic=hygiene', { cookie: sessionCookie });
+res = await request('/admin/feedbacks.php?topic=hygiene', { cookie: sessionCookie });
 assert.equal(res.response.status, 200, 'Filtered by topic page failed.');
 assert(res.body.includes('Clean restaurant, image attached test'), 'Filtered topic item missing.');
 
 // Filter by rating
-res = await request('/hvk/admin/feedbacks.php?rating=3', { cookie: sessionCookie });
+res = await request('/admin/feedbacks.php?rating=3', { cookie: sessionCookie });
 assert.equal(res.response.status, 200, 'Filtered by rating page failed.');
 assert(res.body.includes('Personel nazikti.'), 'Filtered rating item missing.');
 
 // ── 7. Admin Deletion Lifecycle & Physical File Deletion ──
 // Get tokens from feedbacks page
-const pageRes = await request('/hvk/admin/feedbacks.php', { cookie: sessionCookie });
+const pageRes = await request('/admin/feedbacks.php', { cookie: sessionCookie });
 const csrfToken = csrf(pageRes.body);
 const subToken = submission(pageRes.body);
 
@@ -346,7 +346,7 @@ const deleteForm = new URLSearchParams({
   id: String(mediaFeedback.owner.id),
 });
 
-res = await request('/hvk/admin/feedbacks.php', {
+res = await request('/admin/feedbacks.php', {
   method: 'POST',
   cookie: sessionCookie,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -365,17 +365,17 @@ assert(allAfter.every(r => r.state === 'deleted'), 'managed_uploads state is not
 assert(allAfter.every(r => Object.values(r.files).every(exists => exists === false)), 'Private physical image file still exists on disk after deletion!');
 
 // Confirm accessing deleted private image now returns 404
-res = await request(`/hvk/admin/private-image.php?id=${uploadId}`, { cookie: sessionCookie });
+res = await request(`/admin/private-image.php?id=${uploadId}`, { cookie: sessionCookie });
 assert.equal(res.response.status, 404, 'Deleted private image did not return 404.');
 
 // ── 8. Repeat Deletion (Idempotency) ──
-const pageRes2 = await request('/hvk/admin/feedbacks.php', { cookie: sessionCookie });
+const pageRes2 = await request('/admin/feedbacks.php', { cookie: sessionCookie });
 const deleteForm2 = new URLSearchParams({
   csrf_token: csrf(pageRes2.body),
   submission_token: submission(pageRes2.body),
   id: String(mediaFeedback.owner.id),
 });
-res = await request('/hvk/admin/feedbacks.php', {
+res = await request('/admin/feedbacks.php', {
   method: 'POST',
   cookie: sessionCookie,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -389,7 +389,7 @@ sqlExec(`INSERT INTO managed_uploads (operation_id, owner_type, owner_id, purpos
          VALUES ('sim_pending_op_123456789012', 'feedback', 999999, 'feedback', 'main', 'private', 'feedback/nonexistent_simulated.webp', 'cleanup_pending')`);
 
 // Verify pending cleanup alert appears in admin feedbacks
-res = await request('/hvk/admin/feedbacks.php', { cookie: sessionCookie });
+res = await request('/admin/feedbacks.php', { cookie: sessionCookie });
 assert(res.body.includes('data-testid="pending-cleanup-alert"'), 'Pending cleanup alert was not rendered.');
 assert(res.body.includes('data-testid="retry-cleanup-button"'), 'Retry cleanup button was not rendered.');
 
@@ -399,7 +399,7 @@ const retryForm = new URLSearchParams({
   submission_token: submission(res.body),
   action: 'retry_cleanup',
 });
-res = await request('/hvk/admin/feedbacks.php', {
+res = await request('/admin/feedbacks.php', {
   method: 'POST',
   cookie: sessionCookie,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -415,7 +415,7 @@ sqlExec(`DELETE FROM managed_uploads WHERE operation_id = 'sim_pending_op_123456
 let throttled = false;
 let retryAfterHeader = null;
 for (let i = 0; i < 35; i++) {
-  res = await request('/hvk/admin/api/feedback.php', {
+  res = await request('/admin/api/feedback.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ topic: 'taste', rating: 5, message: `Throttling flood test ${i}` }),

@@ -35,7 +35,7 @@ const server = spawn(php, ['-d', 'upload_max_filesize=6M', '-d', 'post_max_size=
   stdio: 'ignore',
 });
 try {
-  await waitFor('http://127.0.0.1:38082/hvk/admin/login.php');
+  await waitFor('http://127.0.0.1:38082/admin/login.php');
   run(php, [path.join(repo, 'database/tests/catalog-unit.php')]);
   run(process.execPath, [path.join(repo, 'database/tests/catalog-http.mjs')], {
     ...process.env,

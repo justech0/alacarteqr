@@ -58,7 +58,7 @@ try {
     windowsHide: true,
     stdio: 'ignore',
   });
-  await waitFor('http://127.0.0.1:38084/hvk/admin/api/menu.php');
+  await waitFor('http://127.0.0.1:38084/admin/api/menu.php');
   run(process.execPath, [path.join(repo, 'database/tests/menu-http.mjs')], {
     ...commonEnv,
     CHEF_HTTP_BASE: 'http://127.0.0.1:38084',
@@ -69,8 +69,8 @@ try {
     windowsHide: true,
     stdio: 'ignore',
   });
-  await waitFor('http://127.0.0.1:38085/hvk/admin/api/menu.php');
-  const outage = await fetch('http://127.0.0.1:38085/hvk/admin/api/menu.php');
+  await waitFor('http://127.0.0.1:38085/admin/api/menu.php');
+  const outage = await fetch('http://127.0.0.1:38085/admin/api/menu.php');
   const outageBody = await outage.text();
   if (outage.status !== 503 || !/^application\/json\b/.test(outage.headers.get('content-type') ?? '')) {
     throw new Error('Database outage did not return the public JSON 503 response.');

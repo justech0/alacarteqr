@@ -44,8 +44,8 @@ const production = spawn(php, [...commonArgs, '127.0.0.1:38083', '-t', repo], {
 });
 
 try {
-  await waitFor('http://127.0.0.1:38082/hvk/admin/login.php');
-  await waitFor('http://127.0.0.1:38083/hvk/admin/login.php');
+  await waitFor('http://127.0.0.1:38082/admin/login.php');
+  await waitFor('http://127.0.0.1:38083/admin/login.php');
   run(process.execPath, [path.join(repo, 'database/tests/security-headers-http.mjs')], {
     CHEF_HTTP_BASE: 'http://127.0.0.1:38082',
     CHEF_PROD_BACKEND: 'http://127.0.0.1:38083',

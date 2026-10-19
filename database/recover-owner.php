@@ -6,7 +6,7 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require_once dirname(__DIR__) . '/hvk/admin/security.php';
+require_once dirname(__DIR__) . '/admin/security.php';
 
 function recovery_hidden_input(string $prompt): string
 {

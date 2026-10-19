@@ -14,7 +14,7 @@ final class ChefMediaStorageException extends RuntimeException
 {
 }
 
-// Must match hvk/media/.htaccess byte for byte. The release ships that file as media/.htaccess.
+// Must match media/.htaccess byte for byte. The release ships that file as media/.htaccess.
 // The pattern also denies double extensions such as name.php.webp.
 const CHEF_MEDIA_HARDENING_POLICY = <<<'HTACCESS'
 Options -Indexes

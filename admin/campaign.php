@@ -75,16 +75,16 @@ require_once __DIR__ . '/header.php';
 <div class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-serif text-hvk-accent tracking-[0.12em]">Kampanya Pop-up</h1>
-            <p class="text-sm text-hvk-muted">Görseli ve görünürlüğü buradan yönetin.</p>
+            <h1 class="text-2xl font-serif text-chef-accent tracking-[0.12em]">Kampanya Pop-up</h1>
+            <p class="text-sm text-chef-muted">Görseli ve görünürlüğü buradan yönetin.</p>
         </div>
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-3">
-                <span class="text-sm text-hvk-muted">Durum:</span>
+                <span class="text-sm text-chef-muted">Durum:</span>
                 <label class="relative inline-flex items-center cursor-pointer select-none">
                     <input id="is_active" name="is_active" type="checkbox" form="campaignForm" class="sr-only peer" <?php echo $isActive ? 'checked' : ''; ?> data-testid="campaign-active">
                     <span class="sr-only">Kampanyayı göster</span>
-                    <div class="w-16 h-9 bg-white/10 peer-checked:bg-hvk-accent/70 rounded-full border border-hvk-accent/40 transition-colors relative">
+                    <div class="w-16 h-9 bg-white/10 peer-checked:bg-chef-accent/70 rounded-full border border-chef-accent/40 transition-colors relative">
                         <div class="absolute top-1 left-1 w-7 h-7 bg-white rounded-full shadow transform transition-transform duration-300 peer-checked:translate-x-7"></div>
                     </div>
                 </label>
@@ -98,28 +98,28 @@ require_once __DIR__ . '/header.php';
         <input type="hidden" name="action" value="save">
 
         <div class="space-y-2">
-            <label for="campaign-image" class="text-sm text-hvk-muted">Kampanya görseli</label>
+            <label for="campaign-image" class="text-sm text-chef-muted">Kampanya görseli</label>
             <input id="campaign-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-lg p-3 text-sm" data-testid="campaign-image" />
-            <p class="text-xs text-hvk-muted">WebP/JPG/PNG yükleyebilirsiniz. Yeni yükleme mevcut görseli değiştirir.</p>
+            <p class="text-xs text-chef-muted">WebP/JPG/PNG yükleyebilirsiniz. Yeni yükleme mevcut görseli değiştirir.</p>
         </div>
 
-        <div class="border border-dashed border-hvk-accent/30 rounded-xl p-4 bg-white/5">
+        <div class="border border-dashed border-chef-accent/30 rounded-xl p-4 bg-white/5">
             <?php if ($imagePath): ?>
                 <div class="flex items-center gap-4">
-                    <img src="<?php echo sanitize((string)chef_media_image_url($imagePath)); ?>" alt="Kampanya" class="h-32 w-auto rounded-lg object-contain bg-black/40 border border-hvk-accent/20">
+                    <img src="<?php echo sanitize((string)chef_media_image_url($imagePath)); ?>" alt="Kampanya" class="h-32 w-auto rounded-lg object-contain bg-black/40 border border-chef-accent/20">
                     <div class="space-y-2">
-                        <p class="text-sm text-hvk-text">Güncel görsel</p>
+                        <p class="text-sm text-chef-text">Güncel görsel</p>
                         <button form="deleteImageForm" type="submit" class="admin-button admin-button-danger" data-testid="campaign-delete">Görseli sil</button>
                     </div>
                 </div>
             <?php else: ?>
-                <p class="text-sm text-hvk-muted">Henüz bir görsel eklenmedi.</p>
+                <p class="text-sm text-chef-muted">Henüz bir görsel eklenmedi.</p>
             <?php endif; ?>
         </div>
 
         <div class="flex gap-3">
             <button type="submit" class="admin-button admin-button-primary" data-testid="campaign-save">Kaydet</button>
-            <a href="index.php" class="px-4 py-3 rounded-lg border border-hvk-accent/30 text-hvk-text hover:bg-white/5">İptal</a>
+            <a href="index.php" class="px-4 py-3 rounded-lg border border-chef-accent/30 text-chef-text hover:bg-white/5">İptal</a>
         </div>
     </form>
 

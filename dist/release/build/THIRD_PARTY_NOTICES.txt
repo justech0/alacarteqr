@@ -1,6 +1,6 @@
 Chef A La Carte third-party notices
 
-hvk/admin/assets/admin.css contains generated output of Tailwind CSS 3.4.17.
+admin/assets/admin.css contains generated output of Tailwind CSS 3.4.17.
 Source: https://github.com/tailwindlabs/tailwindcss
 
 MIT License

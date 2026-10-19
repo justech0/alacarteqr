@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/functions.php';
+require_once dirname(__DIR__, 2) . '/admin/functions.php';
 
 $_SESSION = [];
 $clock = static fn(): int => 2_000_000_000;

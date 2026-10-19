@@ -6,8 +6,8 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require_once dirname(__DIR__) . '/hvk/admin/security.php';
-require_once dirname(__DIR__) . '/hvk/admin/media-service.php';
+require_once dirname(__DIR__) . '/admin/security.php';
+require_once dirname(__DIR__) . '/admin/media-service.php';
 
 $command = $argv[1] ?? 'status';
 $allowed = ['prepare', 'status', 'cleanup', 'inventory', 'migrate-legacy'];

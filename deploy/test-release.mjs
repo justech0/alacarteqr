@@ -318,7 +318,7 @@ async function installAndSmoke(variant, kind) {
     });
     let menu;
     await check(variant, 'Guest menu API', async () => {
-      const r = await request('/hvk/admin/api/menu.php');
+      const r = await request('/admin/api/menu.php');
       assert.equal(r.status, 200);
       menu = JSON.parse(r.body);
       assert.equal(menu.categories.length, 4);
@@ -329,16 +329,16 @@ async function installAndSmoke(variant, kind) {
     // Admin login.
     let session;
     await check(variant, 'Admin login', async () => {
-      const page = await request('/hvk/admin/login.php');
+      const page = await request('/admin/login.php');
       assert.equal(page.status, 200);
       assert(page.response.headers.get('strict-transport-security'), 'HSTS missing on HTTPS.');
       const form = new URLSearchParams({ csrf_token: field(page.body, 'csrf_token'), submission_token: field(page.body, 'submission_token'), username: ownerUser, password: ownerPassword });
-      const r = await request('/hvk/admin/login.php', { method: 'POST', cookie: cookieOf(page.response), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
+      const r = await request('/admin/login.php', { method: 'POST', cookie: cookieOf(page.response), headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
       assert.equal(r.status, 302);
       const raw = r.response.headers.get('set-cookie') ?? '';
-      assert(/;\s*secure/i.test(raw) && /;\s*httponly/i.test(raw) && /path=\/hvk\/admin/i.test(raw), 'Session cookie flags are wrong.');
+      assert(/;\s*secure/i.test(raw) && /;\s*httponly/i.test(raw) && /path=\/admin/i.test(raw), 'Session cookie flags are wrong.');
       session = cookieOf(r.response);
-      const dashboard = await request('/hvk/admin/index.php', { cookie: session });
+      const dashboard = await request('/admin/index.php', { cookie: session });
       assert.equal(dashboard.status, 200);
       assert.equal(dashboard.response.headers.get('cache-control'), 'no-store, private, max-age=0');
       return 'Secure, HttpOnly, no-store';
@@ -347,11 +347,11 @@ async function installAndSmoke(variant, kind) {
     // One catalog edit through bulk prices.
     await check(variant, 'Catalog price edit', async () => {
       const [product] = dbQuery(configFile, 'SELECT id, public_id FROM products ORDER BY id LIMIT 1');
-      const pair = await tokens('/hvk/admin/bulk-prices.php', session);
+      const pair = await tokens('/admin/bulk-prices.php', session);
       const form = new URLSearchParams({ ...pair, action: 'bulk_update_prices', [`price[${product.id}]`]: '321,50' });
-      const r = await request('/hvk/admin/bulk-prices.php', { method: 'POST', cookie: session, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
+      const r = await request('/admin/bulk-prices.php', { method: 'POST', cookie: session, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
       assert([302, 303].includes(r.status), `status ${r.status}`);
-      const after = JSON.parse((await request('/hvk/admin/api/menu.php')).body);
+      const after = JSON.parse((await request('/admin/api/menu.php')).body);
       const item = after.items.find(i => i.id === (product.public_id ?? String(product.id)));
       assert.equal(item.price, 321.5);
       assert(after.version > menu.version, 'Menu version did not change.');
@@ -362,13 +362,13 @@ async function installAndSmoke(variant, kind) {
     const png = path.join(work, 'fixture.png');
     run(php, ['-r', `$i = imagecreatetruecolor(64, 64); imagefill($i, 0, 0, imagecolorallocate($i, 35, 126, 48)); imagepng($i, ${JSON.stringify(png)});`]);
     await check(variant, 'Public media upload and delivery', async () => {
-      const pair = await tokens('/hvk/admin/campaign.php', session);
+      const pair = await tokens('/admin/campaign.php', session);
       const form = new FormData();
       for (const [k, v] of Object.entries({ ...pair, action: 'save', is_active: '1' })) form.set(k, v);
       form.set('image', new Blob([fs.readFileSync(png)], { type: 'image/png' }), 'campaign.png');
-      const r = await request('/hvk/admin/campaign.php', { method: 'POST', cookie: session, body: form });
+      const r = await request('/admin/campaign.php', { method: 'POST', cookie: session, body: form });
       assert([302, 303].includes(r.status), `status ${r.status}`);
-      const current = JSON.parse((await request('/hvk/admin/api/menu.php')).body);
+      const current = JSON.parse((await request('/admin/api/menu.php')).body);
       assert(current.campaign?.image?.startsWith('/media/campaigns/'), 'Campaign image URL missing.');
       const image = await request(current.campaign.image, { binary: true });
       assert.equal(image.status, 200);
@@ -387,7 +387,7 @@ async function installAndSmoke(variant, kind) {
       form.set('message', 'Fresh install smoke test');
       form.set('language', 'tr');
       form.set('image', new Blob([fs.readFileSync(png)], { type: 'image/png' }), 'feedback.png');
-      const r = await request('/hvk/admin/api/feedback.php', { method: 'POST', body: form, headers: { 'Idempotency-Key': crypto.randomUUID() } });
+      const r = await request('/admin/api/feedback.php', { method: 'POST', body: form, headers: { 'Idempotency-Key': crypto.randomUUID() } });
       assert.equal(r.status, 201, r.body);
       const [row] = dbQuery(configFile, 'SELECT id, image_path FROM feedbacks ORDER BY id DESC LIMIT 1');
       feedbackId = Number(row.id);
@@ -398,22 +398,22 @@ async function installAndSmoke(variant, kind) {
       return `${files.length} private file(s)`;
     });
     await check(variant, 'Private image access control', async () => {
-      const anonymous = await request(`/hvk/admin/private-image.php?id=${uploadId}`);
+      const anonymous = await request(`/admin/private-image.php?id=${uploadId}`);
       assert([302, 303].includes(anonymous.status), `anonymous ${anonymous.status}`);
-      const owner = await request(`/hvk/admin/private-image.php?id=${uploadId}`, { cookie: session, binary: true });
+      const owner = await request(`/admin/private-image.php?id=${uploadId}`, { cookie: session, binary: true });
       assert.equal(owner.status, 200);
       assert.equal(owner.response.headers.get('content-type'), 'image/webp');
       return `anonymous ${anonymous.status}, owner 200`;
     });
     await check(variant, 'Feedback deletion removes files', async () => {
-      const pair = await tokens('/hvk/admin/feedbacks.php', session);
+      const pair = await tokens('/admin/feedbacks.php', session);
       const form = new URLSearchParams({ ...pair, id: String(feedbackId) });
-      const r = await request('/hvk/admin/feedbacks.php', { method: 'POST', cookie: session, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
+      const r = await request('/admin/feedbacks.php', { method: 'POST', cookie: session, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form });
       assert.equal(r.status, 303);
       assert.equal(dbQuery(configFile, `SELECT COUNT(*) AS n FROM feedbacks WHERE id = ${feedbackId}`)[0].n, 0);
       const remaining = listFiles(feedbackDir).filter(f => !f.includes(`${path.sep}.pending`));
       assert.equal(remaining.length, 0, `${remaining.length} file(s) remain.`);
-      const gone = await request(`/hvk/admin/private-image.php?id=${uploadId}`, { cookie: session });
+      const gone = await request(`/admin/private-image.php?id=${uploadId}`, { cookie: session });
       assert.equal(gone.status, 404);
       return '0 files, image 404';
     });
@@ -423,15 +423,15 @@ async function installAndSmoke(variant, kind) {
       const expectations = {
         '/database/lib.php': [404],
         '/database/': [404],
-        '/hvk/admin/config.php': [403],
-        '/hvk/admin/security.php': [403],
-        '/hvk/admin/functions.php': [403],
-        '/hvk/admin/media-service.php': [403],
-        '/hvk/admin/.htaccess': [403],
+        '/admin/config.php': [403],
+        '/admin/security.php': [403],
+        '/admin/functions.php': [403],
+        '/admin/media-service.php': [403],
+        '/admin/.htaccess': [403],
         '/.htaccess': [403],
         '/media/': [403],
         '/media/.htaccess': [403],
-        '/hvk/admin/assets/': [403, 404],
+        '/admin/assets/': [403, 404],
         '/..%2fchef-private/config.php': [400, 403, 404],
         '/chef-private/config.php': [404],
       };
@@ -459,10 +459,10 @@ async function installAndSmoke(variant, kind) {
       return out.join(', ');
     });
     await check(variant, 'Logout ends session', async () => {
-      const pair = await tokens('/hvk/admin/index.php', session);
-      const r = await request('/hvk/admin/logout.php', { method: 'POST', cookie: session, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(pair) });
+      const pair = await tokens('/admin/index.php', session);
+      const r = await request('/admin/logout.php', { method: 'POST', cookie: session, headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams(pair) });
       assert.equal(r.status, 303);
-      const after = await request('/hvk/admin/products.php', { cookie: session });
+      const after = await request('/admin/products.php', { cookie: session });
       assert([302, 303].includes(after.status), `products ${after.status}`);
       return 'redirect to login';
     });

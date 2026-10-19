@@ -46,7 +46,7 @@ Verified: 2026-10-13T17:25:00+03:00.
 
 ## Admin test access
 
-- Admin URL: `http://127.0.0.1:38082/hvk/admin/login.php`.
+- Admin URL: `http://127.0.0.1:38082/admin/login.php`.
 - Launch command: `set CHEF_CONFIG_FILE=%TEMP%\chef-task05\private\config.php && C:\laragon\bin\php\php-8.3.33-Win32-vs16-x64\php.exe -S 127.0.0.1:38082 -t C:\Users\Enes\Desktop\Alacart`.
 - Credentials file: `%TEMP%\chef-task05\private\admin.credentials`.
 - The file contains the generated local administrator credentials. Do not publish it.

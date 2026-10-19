@@ -80,13 +80,36 @@
           "bytes": 127442
         }
       ]
+    },
+    {
+      "id": "rev1-feedback",
+      "date": "2026-10-19",
+      "description": "Revision 1 design with Task 08 persistent feedback, multipart submission, contact limit 150, and preview notice removal.",
+      "verify_rule": "Recompute these hashes after guest feedback changes. Preserve the revision 1 design and frozen preview.",
+      "files": [
+        {
+          "relative_path": "chef-onizleme.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "index.html",
+          "sha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
+          "bytes": 130309
+        },
+        {
+          "relative_path": "public_html/index.html",
+          "sha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
+          "bytes": 130309
+        }
+      ]
     }
   ],
   "current_revision": {
-    "id": "rev1-feedback",
+    "id": "rev2-feedback-steps",
     "date": "2026-10-19",
-    "description": "Revision 1 design with Task 08 persistent feedback, multipart submission, contact limit 150, and preview notice removal.",
-    "verify_rule": "Recompute these hashes after guest feedback changes. Preserve the revision 1 design and frozen preview.",
+    "description": "User-requested step-by-step feedback (topic, rating, message) modeled on the legacy flow. Admin moved to /admin. Colors and tokens unchanged.",
+    "verify_rule": "Recompute these hashes after guest changes. Preserve the revision 1 design.",
     "files": [
       {
         "relative_path": "chef-onizleme.html",
@@ -95,13 +118,13 @@
       },
       {
         "relative_path": "index.html",
-        "sha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
-        "bytes": 130309
+        "sha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
+        "bytes": 135268
       },
       {
         "relative_path": "public_html/index.html",
-        "sha256": "456b7bea550af767624494ebe0f2a168c10bed79bdef26115800b19886af3a8e",
-        "bytes": 130309
+        "sha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
+        "bytes": 135268
       }
     ]
   }

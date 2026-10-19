@@ -30,7 +30,7 @@ return [
         'trusted_proxies' => [],
         'session' => [
             'name' => 'CHEFADMIN',
-            'path' => '<BASE_PATH>/hvk/admin',
+            'path' => '<BASE_PATH>/admin',
             'domain' => '',
             'secure' => true,
             'idle_seconds' => 1800,

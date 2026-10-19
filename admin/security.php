@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/database/lib.php';
+require_once dirname(__DIR__) . '/database/lib.php';
 
 if (chef_direct_request(__FILE__)) {
     http_response_code(404);
@@ -50,7 +50,7 @@ function chef_document_root(): string
         $root = (string)getenv('DOCUMENT_ROOT');
     }
     if ($root === '') {
-        $root = dirname(__DIR__, 2);
+        $root = dirname(__DIR__);
     }
     return realpath($root) ?: $root;
 }
@@ -183,7 +183,7 @@ function chef_clean_log_value(string $value, int $limit = 500): string
     }
     $value = preg_replace('/(?:mysql:|mariadb:)[^\s]+/i', '[redacted-dsn]', $value) ?? $value;
     $value = preg_replace('/(?:password|passwd|pwd|token|secret|authorization)\s*[:=]\s*[^\s,;]+/i', '$1=[redacted]', $value) ?? $value;
-    $repo = realpath(dirname(__DIR__, 2));
+    $repo = realpath(dirname(__DIR__));
     if ($repo !== false) {
         $value = str_ireplace(str_replace('\\', '/', $repo), '.', str_replace('\\', '/', $value));
     }

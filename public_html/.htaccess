@@ -13,9 +13,9 @@ Options -Indexes
 
     # Guest CSP. The hashes cover the single inline <script> and <style> in index.html.
     # Run "npm test" after each guest change. database/tests/security-headers-static.mjs checks these hashes.
-    # PHP admin responses send their own policy from hvk/admin/security.php.
+    # PHP admin responses send their own policy from admin/security.php.
     <Files "index.html">
-        Header always set Content-Security-Policy "default-src 'none'; script-src 'sha256-vV4044LZPoEuGFFvcNqu70nCthOIdj/RhBO4fKvSGCQ='; style-src 'sha256-Tla8lVl7tCJccxFxte8gVChF7GUoZI+Dc5F0Y2VRl1g='; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
+        Header always set Content-Security-Policy "default-src 'none'; script-src 'sha256-5YJMAXWJrTVkwYDP0i//RIXcXICxuAmAPiJdNLIYcKY='; style-src 'sha256-XNwxqTjKo634c1wnzosjuOEOdHQqgIzVFR2ZVtSVvmQ='; img-src 'self' data: blob:; connect-src 'self'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'; object-src 'none'"
         Header always set X-Frame-Options "DENY"
         Header always set Cross-Origin-Opener-Policy "same-origin"
     </Files>

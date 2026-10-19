@@ -1,11 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: 'class',
-  content: ['./hvk/admin/**/*.php', './hvk/admin/assets/admin.js'],
+  content: ['./admin/**/*.php', './admin/assets/admin.js'],
   theme: {
     extend: {
       colors: {
-        hvk: {
+        chef: {
           accent: 'var(--accent)',
           accentStrong: 'var(--accent-strong)',
           ink: 'var(--surface-page)',

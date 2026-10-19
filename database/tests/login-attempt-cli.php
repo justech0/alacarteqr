@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/security.php';
+require_once dirname(__DIR__, 2) . '/admin/security.php';
 
 $payload = json_decode((string)stream_get_contents(STDIN), true);
 if (!is_array($payload)) {
@@ -9,7 +9,7 @@ if (!is_array($payload)) {
 }
 $_SERVER['REMOTE_ADDR'] = (string)($payload['address'] ?? '198.51.100.8');
 $_SERVER['REQUEST_METHOD'] = 'POST';
-$_SERVER['SCRIPT_NAME'] = '/hvk/admin/login.php';
+$_SERVER['SCRIPT_NAME'] = '/admin/login.php';
 $config = chef_load_web_config();
 $chefConfig = $config;
 $chefLogFile = chef_prepare_log_file($config);

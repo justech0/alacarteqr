@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/security.php';
+require_once dirname(__DIR__, 2) . '/admin/security.php';
 
 $inventory = require __DIR__ . '/admin-route-inventory.php';
 $expected = array_merge(
@@ -11,7 +11,7 @@ $expected = array_merge(
 );
 sort($expected);
 $actual = [];
-$root = dirname(__DIR__, 2) . '/hvk/admin';
+$root = dirname(__DIR__, 2) . '/admin';
 $iterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS));
 foreach ($iterator as $file) {
     if ($file->getExtension() !== 'php') {

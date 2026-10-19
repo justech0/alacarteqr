@@ -86,8 +86,8 @@
   .nav-link[aria-current="page"] { background: #176023; color: #ffffff; font-weight: 700; }
   .dark .nav-link[aria-current="page"] { background: var(--surface-raised); color: #5bc46c; border: 1px solid #5bc46c; }
   .logo-badge { background: #ffffff; border-radius: 9999px; }
-  .text-hvk-accent { color: var(--accent-link) !important; }
-  .bg-hvk-accent.text-hvk-ink { color: #ffffff !important; }
+  .text-chef-accent { color: var(--accent-link) !important; }
+  .bg-chef-accent.text-chef-ink { color: #ffffff !important; }
   .bg-black\/40, .bg-black\/50, .bg-black\/60, .bg-black\/70, .bg-white\/5, .bg-white\/10 { background: var(--surface-card) !important; }
   .glass { background: var(--surface-card); border-color: var(--line); }
 }

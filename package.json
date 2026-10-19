@@ -10,7 +10,7 @@
     "test:catalog-http": "node database/tests/run-catalog-http-tests.mjs",
     "test:menu-http": "node database/tests/run-menu-http-tests.mjs",
     "test:feedback-http": "node database/tests/run-feedback-http-tests.mjs",
-    "build:admin-css": "tailwindcss -c tailwind.admin.config.js -i hvk/admin/assets/admin-tailwind.css -o hvk/admin/assets/admin.css --minify"
+    "build:admin-css": "tailwindcss -c tailwind.admin.config.js -i admin/assets/admin-tailwind.css -o admin/assets/admin.css --minify"
   },
   "devDependencies": {
     "http-server": "^14.1.1",

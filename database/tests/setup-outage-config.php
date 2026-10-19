@@ -6,7 +6,7 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/security.php';
+require_once dirname(__DIR__, 2) . '/admin/security.php';
 
 $source = $argv[1] ?? '';
 $target = $argv[2] ?? '';

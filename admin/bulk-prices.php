@@ -239,13 +239,13 @@ include __DIR__ . '/header.php';
 <div class="space-y-6">
     <div class="flex items-center justify-between gap-4 flex-wrap">
         <div>
-            <h2 class="text-xl font-serif tracking-[0.18em] text-hvk-accent">Toplu Fiyat Güncelleme</h2>
-            <p class="text-sm text-hvk-muted">Tüm ürünlerin fiyatlarını tek ekranda düzenleyin.</p>
+            <h2 class="text-xl font-serif tracking-[0.18em] text-chef-accent">Toplu Fiyat Güncelleme</h2>
+            <p class="text-sm text-chef-muted">Tüm ürünlerin fiyatlarını tek ekranda düzenleyin.</p>
         </div>
         <div class="flex items-center gap-3 flex-wrap">
             <form method="GET" class="flex items-center gap-3" data-testid="bulk-price-filter-form">
-                <label for="bulk-price-category" class="text-sm text-hvk-muted">Kategori</label>
-                <select id="bulk-price-category" name="category" class="bg-white/5 border border-hvk-accent/30 rounded-lg px-3 py-2 text-sm text-hvk-text focus:border-hvk-accent focus:ring-1 focus:ring-hvk-accent" data-testid="bulk-price-category">
+                <label for="bulk-price-category" class="text-sm text-chef-muted">Kategori</label>
+                <select id="bulk-price-category" name="category" class="bg-white/5 border border-chef-accent/30 rounded-lg px-3 py-2 text-sm text-chef-text focus:border-chef-accent focus:ring-1 focus:ring-chef-accent" data-testid="bulk-price-category">
                     <option value="0" <?php echo $selectedCategory === 0 ? 'selected' : ''; ?>>Tümü</option>
                     <?php foreach ($categories as $cat): ?>
                         <option value="<?php echo (int)$cat['id']; ?>" <?php echo $selectedCategory === (int)$cat['id'] ? 'selected' : ''; ?>><?php echo sanitize($cat['name']); ?></option>
@@ -263,12 +263,12 @@ include __DIR__ . '/header.php';
     </div>
 
     <!-- CSV Update Section -->
-    <div class="glass rounded-2xl border border-hvk-accent/20 p-4 bg-black/50">
+    <div class="glass rounded-2xl border border-chef-accent/20 p-4 bg-black/50">
         <div class="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center">
-            <div class="text-sm text-hvk-muted space-y-2 flex-1">
-                <h3 class="text-hvk-accent font-semibold mb-1">CSV ile Toplu Güncelleme</h3>
+            <div class="text-sm text-chef-muted space-y-2 flex-1">
+                <h3 class="text-chef-accent font-semibold mb-1">CSV ile Toplu Güncelleme</h3>
                 <p>Ürün fiyatlarını CSV dosyası ile hızlıca güncelleyebilirsiniz. Örnek CSV formatı:</p>
-                <pre class="bg-black/40 border border-hvk-accent/20 p-2 rounded text-xs text-hvk-text inline-block">ID, Urun_Adi, Fiyat
+                <pre class="bg-black/40 border border-chef-accent/20 p-2 rounded text-xs text-chef-text inline-block">ID, Urun_Adi, Fiyat
 1, "Hamburger", 150.50
 2, "Kola", 35.00</pre>
                 <p class="text-xs">
@@ -292,7 +292,7 @@ include __DIR__ . '/header.php';
                     <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
                     <input type="hidden" name="action" value="import_csv_prices">
                     <label class="sr-only" for="bulk-price-file">Fiyat CSV dosyası</label>
-                    <input id="bulk-price-file" type="file" name="csv_file" accept=".csv" required class="flex-1 w-full text-xs text-hvk-text bg-black/40 border border-hvk-accent/20 rounded-lg p-2 cursor-pointer" data-testid="bulk-price-file">
+                    <input id="bulk-price-file" type="file" name="csv_file" accept=".csv" required class="flex-1 w-full text-xs text-chef-text bg-black/40 border border-chef-accent/20 rounded-lg p-2 cursor-pointer" data-testid="bulk-price-file">
                     <button type="submit" class="admin-button admin-button-primary shrink-0" data-testid="bulk-price-import">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
                         Yükle
@@ -302,13 +302,13 @@ include __DIR__ . '/header.php';
         </div>
     </div>
 
-    <form method="POST" class="glass rounded-2xl border border-hvk-accent/20 p-4 bg-black/50 overflow-x-auto" data-mutation-form data-warn-unsaved data-testid="bulk-price-form">
+    <form method="POST" class="glass rounded-2xl border border-chef-accent/20 p-4 bg-black/50 overflow-x-auto" data-mutation-form data-warn-unsaved data-testid="bulk-price-form">
         <input type="hidden" name="csrf_token" value="<?php echo sanitize($_SESSION['csrf_token']); ?>">
         <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
         <input type="hidden" name="action" value="bulk_update_prices">
-        <table class="responsive-table min-w-full text-sm text-hvk-text">
+        <table class="responsive-table min-w-full text-sm text-chef-text">
             <thead>
-                <tr class="text-left border-b border-hvk-accent/20">
+                <tr class="text-left border-b border-chef-accent/20">
                     <th class="py-3 px-2">ID</th>
                     <th class="py-3 px-2">Kategori</th>
                     <th class="py-3 px-2">Ürün</th>
@@ -316,14 +316,14 @@ include __DIR__ . '/header.php';
                     <th class="py-3 px-2">Yeni Fiyat</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-hvk-accent/10">
+            <tbody class="divide-y divide-chef-accent/10">
                 <?php foreach ($products as $product): ?>
                     <?php $currentPrice = number_format((float)$product['price'], 2, '.', ''); ?>
                     <tr class="hover:bg-white/5">
-                        <td data-label="ID" class="py-3 px-2 whitespace-nowrap text-hvk-muted">#<?php echo $product['id']; ?></td>
-                        <td data-label="Kategori" class="py-3 px-2 whitespace-nowrap text-hvk-muted"><?php echo $product['category_name'] ? sanitize($product['category_name']) : 'Kategori yok'; ?></td>
-                        <td data-label="Ürün" class="py-3 px-2 min-w-[180px] text-hvk-text"><?php echo sanitize($product['name']); ?></td>
-                        <td data-label="Mevcut fiyat" class="py-3 px-2 whitespace-nowrap text-hvk-accent font-semibold"><?php echo $currentPrice; ?> ₺</td>
+                        <td data-label="ID" class="py-3 px-2 whitespace-nowrap text-chef-muted">#<?php echo $product['id']; ?></td>
+                        <td data-label="Kategori" class="py-3 px-2 whitespace-nowrap text-chef-muted"><?php echo $product['category_name'] ? sanitize($product['category_name']) : 'Kategori yok'; ?></td>
+                        <td data-label="Ürün" class="py-3 px-2 min-w-[180px] text-chef-text"><?php echo sanitize($product['name']); ?></td>
+                        <td data-label="Mevcut fiyat" class="py-3 px-2 whitespace-nowrap text-chef-accent font-semibold"><?php echo $currentPrice; ?> ₺</td>
                         <td data-label="Yeni fiyat" class="py-3 px-2">
                             <label class="sr-only" for="price-<?php echo (int)$product['id']; ?>"><?php echo sanitize($product['name']); ?> yeni fiyatı</label>
                             <input
@@ -332,7 +332,7 @@ include __DIR__ . '/header.php';
                                 name="price[<?php echo $product['id']; ?>]"
                                 value="<?php echo $currentPrice; ?>"
                                 placeholder="<?php echo $currentPrice; ?>"
-                                class="w-32 bg-white/5 border border-hvk-accent/30 rounded-lg px-3 py-2 text-sm focus:border-hvk-accent focus:ring-1 focus:ring-hvk-accent"
+                                class="w-32 bg-white/5 border border-chef-accent/30 rounded-lg px-3 py-2 text-sm focus:border-chef-accent focus:ring-1 focus:ring-chef-accent"
                                 data-testid="bulk-price-<?php echo (int)$product['id']; ?>"
                             >
                         </td>
@@ -341,7 +341,7 @@ include __DIR__ . '/header.php';
 
                 <?php if (empty($products)): ?>
                     <tr>
-                        <td colspan="5" class="py-6 text-center text-hvk-muted">Bu filtre ile ürün bulunamadı.</td>
+                        <td colspan="5" class="py-6 text-center text-chef-muted">Bu filtre ile ürün bulunamadı.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

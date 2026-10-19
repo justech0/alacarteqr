@@ -167,18 +167,18 @@ require_once __DIR__ . '/header.php';
 ?>
 <div class="max-w-4xl mx-auto space-y-6">
     <div>
-        <h1 class="text-2xl font-serif text-hvk-accent tracking-[0.12em]">Toplu Ürün Yükle</h1>
-        <p class="text-sm text-hvk-muted">CSV veya JSON ile hızlı ürün aktarımı yapın.</p>
+        <h1 class="text-2xl font-serif text-chef-accent tracking-[0.12em]">Toplu Ürün Yükle</h1>
+        <p class="text-sm text-chef-muted">CSV veya JSON ile hızlı ürün aktarımı yapın.</p>
     </div>
 
     <form method="POST" enctype="multipart/form-data" class="admin-panel rounded-xl p-6 space-y-6" data-mutation-form data-testid="product-import-form">
         <input type="hidden" name="csrf_token" value="<?php echo sanitize($_SESSION['csrf_token']); ?>">
         <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
         <div class="space-y-2">
-            <label for="product-import-file" class="text-sm text-hvk-muted">Dosya seç (.csv veya .json)</label>
+            <label for="product-import-file" class="text-sm text-chef-muted">Dosya seç (.csv veya .json)</label>
             <input id="product-import-file" type="file" name="file" accept=".csv,.json" class="block w-full rounded-lg p-3 text-sm" required data-testid="product-import-file">
         </div>
-        <div class="text-xs text-hvk-muted space-y-1">
+        <div class="text-xs text-chef-muted space-y-1">
             <p>CSV kolonları: category_name, product_name, description, price, image_url, sort_order</p>
             <p>En fazla 2 MB ve 500 satır. JSON, aynı alanları içeren düz bir liste olmalıdır.</p>
             <p>Aktarım atomiktir. Hatalı satır varsa hiçbir ürün eklenmez.</p>
@@ -188,11 +188,11 @@ require_once __DIR__ . '/header.php';
     </form>
 
     <?php if ($results): ?>
-        <div class="bg-black/50 border border-hvk-accent/20 rounded-xl p-4 space-y-2">
-            <p class="text-sm text-hvk-text">Okunan satır: <?php echo $results['read']; ?></p>
+        <div class="bg-black/50 border border-chef-accent/20 rounded-xl p-4 space-y-2">
+            <p class="text-sm text-chef-text">Okunan satır: <?php echo $results['read']; ?></p>
             <p class="text-sm text-green-300">Uygulanan: <?php echo $results['applied']; ?></p>
             <p class="text-sm text-red-200">Reddedilen: <?php echo $results['rejected']; ?></p>
-            <p class="text-sm text-hvk-muted">Yeni kategoriler: <?php echo implode(', ', $results['createdCategories']); ?></p>
+            <p class="text-sm text-chef-muted">Yeni kategoriler: <?php echo implode(', ', $results['createdCategories']); ?></p>
             <?php if (!empty($results['errors'])): ?>
                 <div class="text-sm text-red-200 space-y-1">
                     <?php foreach ($results['errors'] as $error): ?>

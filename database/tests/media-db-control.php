@@ -6,8 +6,8 @@ if (PHP_SAPI !== 'cli') {
     exit;
 }
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/security.php';
-require_once dirname(__DIR__, 2) . '/hvk/admin/media-service.php';
+require_once dirname(__DIR__, 2) . '/admin/security.php';
+require_once dirname(__DIR__, 2) . '/admin/media-service.php';
 
 $chefConfig = chef_load_config((string)getenv('CHEF_CONFIG_FILE'));
 $pdo = chef_connect($chefConfig);

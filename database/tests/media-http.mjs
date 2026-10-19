@@ -53,13 +53,13 @@ function submission(body) {
 }
 
 async function login() {
-  const page = await request('/hvk/admin/login.php');
+  const page = await request('/admin/login.php');
   const loginCookie = cookie(page.response);
   const form = new URLSearchParams({
     csrf_token: csrf(page.body), submission_token: submission(page.body),
     username: credentials.admin_username, password: credentials.admin_password,
   });
-  const result = await request('/hvk/admin/login.php', {
+  const result = await request('/admin/login.php', {
     method: 'POST', cookie: loginCookie,
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: form,
   });
@@ -74,7 +74,7 @@ async function pageToken(route, sessionCookie) {
 }
 
 async function campaignUpload(sessionCookie, filename, submittedName = filename, extraBytes = 0) {
-  const token = await pageToken('/hvk/admin/campaign.php', sessionCookie);
+  const token = await pageToken('/admin/campaign.php', sessionCookie);
   let data = fs.readFileSync(path.join(fixtureRoot, filename));
   if (extraBytes > 0) data = Buffer.concat([data, Buffer.alloc(extraBytes, 65)]);
   const form = new FormData();
@@ -83,7 +83,7 @@ async function campaignUpload(sessionCookie, filename, submittedName = filename,
   form.set('action', 'save');
   form.set('is_active', '1');
   form.set('image', new Blob([data]), submittedName);
-  return request('/hvk/admin/campaign.php', { method: 'POST', cookie: sessionCookie, body: form });
+  return request('/admin/campaign.php', { method: 'POST', cookie: sessionCookie, body: form });
 }
 
 function campaignState() {
@@ -92,7 +92,7 @@ function campaignState() {
 
 let response = await request('/database/media-cli.php');
 assert(response.response.status === 404, 'media-cli.php was accessible through HTTP.');
-response = await request('/hvk/admin/private-image.php?id=1');
+response = await request('/admin/private-image.php?id=1');
 assert([302, 303].includes(response.response.status), 'Private media allowed anonymous access.');
 
 const sessionCookie = await login();
@@ -136,7 +136,7 @@ form.set('message', 'Database rollback test');
 form.set('language', 'tr');
 form.set('branch_id', '999999');
 form.set('image', new Blob([fs.readFileSync(path.join(fixtureRoot, 'valid.jpg'))]), 'rollback.jpg');
-response = await request('/hvk/admin/api/feedback.php', { method: 'POST', body: form });
+response = await request('/admin/api/feedback.php', { method: 'POST', body: form });
 assert(response.response.status === 500, 'Database failure after upload did not fail safely.');
 
 form = new FormData();
@@ -145,22 +145,22 @@ form.set('rating', '5');
 form.set('message', 'Private image test');
 form.set('language', 'tr');
 form.set('image', new Blob([fs.readFileSync(path.join(fixtureRoot, 'valid.png'))]), 'feedback.png');
-response = await request('/hvk/admin/api/feedback.php', { method: 'POST', body: form });
+response = await request('/admin/api/feedback.php', { method: 'POST', body: form });
 assert(response.response.status === 201, 'Valid feedback upload failed.');
 const feedback = JSON.parse(control('feedback-json'));
 assert(feedback.owner?.image_path?.startsWith('managed:'), 'Feedback image did not use a private server record.');
 const uploadId = Number(feedback.owner.image_path.slice(8));
-response = await request(`/hvk/admin/private-image.php?id=${uploadId}`);
+response = await request(`/admin/private-image.php?id=${uploadId}`);
 assert([302, 303].includes(response.response.status), 'Anonymous private image request was accepted.');
-response = await request(`/hvk/admin/private-image.php?id=${uploadId}`, { cookie: sessionCookie, binary: true });
+response = await request(`/admin/private-image.php?id=${uploadId}`, { cookie: sessionCookie, binary: true });
 assert(response.response.status === 200, 'Authorized private image request failed.');
 assert(response.response.headers.get('content-type') === 'image/webp', 'Private image MIME is invalid.');
 assert(response.response.headers.get('x-content-type-options') === 'nosniff', 'Private image nosniff header is missing.');
 assert((response.response.headers.get('cache-control') ?? '').includes('no-store'), 'Private image was cacheable.');
 
-let token = await pageToken('/hvk/admin/feedbacks.php', sessionCookie);
+let token = await pageToken('/admin/feedbacks.php', sessionCookie);
 let encoded = new URLSearchParams({ csrf_token: token.csrf, submission_token: token.submission, id: String(feedback.owner.id) });
-response = await request('/hvk/admin/feedbacks.php', {
+response = await request('/admin/feedbacks.php', {
   method: 'POST', cookie: sessionCookie,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: encoded,
 });
@@ -169,9 +169,9 @@ const allAfterFeedbackDelete = JSON.parse(control('all-json')).filter(row => row
 assert(allAfterFeedbackDelete.length > 0 && allAfterFeedbackDelete.every(row => row.state === 'deleted'), 'Feedback media deletion is incomplete.');
 assert(allAfterFeedbackDelete.every(row => Object.values(row.files).every(exists => exists === false)), 'Feedback media still exists on disk.');
 
-token = await pageToken('/hvk/admin/campaign.php', sessionCookie);
+token = await pageToken('/admin/campaign.php', sessionCookie);
 encoded = new URLSearchParams({ csrf_token: token.csrf, submission_token: token.submission, action: 'delete_image' });
-response = await request('/hvk/admin/campaign.php', {
+response = await request('/admin/campaign.php', {
   method: 'POST', cookie: sessionCookie,
   headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: encoded,
 });

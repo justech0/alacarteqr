@@ -36,24 +36,24 @@ $latestFeedbacks = $stmt->fetchAll();
 include 'header.php';
 ?>
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-    <div class="p-6 rounded-2xl border border-hvk-accent/30 bg-black/40">
-        <p class="text-xs uppercase tracking-widest text-hvk-muted mb-2">Toplam Ürün</p>
-        <div class="text-3xl font-serif text-hvk-accent"><?php echo $counts['products']; ?></div>
+    <div class="p-6 rounded-2xl border border-chef-accent/30 bg-black/40">
+        <p class="text-xs uppercase tracking-widest text-chef-muted mb-2">Toplam Ürün</p>
+        <div class="text-3xl font-serif text-chef-accent"><?php echo $counts['products']; ?></div>
     </div>
-    <div class="p-6 rounded-2xl border border-hvk-accent/30 bg-black/40">
-        <p class="text-xs uppercase tracking-widest text-hvk-muted mb-2">Toplam Kategori</p>
-        <div class="text-3xl font-serif text-hvk-accent"><?php echo $counts['categories']; ?></div>
+    <div class="p-6 rounded-2xl border border-chef-accent/30 bg-black/40">
+        <p class="text-xs uppercase tracking-widest text-chef-muted mb-2">Toplam Kategori</p>
+        <div class="text-3xl font-serif text-chef-accent"><?php echo $counts['categories']; ?></div>
     </div>
-    <div class="p-6 rounded-2xl border border-hvk-accent/30 bg-black/40">
-        <p class="text-xs uppercase tracking-widest text-hvk-muted mb-2">Geri Bildirimler</p>
-        <div class="text-3xl font-serif text-hvk-accent"><?php echo $counts['feedbacks']; ?></div>
+    <div class="p-6 rounded-2xl border border-chef-accent/30 bg-black/40">
+        <p class="text-xs uppercase tracking-widest text-chef-muted mb-2">Geri Bildirimler</p>
+        <div class="text-3xl font-serif text-chef-accent"><?php echo $counts['feedbacks']; ?></div>
     </div>
 </div>
 
-<div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 rounded-xl border border-hvk-accent/20 bg-white/5">
+<div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-4 rounded-xl border border-chef-accent/20 bg-white/5">
     <div>
-        <p class="text-xs uppercase tracking-[0.25em] text-hvk-muted">Menü önbelleği</p>
-        <p class="text-sm text-hvk-text">Menüyü yenile butonuna bastığınızda önbellek güncellenir.</p>
+        <p class="text-xs uppercase tracking-[0.25em] text-chef-muted">Menü önbelleği</p>
+        <p class="text-sm text-chef-text">Menüyü yenile butonuna bastığınızda önbellek güncellenir.</p>
     </div>
     <form method="POST" class="flex items-center gap-2" data-mutation-form data-testid="menu-invalidate-form">
         <input type="hidden" name="csrf_token" value="<?php echo sanitize($_SESSION['csrf_token']); ?>">
@@ -63,23 +63,23 @@ include 'header.php';
     </form>
 </div>
 
-<div class="bg-black/50 border border-hvk-accent/20 rounded-2xl p-6">
+<div class="bg-black/50 border border-chef-accent/20 rounded-2xl p-6">
     <div class="flex items-center justify-between mb-4">
-        <h2 class="font-serif text-lg text-hvk-accent tracking-[0.15em]">Son Yorumlar</h2>
-        <a href="feedbacks.php" class="text-xs text-hvk-muted underline">Tümü</a>
+        <h2 class="font-serif text-lg text-chef-accent tracking-[0.15em]">Son Yorumlar</h2>
+        <a href="feedbacks.php" class="text-xs text-chef-muted underline">Tümü</a>
     </div>
     <?php if (empty($latestFeedbacks)): ?>
-        <p class="text-hvk-muted text-sm">Henüz yorum yok.</p>
+        <p class="text-chef-muted text-sm">Henüz yorum yok.</p>
     <?php else: ?>
         <div class="space-y-4">
             <?php foreach ($latestFeedbacks as $feedback): ?>
-                <div class="p-4 rounded-xl border border-hvk-accent/10 bg-white/5">
+                <div class="p-4 rounded-xl border border-chef-accent/10 bg-white/5">
                     <div class="flex items-center justify-between mb-1">
-                        <div class="text-sm font-semibold text-hvk-text"><?php echo sanitize($feedback['customer_name']); ?></div>
-                        <div class="text-xs text-hvk-accent font-bold">★ <?php echo (int)$feedback['rating']; ?>/5</div>
+                        <div class="text-sm font-semibold text-chef-text"><?php echo sanitize($feedback['customer_name']); ?></div>
+                        <div class="text-xs text-chef-accent font-bold">★ <?php echo (int)$feedback['rating']; ?>/5</div>
                     </div>
-                    <p class="text-sm text-hvk-muted">"<?php echo sanitize($feedback['comment']); ?>"</p>
-                    <p class="text-[10px] text-hvk-muted mt-2"><?php echo date('d.m.Y H:i', strtotime($feedback['created_at'])); ?></p>
+                    <p class="text-sm text-chef-muted">"<?php echo sanitize($feedback['comment']); ?>"</p>
+                    <p class="text-[10px] text-chef-muted mt-2"><?php echo date('d.m.Y H:i', strtotime($feedback['created_at'])); ?></p>
                 </div>
             <?php endforeach; ?>
         </div>

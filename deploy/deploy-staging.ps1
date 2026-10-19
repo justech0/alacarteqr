@@ -537,7 +537,7 @@ try {
         'environment' => 'production',
         'trusted_proxies' => [],
         'session' => [
-            'name' => 'CHEFADMIN', 'path' => '/hvk/admin', 'domain' => '', 'secure' => true,
+            'name' => 'CHEFADMIN', 'path' => '/admin', 'domain' => '', 'secure' => true,
             'idle_seconds' => 1800, 'absolute_seconds' => 28800,
         ],
         'throttle' => [
@@ -552,7 +552,7 @@ try {
         'public_root' => $documentReal . '/media',
         'private_root' => $privateReal . '/media',
         'temporary_root' => $privateReal . '/tmp/media',
-        'legacy_public_root' => $documentReal . '/hvk/admin/uploads',
+        'legacy_public_root' => $documentReal . '/admin/uploads',
         'public_base_url' => '/media',
         'max_bytes' => 4194304,
         'request_overhead_bytes' => 1048576,
@@ -720,7 +720,7 @@ function Invoke-HarnessCurl {
     $statusCode = 200
     $body = '<html>admin</html>'
 
-    if ($url -like '*/hvk/admin/login.php' -and $Script:HarnessScenario -eq 'curl-503') {
+    if ($url -like '*/admin/login.php' -and $Script:HarnessScenario -eq 'curl-503') {
         $statusCode = 503
         $body = 'Service unavailable'
     }
@@ -1333,7 +1333,7 @@ set -e
 [ "$(find "$verify/public" -type f | wc -l | tr -d ' ')" = '33' ]
 [ "$(find "$verify/private" -type f | wc -l | tr -d ' ')" = '9' ]
 [ -f "$verify/public/media/.htaccess" ]
-[ -f "$verify/public/hvk/admin/.htaccess" ]
+[ -f "$verify/public/admin/.htaccess" ]
 [ -z "$(find "$verify" -type l -print -quit)" ]
 python3 - "$public_archive" "$verify/public" "$private_archive" "$verify/private" <<'PY'
 import hashlib, os, sys, zipfile
@@ -1420,7 +1420,7 @@ PY
     Set-StepResult 6 PASS "Transferler ve özel test extraction exit=0. $activationMode Private arşiv çıkarıldı."
 
     Start-Step 7
-    $htaccessCommand = "test -f $($Script:DocumentRoot)/media/.htaccess && test -f $($Script:DocumentRoot)/hvk/admin/.htaccess"
+    $htaccessCommand = "test -f $($Script:DocumentRoot)/media/.htaccess && test -f $($Script:DocumentRoot)/admin/.htaccess"
     $htaccess = Invoke-SshCapture -RemoteCommand $htaccessCommand
     Assert-NativeSuccess $htaccess 'Gerekli media veya admin .htaccess dosyası eksik.'
     Set-StepResult 7 PASS 'Public media ve admin .htaccess dosyaları bulundu.'
@@ -1499,12 +1499,12 @@ trap - EXIT
     Start-Step 10
     $databaseCommand = @'
 set -eu
-mkdir -p "__DOCUMENT_ROOT__/hvk/admin/uploads"
-mkdir -p "__PRIVATE_ROOT__/hvk/admin"
-chmod 700 "__PRIVATE_ROOT__/hvk" "__PRIVATE_ROOT__/hvk/admin"
-cp "__DOCUMENT_ROOT__/hvk/admin/security.php" "__PRIVATE_ROOT__/hvk/admin/security.php"
-cp "__DOCUMENT_ROOT__/hvk/admin/media-service.php" "__PRIVATE_ROOT__/hvk/admin/media-service.php"
-chmod 0600 "__PRIVATE_ROOT__/hvk/admin/security.php" "__PRIVATE_ROOT__/hvk/admin/media-service.php"
+mkdir -p "__DOCUMENT_ROOT__/admin/uploads"
+mkdir -p "__PRIVATE_ROOT__/admin"
+chmod 700 "__PRIVATE_ROOT__/admin"
+cp "__DOCUMENT_ROOT__/admin/security.php" "__PRIVATE_ROOT__/admin/security.php"
+cp "__DOCUMENT_ROOT__/admin/media-service.php" "__PRIVATE_ROOT__/admin/media-service.php"
+chmod 0600 "__PRIVATE_ROOT__/admin/security.php" "__PRIVATE_ROOT__/admin/media-service.php"
 CHEF_DB_CONFIG=__CONFIG_PATH__ __PHP__ "__PRIVATE_ROOT__/database/cli.php" migrate
 CHEF_DB_CONFIG=__CONFIG_PATH__ __PHP__ "__PRIVATE_ROOT__/database/cli.php" seed
 hardening="__DOCUMENT_ROOT__/media/.htaccess"
@@ -1567,7 +1567,7 @@ crontab "$temporary"
     }
 
     Start-Step 13
-    $adminResponse = Invoke-HttpRequest -Url "https://$SiteHost/hvk/admin/login.php"
+    $adminResponse = Invoke-HttpRequest -Url "https://$SiteHost/admin/login.php"
     if ($adminResponse.StatusCode -eq 503) {
         throw 'Admin giriş sayfası 503 döndürdü. LiteSpeed SetEnv görünürlüğünü kontrol edin.'
     }

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/security.php';
+require_once dirname(__DIR__, 2) . '/admin/security.php';
 
 $config = chef_load_web_config();
 $chefConfig = $config;

@@ -60,7 +60,7 @@ async function postUrlEncoded(route, sessionCookie, fields) {
 async function readMenu(etag = null) {
   const headers = { Accept: 'application/json' };
   if (etag) headers['If-None-Match'] = etag;
-  return request('/hvk/admin/api/menu.php', { headers });
+  return request('/admin/api/menu.php', { headers });
 }
 
 const initial = await readMenu();
@@ -83,9 +83,9 @@ const cached = await readMenu(firstEtag);
 assert.equal(cached.response.status, 304, 'Matching ETag did not return HTTP 304.');
 assert.equal(cached.body, '', 'HTTP 304 returned a response body.');
 
-const loginPage = await request('/hvk/admin/login.php');
+const loginPage = await request('/admin/login.php');
 const loginCookie = cookie(loginPage.response);
-const login = await postUrlEncoded('/hvk/admin/login.php', loginCookie, {
+const login = await postUrlEncoded('/admin/login.php', loginCookie, {
   ...tokens(loginPage.body),
   username: credentials.admin_username,
   password: credentials.admin_password,
@@ -100,7 +100,7 @@ const originalCategory = categories.find(row => Number(row.id) === Number(seedPr
 const targetCategory = categories.find(row => Number(row.id) !== Number(seedProduct.category_id));
 assert(originalCategory && targetCategory, 'Category move fixtures are missing.');
 
-const productPage = await formPage(`/hvk/admin/products.php?category=${seedProduct.category_id}&edit=${seedProduct.id}`, sessionCookie);
+const productPage = await formPage(`/admin/products.php?category=${seedProduct.category_id}&edit=${seedProduct.id}`, sessionCookie);
 const productFields = {
   ...productPage.tokens,
   action: 'update', id: String(seedProduct.id), redirect_category: String(seedProduct.category_id),
@@ -112,7 +112,7 @@ const productFields = {
 };
 if (seedProduct.ingredients_verified_at) productFields.ingredients_verified = '1';
 if (seedProduct.calories_verified_at) productFields.calories_verified = '1';
-const productUpdate = await postUrlEncoded('/hvk/admin/products.php', sessionCookie, productFields);
+const productUpdate = await postUrlEncoded('/admin/products.php', sessionCookie, productFields);
 assert([302, 303].includes(productUpdate.response.status), 'Translation edit failed.');
 const afterTranslation = await readMenu(firstEtag);
 assert.equal(afterTranslation.response.status, 200, 'Translation edit did not invalidate the cached menu.');
@@ -120,8 +120,8 @@ const translationEtag = afterTranslation.response.headers.get('etag');
 const translatedItem = JSON.parse(afterTranslation.body).items.find(item => item.id === seedProduct.public_id);
 assert.deepEqual(translatedItem.name, { tr: seedProduct.name, en: null, ar: null }, 'Editable translations or Turkish fallback contract regressed.');
 
-const movePage = await formPage(`/hvk/admin/products.php?category=${seedProduct.category_id}`, sessionCookie);
-const moveResult = await postUrlEncoded('/hvk/admin/products.php', sessionCookie, {
+const movePage = await formPage(`/admin/products.php?category=${seedProduct.category_id}`, sessionCookie);
+const moveResult = await postUrlEncoded('/admin/products.php', sessionCookie, {
   ...movePage.tokens, action: 'move_category', id: String(seedProduct.id),
   new_category_id: String(targetCategory.id), redirect_category: String(seedProduct.category_id),
 });
@@ -131,25 +131,25 @@ assert.equal(afterMove.response.status, 200, 'Category move did not invalidate t
 const moveEtag = afterMove.response.headers.get('etag');
 assert.equal(JSON.parse(afterMove.body).items.find(item => item.id === seedProduct.public_id)?.category, targetCategory.public_id, 'Category move is absent from the public menu.');
 
-const pricePage = await formPage('/hvk/admin/bulk-prices.php', sessionCookie);
+const pricePage = await formPage('/admin/bulk-prices.php', sessionCookie);
 const priceForm = new FormData();
 Object.entries({ ...pricePage.tokens, action: 'import_csv_prices' }).forEach(([key, value]) => priceForm.set(key, value));
 priceForm.set('csv_file', new Blob([`ID,Urun_Adi,Fiyat\n${seedProduct.id},${seedProduct.name},"123,45"\n`]), 'prices.csv');
-const priceUpdate = await request('/hvk/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: priceForm });
+const priceUpdate = await request('/admin/bulk-prices.php', { method: 'POST', cookie: sessionCookie, body: priceForm });
 assert([302, 303].includes(priceUpdate.response.status), 'Price CSV import failed.');
 const afterPrice = await readMenu(moveEtag);
 assert.equal(afterPrice.response.status, 200, 'Price import did not invalidate the cached menu.');
 const priceEtag = afterPrice.response.headers.get('etag');
 assert.equal(JSON.parse(afterPrice.body).items.find(item => item.id === seedProduct.public_id)?.price, 123.45, 'Imported price is absent from the public menu.');
 
-const importPage = await formPage('/hvk/admin/import-products.php', sessionCookie);
+const importPage = await formPage('/admin/import-products.php', sessionCookie);
 const productImport = new FormData();
 Object.entries(importPage.tokens).forEach(([key, value]) => productImport.set(key, value));
 productImport.set('file', new Blob([JSON.stringify([{
   category_name: targetCategory.name, product_name: 'Task07 API Import', description: 'Fallback test',
   price: '67.80', image_url: '', sort_order: '',
 }])]), 'products.json');
-const importResult = await request('/hvk/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: productImport });
+const importResult = await request('/admin/import-products.php', { method: 'POST', cookie: sessionCookie, body: productImport });
 assert([302, 303].includes(importResult.response.status), 'Product JSON import failed.');
 const afterImport = await readMenu(priceEtag);
 assert.equal(afterImport.response.status, 200, 'Product import did not invalidate the cached menu.');
@@ -157,8 +157,8 @@ const importEtag = afterImport.response.headers.get('etag');
 const importedItem = JSON.parse(afterImport.body).items.find(item => item.name.tr === 'Task07 API Import');
 assert(importedItem && importedItem.name.en === null && importedItem.description.en === null, 'Imported product fallback data is invalid.');
 
-const branchPage = await formPage('/hvk/admin/branches.php', sessionCookie);
-const branchUpdate = await postUrlEncoded('/hvk/admin/branches.php', sessionCookie, {
+const branchPage = await formPage('/admin/branches.php', sessionCookie);
+const branchUpdate = await postUrlEncoded('/admin/branches.php', sessionCookie, {
   ...branchPage.tokens,
   wifi_name: 'Chef Part A Test',
   wifi_password: 'part-a-only',
@@ -170,11 +170,11 @@ const wifiEtag = afterWifi.response.headers.get('etag');
 assert.notEqual(wifiEtag, importEtag, 'WiFi update did not change the ETag.');
 assert.deepEqual(JSON.parse(afterWifi.body).wifi, { network: 'Chef Part A Test', password: 'part-a-only' });
 
-const campaignPage = await formPage('/hvk/admin/campaign.php', sessionCookie);
+const campaignPage = await formPage('/admin/campaign.php', sessionCookie);
 const campaignForm = new FormData();
 Object.entries({ ...campaignPage.tokens, action: 'save', is_active: '1' }).forEach(([key, value]) => campaignForm.set(key, value));
 campaignForm.set('image', new Blob([fs.readFileSync(fixture)], { type: 'image/png' }), 'campaign.png');
-const campaignUpdate = await request('/hvk/admin/campaign.php', {
+const campaignUpdate = await request('/admin/campaign.php', {
   method: 'POST',
   cookie: sessionCookie,
   body: campaignForm,
@@ -187,14 +187,14 @@ assert.equal(campaign?.enabled, true, 'Enabled campaign is missing.');
 assert.match(campaign?.image ?? '', /^\/media\/.+\.webp$/);
 assert.deepEqual(campaign.text, { tr: null, en: null, ar: null });
 
-const cleanupCampaignPage = await formPage('/hvk/admin/campaign.php', sessionCookie);
-const campaignCleanup = await postUrlEncoded('/hvk/admin/campaign.php', sessionCookie, {
+const cleanupCampaignPage = await formPage('/admin/campaign.php', sessionCookie);
+const campaignCleanup = await postUrlEncoded('/admin/campaign.php', sessionCookie, {
   ...cleanupCampaignPage.tokens,
   action: 'delete_image',
 });
 assert([302, 303].includes(campaignCleanup.response.status), 'Campaign cleanup failed.');
-const restoreBranchPage = await formPage('/hvk/admin/branches.php', sessionCookie);
-const wifiCleanup = await postUrlEncoded('/hvk/admin/branches.php', sessionCookie, {
+const restoreBranchPage = await formPage('/admin/branches.php', sessionCookie);
+const wifiCleanup = await postUrlEncoded('/admin/branches.php', sessionCookie, {
   ...restoreBranchPage.tokens,
   wifi_name: firstMenu.wifi?.network ?? '',
   wifi_password: firstMenu.wifi?.password ?? '',

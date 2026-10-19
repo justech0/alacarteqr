@@ -24,20 +24,20 @@ assert(!/unsafe-(?:inline|eval|hashes)/.test(csp), 'The guest policy contains an
 assert(/RedirectMatch 404 "\(\?i\)\(\?:\^\|\/\)database\/"/.test(htaccess), 'The public database directory rule is missing.');
 
 // Admin CSP and headers come from security.php.
-const security = read('hvk/admin/security.php');
+const security = read('admin/security.php');
 const adminCsp = /const CHEF_ADMIN_CSP = ([\s\S]*?);\n/.exec(security)?.[1] ?? '';
 assert(adminCsp.includes("frame-ancestors 'none'") && adminCsp.includes("script-src 'self'"), 'The admin policy is incomplete.');
 assert(!/unsafe-(?:inline|eval|hashes)/.test(adminCsp), 'The admin policy contains an unsafe allowance.');
 assert(/chef_request_id\(\);\n\s+chef_send_security_headers\(\);/.test(security), 'chef_bootstrap does not send security headers first.');
-for (const file of fs.readdirSync(path.join(repo, 'hvk/admin')).filter(name => name.endsWith('.php'))) {
-  const source = read(`hvk/admin/${file}`);
+for (const file of fs.readdirSync(path.join(repo, 'admin')).filter(name => name.endsWith('.php'))) {
+  const source = read(`admin/${file}`);
   assert(!/<script(?![^>]*\bsrc=)[^>]*>/i.test(source), `${file} contains an inline script that the admin policy blocks.`);
   assert(!/\sstyle="/i.test(source) && !/<style[\s>]/i.test(source), `${file} contains inline style that the admin policy blocks.`);
 }
 
 // The media hardening policy in PHP must equal the shipped media/.htaccess.
-const media = read('hvk/admin/media-service.php');
+const media = read('admin/media-service.php');
 const policy = /<<<'HTACCESS'\r?\n([\s\S]*?)\r?\nHTACCESS;/.exec(media)?.[1];
-assert.equal(policy, read('hvk/media/.htaccess'), 'CHEF_MEDIA_HARDENING_POLICY differs from hvk/media/.htaccess.');
+assert.equal(policy, read('media/.htaccess'), 'CHEF_MEDIA_HARDENING_POLICY differs from media/.htaccess.');
 
 console.log('Security header static checks: PASS');

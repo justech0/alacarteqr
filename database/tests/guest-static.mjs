@@ -11,7 +11,7 @@ const output = fs.readFileSync(path.join(repo, 'public_html', 'index.html'), 'ut
 assert.equal(output, source, 'public_html/index.html differs from the editable guest source.');
 assert(!source.includes('var h={categories:[{'), 'The production guest still contains bundled menu rows.');
 assert(!source.includes('Izgara K\\xF6fte') && !source.includes('Izgara Köfte'), 'A demonstration product remains in the production guest.');
-assert(source.includes('hvk/admin/api/menu.php'), 'The production guest does not request the public menu API.');
+assert(source.includes('admin/api/menu.php'), 'The production guest does not request the public menu API.');
 assert(source.includes('validMenuPayload'), 'The production guest does not validate the menu response.');
 assert(source.includes('menuRequestState="loading"'), 'The accessible loading state is missing.');
 assert(source.includes('menuRequestState="error"'), 'The accessible failure state is missing.');

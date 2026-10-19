@@ -1,8 +1,8 @@
 <?php
 declare(strict_types=1);
 
-require_once dirname(__DIR__, 2) . '/hvk/admin/security.php';
-require_once dirname(__DIR__, 2) . '/hvk/admin/media-service.php';
+require_once dirname(__DIR__, 2) . '/admin/security.php';
+require_once dirname(__DIR__, 2) . '/admin/media-service.php';
 
 if ((string)getenv('CHEF_TEST_ALLOW_RESET') !== 'task02-isolated-docker') {
     throw new RuntimeException('The isolated Docker reset guard is missing.');
@@ -65,7 +65,7 @@ $base = [
     'security' => [
         'trusted_proxies' => [],
         'session' => [
-            'name' => 'CHEFADMIN', 'path' => '/hvk/admin', 'domain' => '', 'secure' => false,
+            'name' => 'CHEFADMIN', 'path' => '/admin', 'domain' => '', 'secure' => false,
             'idle_seconds' => 1800, 'absolute_seconds' => 28800,
         ],
         'throttle' => [
