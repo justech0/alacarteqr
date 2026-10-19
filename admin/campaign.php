@@ -81,12 +81,11 @@ require_once __DIR__ . '/header.php';
         <div class="flex items-center gap-3">
             <div class="flex items-center gap-3">
                 <span class="text-sm text-chef-muted">Durum:</span>
-                <label class="relative inline-flex items-center cursor-pointer select-none">
-                    <input id="is_active" name="is_active" type="checkbox" form="campaignForm" class="sr-only peer" <?php echo $isActive ? 'checked' : ''; ?> data-testid="campaign-active">
-                    <span class="sr-only">Kampanyayı göster</span>
-                    <div class="w-16 h-9 bg-white/10 peer-checked:bg-chef-accent/70 rounded-full border border-chef-accent/40 transition-colors relative">
-                        <div class="absolute top-1 left-1 w-7 h-7 bg-white rounded-full shadow transform transition-transform duration-300 peer-checked:translate-x-7"></div>
-                    </div>
+                <label class="admin-switch" for="is_active">
+                    <input id="is_active" name="is_active" type="checkbox" form="campaignForm" role="switch" <?php echo $isActive ? 'checked' : ''; ?> data-testid="campaign-active" data-switch-label>
+                    <span class="admin-switch-track" aria-hidden="true"></span>
+                    <span class="admin-switch-text" data-on="Yayında" data-off="Kapalı"><?php echo $isActive ? 'Yayında' : 'Kapalı'; ?></span>
+                    <span class="sr-only">Kampanyayı misafirlere göster</span>
                 </label>
             </div>
         </div>
@@ -100,7 +99,7 @@ require_once __DIR__ . '/header.php';
         <div class="space-y-2">
             <label for="campaign-image" class="text-sm text-chef-muted">Kampanya görseli</label>
             <input id="campaign-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="block w-full rounded-lg p-3 text-sm" data-testid="campaign-image" />
-            <p class="text-xs text-chef-muted">WebP/JPG/PNG yükleyebilirsiniz. Yeni yükleme mevcut görseli değiştirir.</p>
+            <p class="text-xs text-chef-muted">Önerilen: 1080 × 1350 piksel dikey (4:5) görsel. JPG, PNG veya WebP, en fazla 4 MB. Görsel menü açılınca pop-up olarak gösterilir.</p>
         </div>
 
         <div class="border border-dashed border-chef-accent/30 rounded-xl p-4 bg-white/5">

@@ -46,8 +46,9 @@ function chef_media_config(): array
 function chef_media_owner_map(): array
 {
     return [
-        'product' => ['table' => 'products', 'directory' => 'products', 'scope' => 'public'],
-        'category' => ['table' => 'categories', 'directory' => 'categories', 'scope' => 'public'],
+        // square: center-crop to 1:1 and flatten transparency on white. Guest cards are square.
+        'product' => ['table' => 'products', 'directory' => 'products', 'scope' => 'public', 'square' => true, 'thumbnail' => 480],
+        'category' => ['table' => 'categories', 'directory' => 'categories', 'scope' => 'public', 'square' => true, 'thumbnail' => 240],
         'campaign' => ['table' => 'campaigns', 'directory' => 'campaigns', 'scope' => 'public'],
         'feedback' => ['table' => 'feedbacks', 'directory' => 'feedback', 'scope' => 'private'],
     ];
@@ -333,6 +334,25 @@ function chef_media_decode(string $path, string $mime): GdImage
     return $image;
 }
 
+// Crops the largest centered square and paints it on white, so transparent or wide photos fill square cards.
+function chef_media_square(GdImage $source): GdImage
+{
+    $width = imagesx($source);
+    $height = imagesy($source);
+    $side = min($width, $height);
+    $target = imagecreatetruecolor($side, $side);
+    $white = imagecolorallocate($target, 255, 255, 255);
+    imagefilledrectangle($target, 0, 0, $side, $side, $white);
+    imagealphablending($target, true);
+    $x = intdiv($width - $side, 2);
+    $y = intdiv($height - $side, 2);
+    if (!imagecopy($target, $source, 0, 0, $x, $y, $side, $side)) {
+        imagedestroy($target);
+        throw new ChefMediaValidationException('Image cropping failed.');
+    }
+    return $target;
+}
+
 function chef_media_resize(GdImage $source, int $maxDimension): GdImage
 {
     $width = imagesx($source);
@@ -450,8 +470,13 @@ function chef_media_stage_upload(PDO $pdo, string $fieldName, string $ownerType)
     }
     chef_media_assert_memory($info[0], $info[1], $limits);
     $decoded = chef_media_decode($sourcePath, $mime);
+    if (!empty($owner['square'])) {
+        $square = chef_media_square($decoded);
+        imagedestroy($decoded);
+        $decoded = $square;
+    }
     $main = chef_media_resize($decoded, $limits['main_dimension']);
-    $thumbnail = chef_media_resize($decoded, $limits['thumbnail_dimension']);
+    $thumbnail = chef_media_resize($decoded, (int)($owner['thumbnail'] ?? $limits['thumbnail_dimension']));
     imagedestroy($decoded);
 
     try {
@@ -759,6 +784,23 @@ function chef_media_owner_files_remaining(PDO $pdo, string $ownerType, int $owne
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM managed_uploads WHERE owner_type = :owner_type AND owner_id = :owner_id AND state <> 'deleted'");
     $stmt->execute([':owner_type' => $ownerType, ':owner_id' => $ownerId]);
     return (int)$stmt->fetchColumn();
+}
+
+// Public managed images store "<name>.webp" with a "<name>-thumb.webp" sibling.
+function chef_media_thumbnail_url(?string $reference): ?string
+{
+    $url = chef_media_image_url($reference);
+    if ($url === null || !str_starts_with($url, '/') || !str_ends_with($url, '.webp') || str_ends_with($url, '-thumb.webp')) {
+        return $url;
+    }
+    $config = chef_media_config();
+    $base = rtrim((string)$config['public_base_url'], '/') . '/';
+    if (!str_starts_with($url, $base)) {
+        return $url;
+    }
+    $thumbnail = substr($url, 0, -5) . '-thumb.webp';
+    $path = rtrim((string)$config['public_root'], '/\\') . '/' . substr($thumbnail, strlen($base));
+    return is_file($path) ? $thumbnail : $url;
 }
 
 function chef_media_image_url(?string $reference): ?string

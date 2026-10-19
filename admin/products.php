@@ -9,7 +9,7 @@ $safeProductFields = [
     'action', 'id', 'name', 'name_en', 'name_ar', 'description', 'description_en', 'description_ar',
     'price', 'category_id', 'redirect_category',
     'ingredients', 'ingredients_en', 'ingredients_ar', 'calories',
-    'ingredients_verified', 'calories_verified', 'new_category_id',
+    'ingredients_verified', 'calories_verified', 'new_category_id', 'auto_verify',
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -37,6 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $mediaStage = null;
+    $failed = false;
     try {
         if (in_array($action, ['create', 'update'], true)) {
             $errors = [];
@@ -60,6 +61,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $verifyIngredients = isset($_POST['ingredients_verified']);
             $verifyCalories = isset($_POST['calories_verified']);
+            // The admin form sends auto_verify. Values the owner enters there count as verified.
+            if (isset($_POST['auto_verify'])) {
+                $verifyIngredients = $ingredients !== null || $ingredientsEn !== null || $ingredientsAr !== null;
+                $verifyCalories = $calories !== null;
+            }
             if ($verifyIngredients && $ingredients === null && $ingredientsEn === null && $ingredientsAr === null) {
                 $errors['ingredients_verified'] = 'İçerik doğrulaması için en az bir içerik alanını doldurun.';
             }
@@ -267,13 +273,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (in_array($action, ['create', 'update'], true)) {
             chef_store_form_state($formKey, $_POST, $safeProductFields);
         }
+        $failed = true;
         $message = $e instanceof DomainException ? $e->getMessage() : chef_admin_error('product_mutation_failed', $e);
         flash_message('error', $message);
     }
 
     $redirect = 'products.php' . ($redirectCategory > 0 ? '?category=' . $redirectCategory : '');
-    if ($action === 'update' && $editId) {
+    // After a successful save the drawer closes. A failed save reopens it with the entered values.
+    if ($action === 'update' && $editId && $failed) {
         $redirect .= ($redirectCategory > 0 ? '&' : '?') . 'edit=' . $editId;
+    } elseif ($action === 'create' && $failed) {
+        $redirect .= ($redirectCategory > 0 ? '&' : '?') . 'new=1';
     }
     header('Location: ' . $redirect, true, 303);
     exit;
@@ -288,136 +298,120 @@ if ($editId > 0) {
     $stmt->execute([':id' => $editId]);
     $editProduct = $stmt->fetch() ?: null;
 }
+$openDrawer = $editProduct !== null || isset($_GET['new']);
 $formKey = $editProduct ? 'product-edit-' . (int)$editProduct['id'] : 'product-create';
 $formState = chef_take_form_state($formKey);
-$searchQuery = trim(is_scalar($_GET['search'] ?? null) ? (string)$_GET['search'] : '');
-$conditions = [];
-$params = [];
-if ($selectedCategory > 0) {
-    $conditions[] = 'p.category_id = :category_id';
-    $params[':category_id'] = $selectedCategory;
+// The whole catalog loads once. Search and category filters run in the browser.
+$products = $pdo->query(
+    'SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id
+     ORDER BY c.sort_order ASC, p.sort_order ASC, p.id ASC'
+)->fetchAll();
+$categoryCounts = [];
+foreach ($products as $product) {
+    $categoryCounts[(int)$product['category_id']] = ($categoryCounts[(int)$product['category_id']] ?? 0) + 1;
 }
-if ($searchQuery !== '') {
-    $conditions[] = '(p.name LIKE :search OR p.description LIKE :search)';
-    $params[':search'] = '%' . $searchQuery . '%';
-}
-$sql = 'SELECT p.*, c.name AS category_name FROM products p JOIN categories c ON c.id = p.category_id';
-if ($conditions) $sql .= ' WHERE ' . implode(' AND ', $conditions);
-$sql .= ' ORDER BY c.sort_order ASC, p.sort_order ASC, p.id ASC';
-$stmt = $pdo->prepare($sql);
-$stmt->execute($params);
-$products = $stmt->fetchAll();
 
 include __DIR__ . '/header.php';
 $value = static fn(string $field, mixed $fallback = ''): string => chef_form_value($formState, $field, $fallback);
 $error = static fn(string $field): ?string => chef_field_error($formState, $field);
 $testId = static fn(array $row): string => sanitize((string)($row['public_id'] ?: $row['id']));
+$searchText = static fn(array $row): string => sanitize(mb_strtolower(trim($row['name'] . ' ' . ($row['description'] ?? '') . ' ' . $row['category_name']), 'UTF-8'));
+$closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCategory : '');
 ?>
-<div class="grid gap-6 xl:grid-cols-[minmax(0,2fr)_minmax(22rem,1fr)]">
-    <section class="min-w-0 space-y-4" aria-labelledby="products-title">
-        <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <div>
-                <h2 id="products-title" class="text-2xl">Ürünler</h2>
-                <p class="admin-muted text-sm">Menü ürünlerini, fiyatlarını ve doğrulanmış bilgilerini yönetin.</p>
-            </div>
-            <form method="GET" class="flex flex-col gap-2 sm:flex-row" data-testid="product-filter-form">
-                <div>
-                    <label for="product-search" class="admin-muted block text-xs">Ürün ara</label>
-                    <input id="product-search" name="search" value="<?php echo sanitize($searchQuery); ?>" class="w-full rounded-lg px-3 py-2 sm:w-48" data-testid="product-search">
-                </div>
-                <div>
-                    <label for="product-category-filter" class="admin-muted block text-xs">Kategori</label>
-                    <select id="product-category-filter" name="category" class="w-full rounded-lg px-3 py-2" data-testid="product-category-filter">
-                        <option value="">Tüm kategoriler</option>
-                        <?php foreach ($categories as $category): ?>
-                            <option value="<?php echo (int)$category['id']; ?>" <?php echo $selectedCategory === (int)$category['id'] ? 'selected' : ''; ?>><?php echo sanitize($category['name']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <button class="admin-button admin-button-secondary self-end" type="submit" data-testid="product-filter-save">Filtrele</button>
-            </form>
-        </div>
+<section class="space-y-4" aria-labelledby="products-title" data-product-page>
+    <h2 id="products-title" class="sr-only">Ürünler</h2>
+    <div class="flex flex-wrap items-center justify-between gap-3">
+        <label class="relative min-w-[12rem] flex-1 sm:max-w-sm">
+            <span class="sr-only">Ürün ara</span>
+            <svg class="admin-muted pointer-events-none absolute left-3 top-1/2 -translate-y-1/2" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <input type="search" class="w-full py-2 pl-10 pr-3" placeholder="Ürün ara" autocomplete="off" data-product-search>
+        </label>
+        <a href="products.php?new=1" class="admin-button admin-button-primary" data-testid="product-new">+ Yeni ürün</a>
+    </div>
 
-        <div class="grid gap-4 md:grid-cols-2">
-            <?php foreach ($products as $product): $publicId = $testId($product); ?>
-                <article class="admin-panel min-w-0 flex flex-col gap-3 rounded-xl p-4" data-testid="product-row-<?php echo $publicId; ?>">
-                    <div class="flex gap-4">
-                        <div class="admin-raised h-24 w-28 shrink-0 overflow-hidden rounded-lg">
-                            <?php if (!empty($product['image_path'])): ?>
-                                <img src="<?php echo sanitize((string)chef_media_image_url($product['image_path'])); ?>" alt="<?php echo sanitize($product['name']); ?>" class="h-full w-full object-cover">
-                            <?php endif; ?>
-                        </div>
-                        <div class="min-w-0 flex-1">
-                            <h3 class="truncate text-lg"><?php echo sanitize($product['name']); ?></h3>
-                            <p class="admin-muted text-xs"><?php echo sanitize($product['category_name']); ?></p>
-                            <p class="mt-2 font-semibold tabular-nums"><?php echo number_format((float)$product['price'], 2, ',', '.'); ?> ₺</p>
-                        </div>
+    <div class="filter-chips" role="toolbar" aria-label="Kategori filtresi">
+        <button type="button" class="filter-chip" data-filter-category="" aria-pressed="<?php echo $selectedCategory ? 'false' : 'true'; ?>">Tümü<span class="chip-count"><?php echo count($products); ?></span></button>
+        <?php foreach ($categories as $category): ?>
+            <button type="button" class="filter-chip" data-filter-category="<?php echo (int)$category['id']; ?>" aria-pressed="<?php echo $selectedCategory === (int)$category['id'] ? 'true' : 'false'; ?>"><?php echo sanitize($category['name']); ?><span class="chip-count"><?php echo (int)($categoryCounts[(int)$category['id']] ?? 0); ?></span></button>
+        <?php endforeach; ?>
+    </div>
+
+    <div class="grid gap-3 sm:grid-cols-2 2xl:grid-cols-3" data-product-grid>
+        <?php foreach ($products as $product): $publicId = $testId($product); $thumb = chef_media_thumbnail_url($product['image_path'] ?? null); ?>
+            <article class="admin-panel flex min-w-0 gap-3 rounded-xl p-3" data-category="<?php echo (int)$product['category_id']; ?>" data-search="<?php echo $searchText($product); ?>" data-testid="product-row-<?php echo $publicId; ?>">
+                <div class="admin-raised h-20 w-20 shrink-0 overflow-hidden rounded-lg">
+                    <?php if ($thumb): ?>
+                        <img src="<?php echo sanitize($thumb); ?>" alt="" class="h-full w-full object-cover" loading="lazy" decoding="async">
+                    <?php endif; ?>
+                </div>
+                <div class="flex min-w-0 flex-1 flex-col">
+                    <div class="flex items-start justify-between gap-2">
+                        <h3 class="truncate font-sans text-base font-semibold"><?php echo sanitize($product['name']); ?></h3>
+                        <span class="shrink-0 font-semibold tabular-nums"><?php echo number_format((float)$product['price'], 2, ',', '.'); ?> ₺</span>
                     </div>
-                    <p class="admin-muted line-clamp-3 text-sm"><?php echo sanitize((string)($product['description'] ?? '')); ?></p>
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        <span class="admin-raised rounded-full px-2 py-1"><?php echo $product['ingredients_verified_at'] ? 'İçerik doğrulandı' : 'İçerik doğrulanmadı'; ?></span>
-                        <span class="admin-raised rounded-full px-2 py-1"><?php echo $product['calories_verified_at'] ? ((int)$product['calories'] . ' kcal doğrulandı') : 'Kalori doğrulanmadı'; ?></span>
-                    </div>
-                    <form method="POST" class="flex gap-2" data-mutation-form data-testid="product-move-form-<?php echo $publicId; ?>">
-                        <input type="hidden" name="csrf_token" value="<?php echo sanitize(chef_csrf_token()); ?>">
-                        <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
-                        <input type="hidden" name="action" value="move_category">
-                        <input type="hidden" name="id" value="<?php echo (int)$product['id']; ?>">
-                        <input type="hidden" name="redirect_category" value="<?php echo $selectedCategory ?: ''; ?>">
-                        <label class="sr-only" for="move-<?php echo $publicId; ?>">Yeni kategori</label>
-                        <select id="move-<?php echo $publicId; ?>" name="new_category_id" class="min-w-0 flex-1 rounded-lg px-3 py-2" data-testid="product-move-category-<?php echo $publicId; ?>">
-                            <?php foreach ($categories as $category): ?>
-                                <option value="<?php echo (int)$category['id']; ?>" <?php echo (int)$product['category_id'] === (int)$category['id'] ? 'selected' : ''; ?>><?php echo sanitize($category['name']); ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                        <button class="admin-button admin-button-secondary" type="submit" data-testid="product-move-<?php echo $publicId; ?>">Taşı</button>
-                    </form>
-                    <div class="flex gap-2">
-                        <a href="products.php?<?php echo $selectedCategory ? 'category=' . $selectedCategory . '&' : ''; ?>edit=<?php echo (int)$product['id']; ?>" class="admin-button admin-button-secondary flex-1" data-testid="product-edit-<?php echo $publicId; ?>">Düzenle</a>
-                        <form method="POST" class="flex-1" data-mutation-form data-confirm-name="<?php echo sanitize($product['name']); ?>" data-confirm-detail="Ürün kaydı ve ilişkili görseller silinir." data-testid="product-delete-form-<?php echo $publicId; ?>">
+                    <p class="admin-muted truncate text-xs"><?php echo sanitize($product['category_name']); ?><?php echo !empty($product['description']) ? ' · ' . sanitize((string)$product['description']) : ''; ?></p>
+                    <div class="mt-auto flex gap-2 pt-2">
+                        <a href="products.php?<?php echo $selectedCategory ? 'category=' . $selectedCategory . '&' : ''; ?>edit=<?php echo (int)$product['id']; ?>" class="admin-button admin-button-secondary min-h-9 flex-1 py-1.5 text-sm" data-keep-scroll data-testid="product-edit-<?php echo $publicId; ?>">Düzenle</a>
+                        <form method="POST" data-mutation-form data-keep-scroll data-confirm-name="<?php echo sanitize($product['name']); ?>" data-confirm-detail="Ürün kaydı ve ilişkili görseller silinir." data-testid="product-delete-form-<?php echo $publicId; ?>">
                             <input type="hidden" name="csrf_token" value="<?php echo sanitize(chef_csrf_token()); ?>">
                             <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="<?php echo (int)$product['id']; ?>">
                             <input type="hidden" name="redirect_category" value="<?php echo $selectedCategory ?: ''; ?>">
-                            <button type="submit" class="admin-button admin-button-danger w-full" data-testid="product-delete-<?php echo $publicId; ?>">Sil</button>
+                            <button type="submit" class="admin-button admin-button-danger min-h-9 py-1.5 text-sm" data-testid="product-delete-<?php echo $publicId; ?>">Sil</button>
                         </form>
                     </div>
-                </article>
-            <?php endforeach; ?>
-            <?php if (!$products): ?>
-                <p class="admin-panel rounded-xl p-5 text-sm">Bu filtreyle eşleşen ürün yok.</p>
-            <?php endif; ?>
-        </div>
-    </section>
+                </div>
+            </article>
+        <?php endforeach; ?>
+    </div>
+    <p class="admin-panel rounded-xl p-5 text-sm" data-product-empty <?php echo $products ? 'hidden' : ''; ?>>Eşleşen ürün yok.</p>
+</section>
 
-    <aside class="admin-panel h-fit rounded-xl p-5 xl:sticky xl:top-24" aria-labelledby="product-form-title">
-        <h2 id="product-form-title" class="text-xl"><?php echo $editProduct ? 'Ürünü düzenle' : 'Yeni ürün'; ?></h2>
-        <p class="admin-muted mt-1 text-sm">Doğrulanmamış içerik ve kalori bilgileri menüde gösterilmez.</p>
-        <form method="POST" enctype="multipart/form-data" class="mt-5 space-y-4" data-mutation-form <?php echo $editProduct ? 'data-warn-unsaved' : ''; ?> data-testid="product-form">
+<dialog class="admin-drawer" aria-labelledby="product-form-title" data-product-drawer data-close-href="<?php echo sanitize($closeHref); ?>" <?php echo $openDrawer ? 'data-open-on-load' : ''; ?>>
+    <form method="POST" enctype="multipart/form-data" class="flex h-full flex-col" data-mutation-form data-keep-scroll data-warn-unsaved data-testid="product-form">
+        <div class="flex items-center justify-between gap-3 border-b px-5 py-4">
+            <h2 id="product-form-title" class="text-xl"><?php echo $editProduct ? sanitize($editProduct['name']) : 'Yeni ürün'; ?></h2>
+            <a href="<?php echo sanitize($closeHref); ?>" class="icon-button" aria-label="Kapat" data-keep-scroll data-drawer-close>
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </a>
+        </div>
+        <div class="flex-1 space-y-4 overflow-y-auto px-5 py-4">
             <input type="hidden" name="csrf_token" value="<?php echo sanitize(chef_csrf_token()); ?>">
             <input type="hidden" name="submission_token" value="<?php echo sanitize($submissionToken); ?>">
             <input type="hidden" name="action" value="<?php echo $editProduct ? 'update' : 'create'; ?>">
             <input type="hidden" name="redirect_category" value="<?php echo $selectedCategory ?: ''; ?>">
+            <input type="hidden" name="auto_verify" value="1">
             <?php if ($editProduct): ?><input type="hidden" name="id" value="<?php echo (int)$editProduct['id']; ?>"><?php endif; ?>
+
+            <?php $currentImage = $editProduct ? chef_media_image_url($editProduct['image_path'] ?? null) : null; ?>
+            <div class="flex items-center gap-4">
+                <div class="admin-raised h-24 w-24 shrink-0 overflow-hidden rounded-xl">
+                    <img src="<?php echo $currentImage ? sanitize($currentImage) : ''; ?>" alt="" class="h-full w-full object-cover" data-image-preview <?php echo $currentImage ? '' : 'hidden'; ?>>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <label for="product-image" class="mb-1 block text-sm font-semibold">Ürün görseli</label>
+                    <input id="product-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="w-full text-sm" data-image-input data-testid="product-image">
+                    <p class="admin-muted mt-1 text-xs">Kare kırpılır. En iyi sonuç: 1200 × 1200 piksel, ürün ortada, düz arka plan.</p>
+                </div>
+            </div>
 
             <?php
             $fields = [
                 ['name', 'Ürün adı', 'text', 200, $editProduct['name'] ?? ''],
-                ['price', 'Fiyat', 'text', null, $editProduct['price'] ?? ''],
-                ['calories', 'Kalori', 'text', 5, $editProduct['calories'] ?? ''],
+                ['price', 'Fiyat (₺)', 'text', null, $editProduct['price'] ?? ''],
             ];
             foreach ($fields as [$field, $label, $type, $maxlength, $fallback]): $fieldError = $error($field); ?>
                 <div>
-                    <label for="product-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
-                    <input id="product-<?php echo $field; ?>" type="<?php echo $type; ?>" name="<?php echo $field; ?>" value="<?php echo sanitize($value($field, $fallback)); ?>" <?php echo $field !== 'calories' ? 'required' : ''; ?> <?php echo $maxlength ? 'maxlength="' . $maxlength . '"' : ''; ?> class="w-full rounded-lg px-3 py-2" data-testid="product-<?php echo $field; ?>" <?php echo $fieldError ? 'aria-invalid="true" aria-describedby="product-' . $field . '-error"' : ''; ?>>
+                    <label for="product-<?php echo $field; ?>" class="mb-1 block text-sm font-semibold"><?php echo $label; ?></label>
+                    <input id="product-<?php echo $field; ?>" type="<?php echo $type; ?>" name="<?php echo $field; ?>" value="<?php echo sanitize($value($field, $fallback)); ?>" required <?php echo $maxlength ? 'maxlength="' . $maxlength . '"' : 'inputmode="decimal"'; ?> class="w-full px-3 py-2" data-testid="product-<?php echo $field; ?>" <?php echo $fieldError ? 'aria-invalid="true" aria-describedby="product-' . $field . '-error"' : ''; ?>>
                     <p id="product-<?php echo $field; ?>-error" role="alert" class="admin-field-error" <?php echo $fieldError ? '' : 'hidden'; ?>><?php echo $fieldError ? sanitize($fieldError) : ''; ?></p>
                 </div>
             <?php endforeach; ?>
 
             <div>
-                <label for="product-category" class="admin-muted mb-1 block text-sm">Kategori</label>
-                <select id="product-category" name="category_id" required class="w-full rounded-lg px-3 py-2" data-testid="product-category">
+                <label for="product-category" class="mb-1 block text-sm font-semibold">Kategori</label>
+                <select id="product-category" name="category_id" required class="w-full px-3 py-2" data-testid="product-category">
                     <option value="">Kategori seçin</option>
                     <?php $chosenCategory = chef_canonical_id($value('category_id', $editProduct['category_id'] ?? ($selectedCategory ?: ''))) ?? 0; ?>
                     <?php foreach ($categories as $category): ?>
@@ -428,62 +422,53 @@ $testId = static fn(array $row): string => sanitize((string)($row['public_id'] ?
             </div>
 
             <div>
-                <label for="product-description" class="admin-muted mb-1 block text-sm">Servis açıklaması</label>
-                <textarea id="product-description" name="description" rows="3" maxlength="5000" class="w-full rounded-lg px-3 py-2" data-testid="product-description"><?php echo sanitize($value('description', $editProduct['description'] ?? '')); ?></textarea>
+                <label for="product-description" class="mb-1 block text-sm font-semibold">Açıklama</label>
+                <textarea id="product-description" name="description" rows="2" maxlength="5000" class="w-full px-3 py-2" placeholder="Örn. 160 gr köfte + patates + salata" data-testid="product-description"><?php echo sanitize($value('description', $editProduct['description'] ?? '')); ?></textarea>
                 <?php if ($error('description')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('description')); ?></p><?php endif; ?>
             </div>
 
-            <fieldset class="space-y-3 border-t pt-4">
-                <legend class="px-1 font-serif text-lg">Çeviriler</legend>
-                <?php foreach ([
-                    ['name_en', 'İngilizce ürün adı', 200, 1],
-                    ['name_ar', 'Arapça ürün adı', 200, 1],
-                    ['description_en', 'İngilizce açıklama', 5000, 3],
-                    ['description_ar', 'Arapça açıklama', 5000, 3],
-                ] as [$field, $label, $maximum, $rows]): ?>
+            <details class="admin-raised rounded-xl px-4 py-3" <?php echo ($error('ingredients') || $error('calories')) ? 'open' : ''; ?>>
+                <summary class="cursor-pointer text-sm font-semibold">İçerik ve kalori <span class="admin-muted font-normal">(isteğe bağlı)</span></summary>
+                <div class="mt-3 space-y-3">
+                    <?php foreach ([['ingredients', 'Türkçe içerik'], ['ingredients_en', 'İngilizce içerik'], ['ingredients_ar', 'Arapça içerik']] as [$field, $label]): ?>
+                        <div>
+                            <label for="product-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
+                            <textarea id="product-<?php echo $field; ?>" name="<?php echo $field; ?>" rows="2" maxlength="5000" class="w-full px-3 py-2" data-testid="product-<?php echo str_replace('_', '-', $field); ?>"><?php echo sanitize($value($field, $editProduct[$field] ?? '')); ?></textarea>
+                            <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
                     <div>
-                        <label for="product-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
-                        <textarea id="product-<?php echo $field; ?>" name="<?php echo $field; ?>" rows="<?php echo $rows; ?>" maxlength="<?php echo $maximum; ?>" class="w-full rounded-lg px-3 py-2" data-testid="product-<?php echo str_replace('_', '-', $field); ?>"><?php echo sanitize($value($field, $editProduct[$field] ?? '')); ?></textarea>
-                        <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
+                        <label for="product-calories" class="admin-muted mb-1 block text-sm">Kalori (kcal)</label>
+                        <input id="product-calories" type="text" inputmode="numeric" name="calories" maxlength="5" value="<?php echo sanitize($value('calories', $editProduct['calories'] ?? '')); ?>" class="w-full px-3 py-2" data-testid="product-calories">
+                        <?php if ($error('calories')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('calories')); ?></p><?php endif; ?>
                     </div>
-                <?php endforeach; ?>
-                <p class="admin-muted text-xs">Boş çeviriler misafir menüsünde Türkçe metni kullanır.</p>
-            </fieldset>
+                    <p class="admin-muted text-xs">Doldurduğunuz içerik ve kalori bilgisi menüde gösterilir. Boş bırakılan alan gösterilmez.</p>
+                </div>
+            </details>
 
-            <fieldset class="space-y-3 border-t pt-4">
-                <legend class="px-1 font-serif text-lg">İçerikler</legend>
-                <?php foreach ([['ingredients', 'Türkçe içerik'], ['ingredients_en', 'İngilizce içerik'], ['ingredients_ar', 'Arapça içerik']] as [$field, $label]): ?>
-                    <div>
-                        <label for="product-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
-                        <textarea id="product-<?php echo $field; ?>" name="<?php echo $field; ?>" rows="2" maxlength="5000" class="w-full rounded-lg px-3 py-2" data-testid="product-<?php echo str_replace('_', '-', $field); ?>"><?php echo sanitize($value($field, $editProduct[$field] ?? '')); ?></textarea>
-                        <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
-                    </div>
-                <?php endforeach; ?>
-                <?php $ingredientsChecked = $value('ingredients_verified', $editProduct && $editProduct['ingredients_verified_at'] ? '1' : '') !== ''; ?>
-                <label class="flex min-h-11 items-center gap-3 text-sm">
-                    <input type="checkbox" name="ingredients_verified" value="1" <?php echo $ingredientsChecked ? 'checked' : ''; ?> class="h-5 w-5" data-testid="product-ingredients-verified">
-                    İçerik bilgisini doğruladım
-                </label>
-                <?php if ($error('ingredients_verified')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('ingredients_verified')); ?></p><?php endif; ?>
-            </fieldset>
-
-            <?php $caloriesChecked = $value('calories_verified', $editProduct && $editProduct['calories_verified_at'] ? '1' : '') !== ''; ?>
-            <label class="flex min-h-11 items-center gap-3 text-sm">
-                <input type="checkbox" name="calories_verified" value="1" <?php echo $caloriesChecked ? 'checked' : ''; ?> class="h-5 w-5" data-testid="product-calories-verified">
-                Kalori bilgisini doğruladım
-            </label>
-            <?php if ($error('calories_verified')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('calories_verified')); ?></p><?php endif; ?>
-
-            <div>
-                <label for="product-image" class="admin-muted mb-1 block text-sm">Ürün görseli</label>
-                <input id="product-image" type="file" name="image" accept="image/jpeg,image/png,image/webp" class="w-full rounded-lg p-2 text-sm" data-testid="product-image">
-                <?php if ($editProduct && $editProduct['image_path']): ?><p class="admin-muted mt-1 text-xs">Yeni dosya seçmezseniz mevcut görsel korunur.</p><?php endif; ?>
-            </div>
-            <div class="flex gap-3">
-                <button type="submit" class="admin-button admin-button-primary flex-1" data-testid="product-save"><?php echo $editProduct ? 'Değişiklikleri kaydet' : 'Ürünü ekle'; ?></button>
-                <?php if ($editProduct): ?><a href="products.php<?php echo $selectedCategory ? '?category=' . $selectedCategory : ''; ?>" class="admin-button admin-button-secondary">Vazgeç</a><?php endif; ?>
-            </div>
-        </form>
-    </aside>
-</div>
+            <details class="admin-raised rounded-xl px-4 py-3">
+                <summary class="cursor-pointer text-sm font-semibold">Çeviriler <span class="admin-muted font-normal">(İngilizce, Arapça)</span></summary>
+                <div class="mt-3 space-y-3">
+                    <?php foreach ([
+                        ['name_en', 'İngilizce ürün adı', 200, 1],
+                        ['name_ar', 'Arapça ürün adı', 200, 1],
+                        ['description_en', 'İngilizce açıklama', 5000, 2],
+                        ['description_ar', 'Arapça açıklama', 5000, 2],
+                    ] as [$field, $label, $maximum, $rows]): ?>
+                        <div>
+                            <label for="product-<?php echo $field; ?>" class="admin-muted mb-1 block text-sm"><?php echo $label; ?></label>
+                            <textarea id="product-<?php echo $field; ?>" name="<?php echo $field; ?>" rows="<?php echo $rows; ?>" maxlength="<?php echo $maximum; ?>" class="w-full px-3 py-2" data-testid="product-<?php echo str_replace('_', '-', $field); ?>"><?php echo sanitize($value($field, $editProduct[$field] ?? '')); ?></textarea>
+                            <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                    <p class="admin-muted text-xs">Boş çeviriler menüde Türkçe metni kullanır.</p>
+                </div>
+            </details>
+        </div>
+        <div class="flex gap-3 border-t px-5 py-4">
+            <button type="submit" class="admin-button admin-button-primary flex-1" data-testid="product-save"><?php echo $editProduct ? 'Kaydet' : 'Ürünü ekle'; ?></button>
+            <a href="<?php echo sanitize($closeHref); ?>" class="admin-button admin-button-secondary" data-keep-scroll data-drawer-close>Vazgeç</a>
+        </div>
+    </form>
+</dialog>
 <?php include __DIR__ . '/footer.php'; ?>

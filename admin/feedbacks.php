@@ -107,11 +107,8 @@ include __DIR__ . '/header.php';
 ?>
 <section class="space-y-4" aria-labelledby="feedback-title">
     <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-        <div>
-            <h2 id="feedback-title" class="text-2xl">Geri bildirimler</h2>
-            <p class="admin-muted text-sm">Müşteri puanlarını, yorumlarını ve yüklenen görselleri inceleyin.</p>
-        </div>
-        <form method="GET" class="flex flex-wrap items-end gap-2" data-testid="feedback-filter-form">
+        <h2 id="feedback-title" class="sr-only">Geri bildirimler</h2>
+        <form method="GET" class="flex flex-wrap items-end gap-2" data-auto-submit data-testid="feedback-filter-form">
             <div>
                 <label for="feedback-topic-filter" class="admin-muted block text-xs">Konu</label>
                 <select id="feedback-topic-filter" name="topic" class="rounded-lg px-3 py-2 text-sm">
@@ -134,7 +131,7 @@ include __DIR__ . '/header.php';
                 <label for="feedback-search" class="admin-muted block text-xs">Ara</label>
                 <input id="feedback-search" name="search" value="<?php echo sanitize($searchQuery); ?>" placeholder="Yorum veya iletişim..." class="rounded-lg px-3 py-2 text-sm">
             </div>
-            <button type="submit" class="admin-button admin-button-secondary text-sm">Filtrele</button>
+            <button type="submit" class="admin-button admin-button-secondary text-sm" data-auto-submit-button>Ara</button>
             <?php if ($topicFilter !== '' || $ratingFilter !== '' || $searchQuery !== ''): ?>
                 <a href="feedbacks.php" class="admin-muted self-center text-xs hover:underline">Temizle</a>
             <?php endif; ?>
@@ -162,21 +159,21 @@ include __DIR__ . '/header.php';
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <?php foreach ($feedbacks as $feedback):
                 $imageUrl = chef_media_image_url($feedback['image_path'] ?? null);
-                $name = trim((string)($feedback['customer_name'] ?? '')) ?: 'İsimsiz müşteri';
+                $name = trim((string)($feedback['customer_name'] ?? '')) ?: 'Müşteri yorumu';
                 $testId = (int)$feedback['id'];
             ?>
                 <article class="admin-panel flex flex-col gap-3 rounded-xl p-4" data-testid="feedback-row-<?php echo $testId; ?>">
                     <div class="flex items-start justify-between gap-3">
                         <div>
                             <h3 class="text-lg"><?php echo sanitize($name); ?></h3>
-                            <p class="admin-muted text-xs"><?php echo date('d.m.Y H:i', strtotime($feedback['created_at'])); ?></p>
+                            <p class="admin-muted text-xs"><?php echo sanitize(date('d.m.Y H:i', strtotime((string)$feedback['created_at']))); ?></p>
                         </div>
-                        <p class="font-semibold"><?php echo (int)$feedback['rating']; ?>/5</p>
+                        <p class="shrink-0 font-semibold <?php echo (int)$feedback['rating'] <= 2 ? 'text-red-500' : 'text-chef-accent'; ?>" aria-label="<?php echo (int)$feedback['rating']; ?> / 5 puan"><?php echo str_repeat('★', (int)$feedback['rating']) . '<span class="admin-muted">' . str_repeat('★', 5 - (int)$feedback['rating']) . '</span>'; ?></p>
                     </div>
                     <?php if (!empty($feedback['topic'])): ?><p class="admin-muted text-xs">Konu: <?php echo sanitize($topicLabels[$feedback['topic']] ?? $feedback['topic']); ?></p><?php endif; ?>
                     <?php if (!empty($feedback['contact'])): ?><p class="admin-muted text-xs">İletişim: <?php echo sanitize($feedback['contact']); ?></p><?php endif; ?>
                     <p class="admin-muted line-clamp-4 flex-1 border-t pt-3 text-sm"><?php echo sanitize((string)($feedback['comment'] ?? '')); ?></p>
-                    <?php if ($imageUrl): ?><img src="<?php echo sanitize($imageUrl); ?>" alt="<?php echo sanitize($name); ?> geri bildirim görseli" class="h-24 w-full rounded-lg object-cover" data-testid="feedback-image-<?php echo $testId; ?>"><?php endif; ?>
+                    <?php if ($imageUrl): ?><button type="button" class="thumb-button" data-image-view="<?php echo sanitize($imageUrl); ?>" data-image-name="geri-bildirim-<?php echo $testId; ?>" aria-label="Görseli büyüt"><img src="<?php echo sanitize($imageUrl); ?>" alt="<?php echo sanitize($name); ?> geri bildirim görseli" loading="lazy" data-testid="feedback-image-<?php echo $testId; ?>"></button><?php endif; ?>
                     <div class="flex gap-2">
                         <button type="button" class="admin-button admin-button-secondary flex-1" data-feedback-open data-feedback-comment="<?php echo sanitize((string)($feedback['comment'] ?? '')); ?>" data-feedback-image="<?php echo $imageUrl ? sanitize($imageUrl) : ''; ?>" data-testid="feedback-view-<?php echo $testId; ?>">Görüntüle</button>
                         <form method="POST" class="flex-1" data-mutation-form data-confirm-name="<?php echo sanitize($name); ?>" data-confirm-detail="Geri bildirim kaydı ve ilişkili görsel silinir." data-testid="feedback-delete-form-<?php echo $testId; ?>">
@@ -211,7 +208,7 @@ include __DIR__ . '/header.php';
     <div class="space-y-4 p-5">
         <div class="flex items-center justify-between gap-3"><h2 id="feedback-dialog-title" class="text-xl">Geri bildirim</h2><button type="button" class="admin-button admin-button-secondary" data-feedback-close>Kapat</button></div>
         <p class="whitespace-pre-wrap text-sm" data-feedback-comment></p>
-        <img src="" alt="Geri bildirim görseli" class="max-h-[60vh] w-full rounded-lg object-contain" data-feedback-image hidden>
+        <button type="button" class="thumb-button" data-image-view="" data-feedback-image-button hidden aria-label="Görseli büyüt"><img src="" alt="Geri bildirim görseli" class="!h-auto max-h-[50vh]" data-feedback-image></button>
     </div>
 </dialog>
 <?php include __DIR__ . '/footer.php'; ?>

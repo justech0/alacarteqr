@@ -1,13 +1,13 @@
 {
-  "date": "2026-10-19T16:28:22.825Z",
+  "date": "2026-10-19T17:20:21.624Z",
   "archives": [
     {
       "name": "public_html.zip",
-      "sha256": "57bca008cb4ca1e87a5ca28cd7059b51f8725c3fdfa3ff57d4131f3e47cb6119"
+      "sha256": "6029ab3dc7a9fda9422c2d661d67017f4cbd80ff707cb321f4294c4bbf2c00cf"
     },
     {
       "name": "chef-private-setup.zip",
-      "sha256": "32c2f0627161de9f3a340b704ca5c1334796ab80871133f65a4fc83a192926e9"
+      "sha256": "15984af4e5221ed701c84ff2ccd6241637c26cbdeb343160e3b4b67c5cc2a35e"
     }
   ],
   "results": [

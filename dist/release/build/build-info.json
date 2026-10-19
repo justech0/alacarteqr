@@ -1,19 +1,19 @@
 {
   "schemaVersion": "2026101501",
-  "guestIndexSha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
+  "guestIndexSha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
   "testSecretMarkersChecked": 3,
   "archives": [
     {
       "file": "public_html.zip",
       "entries": 30,
-      "sha256": "57bca008cb4ca1e87a5ca28cd7059b51f8725c3fdfa3ff57d4131f3e47cb6119",
-      "bytes": 122822
+      "sha256": "6029ab3dc7a9fda9422c2d661d67017f4cbd80ff707cb321f4294c4bbf2c00cf",
+      "bytes": 131519
     },
     {
       "file": "chef-private-setup.zip",
       "entries": 14,
-      "sha256": "d6f3d3493da6c71c3d219a0075f5a5e068fa0c04527e7d8f42202416f2c12bb7",
-      "bytes": 40408
+      "sha256": "15984af4e5221ed701c84ff2ccd6241637c26cbdeb343160e3b4b67c5cc2a35e",
+      "bytes": 40863
     },
     {
       "file": "INSTALL_TR.md",
@@ -24,39 +24,39 @@
   ],
   "files": {
     "public": {
-      ".htaccess": "01efe46a53488a9316940b4e3d7c7d4ea934b9c2fe6395c92252c154a6d57278",
+      ".htaccess": "32dc5857ec0fd445f0c9839b590e8ecfc9c933e21374409ba6df20a6c0da532a",
       "admin/.htaccess": "7f95b43d20f288f5d9c56a003d2171309940b2afe79e4ac9a93f0c2ec29e16ad",
       "admin/api/feedback.php": "87d73effa1ff7aa2d0cbf5a590c3882e65cfc9fc1d11a7d1c086459972bb8c4b",
-      "admin/api/menu.php": "35b3e2a378123621a493ad92604bb96a76176e1dab41d35445273982acfde460",
-      "admin/assets/admin.css": "98f8854bedb5929619b6fc201fb72ed373ee609e5d458a8aa526b55633e66498",
-      "admin/assets/admin.js": "12f2aed64c6fb4ffc73f161827a7b4d11d38d932f1f3731e24522061fa91746f",
+      "admin/api/menu.php": "9cd519849d049845c30924a0bbcbe52ca84d42b11c072cb7e0a08f2c321ff9b3",
+      "admin/assets/admin.css": "b03069cc1fd2ec233bcdad3ee09250d26c6aea7cdbdb6a6525fca707efe53fb7",
+      "admin/assets/admin.js": "eb3ed12b18aec8b43ce45ed768cc5cb3016b9602688aac6e7ef09100ff01aaa7",
       "admin/assets/chef-logo.svg": "d522d37fdbf028fecdabb5abf91f6dbbc9e995c1e5f13ad3341db2350e8c3ac5",
       "admin/assets/THIRD_PARTY_NOTICES.txt": "4e0c60fb6cf1e6099ee29b27e2038dbd6f4c9f68ae547908be4f7f10abebc7eb",
       "admin/branches.php": "03ba0538079a343e1e17d75578034d8c5a1006c48bf7285f9fa3c37cb3000170",
       "admin/bulk-prices.php": "42e90416e0958c81c388315c3996a5157a39066cce578e2d1a547758169cf19b",
-      "admin/campaign.php": "87d7613630912c0119a3e4539eb21f4738736786e9cf53944395daac89afbfd4",
+      "admin/campaign.php": "7888d4d8dc1b63aa33cb654639136d3d02d6285898ac85945ed4f13016ab888a",
       "admin/categories.php": "6c4b507f967b909e97e3b88240590fc5961ee18f9ff6c7aecf6f82c784ea2230",
       "admin/category-order.php": "bd704475baffd9dd4c6f14eb1d31bf84e45aa10146d0884a9a2d84dba609d013",
       "admin/config.php": "97b38c3426b9c3857252f8bf88b7e510471829e74b2d798c27e93eef02fc0e8e",
-      "admin/feedbacks.php": "d5e385df41652f1db9ea8699c0b43677a41e94f418921684a286b177e1cc47d5",
-      "admin/footer.php": "ff3aacd2394f1f8e66cd1e7ecb496469f3f4a10f653671c06b694d55bf870d4b",
+      "admin/feedbacks.php": "99217da30396573a0976f5691889b8f285f71f6e7a7a2cd3d83fb61786969415",
+      "admin/footer.php": "74c76b1842f07cdf67b56d78e00cce70cb5e03b1c65f9daee09739011590026d",
       "admin/functions.php": "96fea0e354d9149b36ee09d0715680bbb4f2f2353bf81f8d22b68ea1775f8de8",
-      "admin/header.php": "f70be5c0ca9fdc0139c96f14a513ed34ac5fc5dafd4c9cd0900b65e203131a53",
+      "admin/header.php": "5c29c2a328f5fd81588c0fcf29c448335d1fbece96368762ef5327b9743864be",
       "admin/import-products.php": "c66035bd8b1509d68a4f5a747268edee7594810a456ac9bef17070fd8b10594f",
-      "admin/index.php": "23303d3a2f4947915b4c27106b0e4162d10bb3f9168d191dfe6f537c43348fcd",
+      "admin/index.php": "49c49b234594b98ce622fc241cadb48081f4601957fe52d330b710d2ef75159a",
       "admin/login.php": "3d8d799826b62d26fe3854fcde835f9cdadbaa4cb6bbf666683b680b8f3aae93",
       "admin/logout.php": "f8f76826d96d3df7ae9fc53616d0b384fe78ea86e95d8b8500ffad55766967f3",
-      "admin/media-service.php": "7a2b16cebb2c12dda9160280ce148da34f0dda6d7fc14da8da323f7dad53aa04",
+      "admin/media-service.php": "d0153387d0e1d9e0126d0ce0a724052697ccc00ca0c5aca43f932727986b8c35",
       "admin/private-image.php": "978c2263c7c9747ee3cbfdca0067f18c1b66de313a2a6394050e59e4fa416e9e",
       "admin/product-order.php": "b9f04869f0a8ef92f989e4ea057d86a592b017424450f382630c5d7f37c26561",
-      "admin/products.php": "40c388dd3c78f2ad89287f14ea324bd7dea020246cf4796001a542b0b8aa80e1",
+      "admin/products.php": "011e1fb60d33d70ad3292f731f6b541ac2ccca0f0c717e5b4fbfbc663e94e592",
       "admin/security.php": "1f6894e7deb044e81f341f68e6b10e998f74fca47a5a0e9a77a9ccb1150a9e26",
       "database/lib.php": "0d7743c1116feee58588169cac2267704d96f7c8793c0697b666e4bc0a44a48d",
-      "index.html": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
+      "index.html": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
       "media/.htaccess": "34e5851682c6e610e10176f9658101125ede909dbac8661d2e0d015ea2385fe8"
     },
     "private": {
-      "admin/media-service.php": "7a2b16cebb2c12dda9160280ce148da34f0dda6d7fc14da8da323f7dad53aa04",
+      "admin/media-service.php": "d0153387d0e1d9e0126d0ce0a724052697ccc00ca0c5aca43f932727986b8c35",
       "admin/security.php": "1f6894e7deb044e81f341f68e6b10e998f74fca47a5a0e9a77a9ccb1150a9e26",
       "config.production.example.php": "b8e5ed4353ec63fa1fd91b01070225106a270dfcb6b7459d4b694a8b6975144a",
       "database/cli.php": "dd02bf047f542f5622ac6be100e7a67d0015f60826fc31926730b2bfe0b34de7",

@@ -103,12 +103,35 @@
           "bytes": 130309
         }
       ]
+    },
+    {
+      "id": "rev2-feedback-steps",
+      "date": "2026-10-19",
+      "description": "User-requested step-by-step feedback (topic, rating, message) modeled on the legacy flow. Admin moved to /admin. Colors and tokens unchanged.",
+      "verify_rule": "Recompute these hashes after guest changes. Preserve the revision 1 design.",
+      "files": [
+        {
+          "relative_path": "chef-onizleme.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "index.html",
+          "sha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
+          "bytes": 135268
+        },
+        {
+          "relative_path": "public_html/index.html",
+          "sha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
+          "bytes": 135268
+        }
+      ]
     }
   ],
   "current_revision": {
-    "id": "rev2-feedback-steps",
+    "id": "rev3-ux",
     "date": "2026-10-19",
-    "description": "User-requested step-by-step feedback (topic, rating, message) modeled on the legacy flow. Admin moved to /admin. Colors and tokens unchanged.",
+    "description": "User-requested: Wi-Fi dialog with copy button, campaign as session pop-up, single-animation dialogs with animated close, thumbnails in grid, layered product photo. Colors unchanged.",
     "verify_rule": "Recompute these hashes after guest changes. Preserve the revision 1 design.",
     "files": [
       {
@@ -118,13 +141,13 @@
       },
       {
         "relative_path": "index.html",
-        "sha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
-        "bytes": 135268
+        "sha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
+        "bytes": 141236
       },
       {
         "relative_path": "public_html/index.html",
-        "sha256": "3184a4034615ff84e071df05517dfb0cc3feccbdea5008514f2f50642c2aeb08",
-        "bytes": 135268
+        "sha256": "97506f78adebc279d5333322a283a95dbdc2ed2aaecee8271de71d902306346b",
+        "bytes": 141236
       }
     ]
   }

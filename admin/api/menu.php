@@ -59,6 +59,16 @@ function menu_public_image(?string $reference): ?string
     return $url;
 }
 
+// Grid cards use the small derivative. Falls back to the main image when no thumbnail exists.
+function menu_public_thumbnail(?string $reference): ?string
+{
+    if (menu_public_image($reference) === null) {
+        return null;
+    }
+    $url = chef_media_thumbnail_url($reference);
+    return is_string($url) && str_starts_with($url, '/') && !str_starts_with($url, '//') ? $url : menu_public_image($reference);
+}
+
 function menu_etag_matches(string $etag): bool
 {
     $header = trim((string)($_SERVER['HTTP_IF_NONE_MATCH'] ?? ''));
@@ -95,6 +105,7 @@ try {
             'id' => $publicId,
             'name' => menu_localized_field($row, 'name'),
             'image' => menu_public_image(menu_nullable_text($row['image_path'] ?? null)),
+            'thumbnail' => menu_public_thumbnail(menu_nullable_text($row['image_path'] ?? null)),
         ];
     }
 
@@ -122,6 +133,7 @@ try {
             'name' => menu_localized_field($row, 'name'),
             'description' => menu_localized_field($row, 'description'),
             'image' => menu_public_image(menu_nullable_text($row['image_path'] ?? null)),
+            'thumbnail' => menu_public_thumbnail(menu_nullable_text($row['image_path'] ?? null)),
             'price' => (float)$row['price'],
             'ingredients' => menu_ingredient_field($row),
             'calories' => $calories,
