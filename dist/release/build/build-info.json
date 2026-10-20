@@ -6,8 +6,8 @@
     {
       "file": "public_html.zip",
       "entries": 31,
-      "sha256": "7ef211e3b97e96b05f29f534476b25624c72a3eafc2b09d493768087194ea06d",
-      "bytes": 134926
+      "sha256": "f3857efacb80b21ca82c96ca97276e2f92985bfa189f35f269ae118be1d4a0d8",
+      "bytes": 134994
     },
     {
       "file": "chef-private-setup.zip",
@@ -24,7 +24,7 @@
   ],
   "files": {
     "public": {
-      ".htaccess": "cbea6a361a342db1b771cb474ba146d883967dcb679b06dcca77514c3b2bcad2",
+      ".htaccess": "df9240b34b1b83b8dc6e1f8982e3958fa9b7a9c98b5cde4621a2e17c53a3eb7d",
       "admin/.htaccess": "7f95b43d20f288f5d9c56a003d2171309940b2afe79e4ac9a93f0c2ec29e16ad",
       "admin/api/feedback.php": "87d73effa1ff7aa2d0cbf5a590c3882e65cfc9fc1d11a7d1c086459972bb8c4b",
       "admin/api/menu.php": "9cd519849d049845c30924a0bbcbe52ca84d42b11c072cb7e0a08f2c321ff9b3",
