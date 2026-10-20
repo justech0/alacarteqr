@@ -75,6 +75,7 @@ if ((Compare-Object $actualAdminPhp ($adminPhp | Sort-Object)) -ne $null) {
 
 $public = [ordered]@{
     'index.html' = Repo 'public_html\index.html'
+    '404.html' = Repo 'public_html\404.html'
     '.htaccess' = Repo 'public_html\.htaccess'
     'media/.htaccess' = Repo 'media\.htaccess'
     'database/lib.php' = Repo 'database\lib.php'

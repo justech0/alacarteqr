@@ -1,5 +1,8 @@
 Options -Indexes
 
+# Unknown addresses show the Chef 404 page.
+ErrorDocument 404 /404.html
+
 # The public package includes database/lib.php for the admin runtime. Never serve it.
 <IfModule mod_alias.c>
     RedirectMatch 404 "(?i)(?:^|/)database/"
@@ -19,6 +22,13 @@ Options -Indexes
         Header always set X-Frame-Options "DENY"
         Header always set Cross-Origin-Opener-Policy "same-origin"
         # Browsers revalidate the page on each visit. An unchanged page costs only a 304 reply.
+        Header always set Cache-Control "no-cache"
+    </Files>
+
+    # 404 page: one inline style, no script.
+    <Files "404.html">
+        Header always set Content-Security-Policy "default-src 'none'; style-src 'sha256-VI1PFkp+Kt0si3JcdnGfrhSWaIdFQl+wlpsN0z+GOSw='; img-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'"
+        Header always set X-Frame-Options "DENY"
         Header always set Cache-Control "no-cache"
     </Files>
 </IfModule>
