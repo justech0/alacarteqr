@@ -75,6 +75,9 @@
 
 }
 
+/* Calories show only in the product pop-up */
+#product-calories:not([hidden]) { display: inline-flex; align-items: center; margin-top: 14px; padding: 5px 12px; border-radius: 999px; background: var(--soft); color: var(--green); font-size: 13px; font-weight: 600; }
+
 /* WiFi dialog */
 .wifi-content { text-align: center; }
 .wifi-content .wifi-symbol { margin: 0 auto 14px; }
@@ -1030,7 +1033,7 @@ SOFTWARE.
   <dialog id="product-dialog" class="dialog product-dialog" aria-labelledby="product-title">
     <button class="icon-button close-button" type="button" data-close aria-label="Kapat"><span data-icon="close"></span></button>
     <div id="product-photo" class="product-photo"></div>
-    <div class="dialog-content"><p id="product-category" class="eyebrow"></p><div class="product-title-row"><h2 id="product-title"></h2><span id="product-price" class="detail-price"></span></div><p id="product-description" class="detail-description"></p><div id="ingredients" hidden><h3 data-text="ingredients">İçindekiler</h3><ul id="ingredient-list"></ul></div><p id="product-calories" class="calories" hidden></p><p class="allergy-note" data-text="allergy">Alerjen bilgisi için ekibimize danışın.</p></div>
+    <div class="dialog-content"><p id="product-category" class="eyebrow"></p><div class="product-title-row"><h2 id="product-title"></h2><span id="product-price" class="detail-price"></span></div><p id="product-description" class="detail-description"></p><div id="ingredients" hidden><h3 data-text="ingredients">İçindekiler</h3><ul id="ingredient-list"></ul></div><p id="product-calories" class="calories" hidden></p></div>
   </dialog>
   <dialog id="campaign" class="dialog campaign-dialog" aria-label="Kampanya">
     <button class="icon-button close-button" id="campaign-close" type="button" data-close aria-label="Kapat"><span data-icon="close"></span></button>
@@ -1167,7 +1170,7 @@ function qe() {
   let t=Ee(h.items,n.category,n.query,n.lang),r=h.categories.find(o=>o.id===n.category),menuEmpty=!n.query.trim()&&h.items.length===0;
   a("#section-title").textContent=n.query.trim()?l("results"):r?b(r.name):l("menu");a("#clear-search").hidden=!n.query;empty.hidden=t.length>0;action.hidden=menuEmpty;
   title.textContent=l(menuEmpty?"menuEmpty":"empty");hint.textContent=l(menuEmpty?"menuEmptyHint":"emptyHint");action.textContent=l("reset");
-  grid.replaceChildren();t.forEach((o,s)=>{let f=p("button","product-card");f.type="button",f.dataset.id=o.id,f.dataset.category=o.category,f.setAttribute("aria-haspopup","dialog");let x=p("span","card-photo");x.append(W(o,s<2,!0));let c=p("span","card-body");c.append(p("h3","",b(o.name)),p("p","",b(o.description).replace(/\s*\+\s*/g," · ")));let m=p("span","card-bottom"),u=p("span","price",De(o.price));u.append(p("b","","₺")),m.append(u),G(o)&&m.append(p("span","card-calories",String(o.calories)+" "+l("kcal"))),c.append(m),f.append(x,c),f.addEventListener("click",()=>{n.product=o,Ne(),oe(a("#product-dialog"))}),grid.append(f)}),e&&Le(grid)
+  grid.replaceChildren();t.forEach((o,s)=>{let f=p("button","product-card");f.type="button",f.dataset.id=o.id,f.dataset.category=o.category,f.setAttribute("aria-haspopup","dialog");let x=p("span","card-photo");x.append(W(o,s<2,!0));let c=p("span","card-body");c.append(p("h3","",b(o.name)),p("p","",b(o.description).replace(/\s*\+\s*/g," · ")));let m=p("span","card-bottom"),u=p("span","price",De(o.price));u.append(p("b","","₺")),m.append(u),c.append(m),f.append(x,c),f.addEventListener("click",()=>{n.product=o,Ne(),oe(a("#product-dialog"))}),grid.append(f)}),e&&Le(grid)
 }function Ne(){let e=n.product;if(!e)return;a("#product-photo").replaceChildren(...productPhoto(e)),a("#product-title").textContent=b(e.name),a("#product-price").textContent=`${De(e.price)} \u20BA`,a("#product-category").textContent=b(h.categories.find(r=>r.id===e.category)?.name),a("#product-description").textContent=b(e.description).replace(/\s*\+\s*/g," \xB7 ");let t=e.ingredientsVerified===!0&&Array.isArray(e.ingredients?.[n.lang])?e.ingredients[n.lang]:[];a("#ingredients").hidden=!t.length,a("#ingredient-list").replaceChildren(...t.map(r=>p("li","",r))),a("#product-calories").hidden=!G(e),a("#product-calories").textContent=G(e)?`${e.calories} ${l("kcal")}`:""}var selectedRating = 0;
 var feedbackStep = 1;
 function goFeedbackStep(step) {

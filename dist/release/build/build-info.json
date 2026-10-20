@@ -1,13 +1,13 @@
 {
   "schemaVersion": "2026101501",
-  "guestIndexSha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
+  "guestIndexSha256": "21228a6740ab31d4b59c8ab3d56140e19ed88c089651c4c335fe34140ba0c8a4",
   "testSecretMarkersChecked": 3,
   "archives": [
     {
       "file": "public_html.zip",
       "entries": 31,
-      "sha256": "fe0e426512bd1bfe1eff6424944a07828f8a3aa4f22467ef4af9e7c8003cf009",
-      "bytes": 134825
+      "sha256": "7ef211e3b97e96b05f29f534476b25624c72a3eafc2b09d493768087194ea06d",
+      "bytes": 134926
     },
     {
       "file": "chef-private-setup.zip",
@@ -24,12 +24,12 @@
   ],
   "files": {
     "public": {
-      ".htaccess": "cd3d0fb6feb44dbaf448d67f181aea40039495f323d64ffc8af1da9fa06e7dfb",
+      ".htaccess": "cbea6a361a342db1b771cb474ba146d883967dcb679b06dcca77514c3b2bcad2",
       "admin/.htaccess": "7f95b43d20f288f5d9c56a003d2171309940b2afe79e4ac9a93f0c2ec29e16ad",
       "admin/api/feedback.php": "87d73effa1ff7aa2d0cbf5a590c3882e65cfc9fc1d11a7d1c086459972bb8c4b",
       "admin/api/menu.php": "9cd519849d049845c30924a0bbcbe52ca84d42b11c072cb7e0a08f2c321ff9b3",
       "admin/api/translate.php": "fd3ffcbedd00f84d65243fe928ff6e41d40f65c0388f8c5099fcb94e388a9afa",
-      "admin/assets/admin.css": "c0b1f1ce31a53d01f02b992ae1dc4b0033bb6ae25095816c789a69a1bd093835",
+      "admin/assets/admin.css": "f7819b1065fa15a345a5034c0239e0dd7e7d3b0e52b59787cb5fb1db09dc6e03",
       "admin/assets/admin.js": "7a15b62ae567535f8351226c9aba7bdf7a02dd2510a825c6ee6368aa3d0bb29f",
       "admin/assets/chef-logo.svg": "d522d37fdbf028fecdabb5abf91f6dbbc9e995c1e5f13ad3341db2350e8c3ac5",
       "admin/assets/THIRD_PARTY_NOTICES.txt": "4e0c60fb6cf1e6099ee29b27e2038dbd6f4c9f68ae547908be4f7f10abebc7eb",
@@ -50,10 +50,10 @@
       "admin/media-service.php": "d0153387d0e1d9e0126d0ce0a724052697ccc00ca0c5aca43f932727986b8c35",
       "admin/private-image.php": "978c2263c7c9747ee3cbfdca0067f18c1b66de313a2a6394050e59e4fa416e9e",
       "admin/product-order.php": "b9f04869f0a8ef92f989e4ea057d86a592b017424450f382630c5d7f37c26561",
-      "admin/products.php": "553915457bb8227731756acb632069ede384d597dee2daa98fa2fe0350a44eef",
+      "admin/products.php": "d1181216b0bca9e537701e26eb02bf883ba39d24c58bf917265acee2c3425428",
       "admin/security.php": "1f6894e7deb044e81f341f68e6b10e998f74fca47a5a0e9a77a9ccb1150a9e26",
       "database/lib.php": "0d7743c1116feee58588169cac2267704d96f7c8793c0697b666e4bc0a44a48d",
-      "index.html": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
+      "index.html": "21228a6740ab31d4b59c8ab3d56140e19ed88c089651c4c335fe34140ba0c8a4",
       "media/.htaccess": "34e5851682c6e610e10176f9658101125ede909dbac8661d2e0d015ea2385fe8"
     },
     "private": {

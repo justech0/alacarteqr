@@ -149,12 +149,35 @@
           "bytes": 141236
         }
       ]
+    },
+    {
+      "id": "rev4-scrollspy",
+      "date": "2026-10-20",
+      "description": "Category highlight reaches short last sections; tap keeps selection; dialog reopen guard. Colors unchanged.",
+      "verify_rule": "Recompute these hashes after guest changes.",
+      "files": [
+        {
+          "relative_path": "chef-onizleme.html",
+          "sha256": "afa9d953fffa936b3206b874f1d66179f370826b4e6adf83c165150e1cfb8928",
+          "bytes": 317468
+        },
+        {
+          "relative_path": "index.html",
+          "sha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
+          "bytes": 142029
+        },
+        {
+          "relative_path": "public_html/index.html",
+          "sha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
+          "bytes": 142029
+        }
+      ]
     }
   ],
   "current_revision": {
-    "id": "rev4-scrollspy",
+    "id": "rev5-calories",
     "date": "2026-10-20",
-    "description": "Category highlight reaches short last sections; tap keeps selection; dialog reopen guard. Colors unchanged.",
+    "description": "Allergy note removed. Calories show only in the product pop-up, not on cards.",
     "verify_rule": "Recompute these hashes after guest changes.",
     "files": [
       {
@@ -164,13 +187,13 @@
       },
       {
         "relative_path": "index.html",
-        "sha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
-        "bytes": 142029
+        "sha256": "21228a6740ab31d4b59c8ab3d56140e19ed88c089651c4c335fe34140ba0c8a4",
+        "bytes": 142130
       },
       {
         "relative_path": "public_html/index.html",
-        "sha256": "03511848d3e7db9497e8f0c16e176c614e3780095b704177cda7ba2fefcea849",
-        "bytes": 142029
+        "sha256": "21228a6740ab31d4b59c8ab3d56140e19ed88c089651c4c335fe34140ba0c8a4",
+        "bytes": 142130
       }
     ]
   }

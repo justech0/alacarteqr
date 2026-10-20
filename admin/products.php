@@ -422,7 +422,6 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
             <?php
             $fields = [
                 ['name', 'Ürün adı', 'text', 200, $editProduct['name'] ?? ''],
-                ['price', 'Fiyat (₺)', 'text', null, $editProduct['price'] ?? ''],
             ];
             foreach ($fields as [$field, $label, $type, $maxlength, $fallback]): $fieldError = $error($field); ?>
                 <div>
@@ -431,6 +430,20 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
                     <p id="product-<?php echo $field; ?>-error" role="alert" class="admin-field-error" <?php echo $fieldError ? '' : 'hidden'; ?>><?php echo $fieldError ? sanitize($fieldError) : ''; ?></p>
                 </div>
             <?php endforeach; ?>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label for="product-price" class="mb-1 block text-sm font-semibold">Fiyat (₺)</label>
+                    <input id="product-price" type="text" name="price" inputmode="decimal" required value="<?php echo sanitize($value('price', $editProduct['price'] ?? '')); ?>" class="w-full px-3 py-2" data-testid="product-price" <?php echo $error('price') ? 'aria-invalid="true" aria-describedby="product-price-error"' : ''; ?>>
+                    <p id="product-price-error" role="alert" class="admin-field-error" <?php echo $error('price') ? '' : 'hidden'; ?>><?php echo $error('price') ? sanitize($error('price')) : ''; ?></p>
+                </div>
+                <div>
+                    <label for="product-calories" class="mb-1 block text-sm font-semibold">Kalori (kcal)</label>
+                    <input id="product-calories" type="text" name="calories" inputmode="numeric" maxlength="5" placeholder="İsteğe bağlı" value="<?php echo sanitize($value('calories', $editProduct['calories'] ?? '')); ?>" class="w-full px-3 py-2" data-testid="product-calories" <?php echo $error('calories') ? 'aria-invalid="true"' : ''; ?>>
+                    <?php if ($error('calories')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('calories')); ?></p><?php endif; ?>
+                </div>
+            </div>
+            <p class="admin-muted -mt-2 text-xs">Kalori sadece ürün penceresinde gösterilir, fiyatın yanında görünmez.</p>
 
             <div>
                 <label for="product-category" class="mb-1 block text-sm font-semibold">Kategori</label>
@@ -450,8 +463,8 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
                 <?php if ($error('description')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('description')); ?></p><?php endif; ?>
             </div>
 
-            <details class="admin-raised rounded-xl px-4 py-3" <?php echo ($error('ingredients') || $error('calories')) ? 'open' : ''; ?>>
-                <summary class="cursor-pointer text-sm font-semibold">İçerik ve kalori <span class="admin-muted font-normal">(isteğe bağlı)</span></summary>
+            <details class="admin-raised rounded-xl px-4 py-3" <?php echo $error('ingredients') ? 'open' : ''; ?>>
+                <summary class="cursor-pointer text-sm font-semibold">İçerik <span class="admin-muted font-normal">(isteğe bağlı)</span></summary>
                 <div class="mt-3 space-y-3">
                     <?php foreach ([['ingredients', 'Türkçe içerik'], ['ingredients_en', 'İngilizce içerik'], ['ingredients_ar', 'Arapça içerik']] as [$field, $label]): ?>
                         <div>
@@ -460,12 +473,8 @@ $closeHref = 'products.php' . ($selectedCategory ? '?category=' . $selectedCateg
                             <?php if ($error($field)): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error($field)); ?></p><?php endif; ?>
                         </div>
                     <?php endforeach; ?>
-                    <div>
-                        <label for="product-calories" class="admin-muted mb-1 block text-sm">Kalori (kcal)</label>
-                        <input id="product-calories" type="text" inputmode="numeric" name="calories" maxlength="5" value="<?php echo sanitize($value('calories', $editProduct['calories'] ?? '')); ?>" class="w-full px-3 py-2" data-testid="product-calories">
-                        <?php if ($error('calories')): ?><p role="alert" class="admin-field-error"><?php echo sanitize($error('calories')); ?></p><?php endif; ?>
-                    </div>
-                    <p class="admin-muted text-xs">Doldurduğunuz içerik ve kalori bilgisi menüde gösterilir. Boş bırakılan alan gösterilmez.</p>
+
+                    <p class="admin-muted text-xs">Doldurulan içerik menüde ürün penceresinde gösterilir. Boş alan gösterilmez.</p>
                 </div>
             </details>
 
