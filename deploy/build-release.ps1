@@ -66,7 +66,7 @@ $noticeText = @(
 $adminPhp = @(
     'branches', 'bulk-prices', 'campaign', 'categories', 'category-order', 'config', 'feedbacks', 'footer',
     'functions', 'header', 'import-products', 'index', 'login', 'logout', 'media-service', 'private-image',
-    'product-order', 'products', 'security'
+    'product-order', 'products', 'security', 'translate-service'
 )
 $actualAdminPhp = @(Get-ChildItem -LiteralPath (Join-Path $repoRoot 'admin') -Filter '*.php' -File | ForEach-Object BaseName | Sort-Object)
 if ((Compare-Object $actualAdminPhp ($adminPhp | Sort-Object)) -ne $null) {
@@ -83,6 +83,7 @@ $public = [ordered]@{
     'admin/api/menu.php' = Repo 'admin\api\menu.php'
     'admin/api/feedback.php' = Repo 'admin\api\feedback.php'
     'admin/api/translate.php' = Repo 'admin\api\translate.php'
+    'admin/translate-service.php' = Repo 'admin\translate-service.php'
     'admin/assets/admin.css' = Repo 'admin\assets\admin.css'
     'admin/assets/admin.js' = Repo 'admin\assets\admin.js'
     'admin/assets/chef-logo.svg' = Repo 'admin\assets\chef-logo.svg'

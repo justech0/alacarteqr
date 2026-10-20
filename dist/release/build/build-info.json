@@ -5,15 +5,15 @@
   "archives": [
     {
       "file": "public_html.zip",
-      "entries": 32,
-      "sha256": "cb6985a2f2c8ebf72d742e36a34e7092bda37fde6ba07e4dfe322928f3bfc50e",
-      "bytes": 136922
+      "entries": 33,
+      "sha256": "c23e09d09a4daf80a04be8563cde56285151adbb7456998d91d059f190895b82",
+      "bytes": 137462
     },
     {
       "file": "chef-private-setup.zip",
       "entries": 14,
-      "sha256": "15984af4e5221ed701c84ff2ccd6241637c26cbdeb343160e3b4b67c5cc2a35e",
-      "bytes": 40863
+      "sha256": "3eabdc43be71828b7028acf3fb19191592191b9abe1c74c40ac9ab2c26ab53bf",
+      "bytes": 41001
     },
     {
       "file": "INSTALL_TR.md",
@@ -29,7 +29,7 @@
       "admin/.htaccess": "7f95b43d20f288f5d9c56a003d2171309940b2afe79e4ac9a93f0c2ec29e16ad",
       "admin/api/feedback.php": "87d73effa1ff7aa2d0cbf5a590c3882e65cfc9fc1d11a7d1c086459972bb8c4b",
       "admin/api/menu.php": "433ee8624dc87f2f221022c2ca06a5150389ffe31ce6cb0298d7f1c6ddb9f0f9",
-      "admin/api/translate.php": "fd3ffcbedd00f84d65243fe928ff6e41d40f65c0388f8c5099fcb94e388a9afa",
+      "admin/api/translate.php": "6b0c092b5deabcb4807e7fa277be60b555b3383f57865ed25f5ffa04f24aff8b",
       "admin/assets/admin.css": "f7819b1065fa15a345a5034c0239e0dd7e7d3b0e52b59787cb5fb1db09dc6e03",
       "admin/assets/admin.js": "7a15b62ae567535f8351226c9aba7bdf7a02dd2510a825c6ee6368aa3d0bb29f",
       "admin/assets/chef-logo.svg": "d522d37fdbf028fecdabb5abf91f6dbbc9e995c1e5f13ad3341db2350e8c3ac5",
@@ -48,17 +48,18 @@
       "admin/index.php": "49c49b234594b98ce622fc241cadb48081f4601957fe52d330b710d2ef75159a",
       "admin/login.php": "4a26a11c58f5ef9a519198c858cb67c6bf164f408daad2ec5a3fffea0b0c8788",
       "admin/logout.php": "f8f76826d96d3df7ae9fc53616d0b384fe78ea86e95d8b8500ffad55766967f3",
-      "admin/media-service.php": "d0153387d0e1d9e0126d0ce0a724052697ccc00ca0c5aca43f932727986b8c35",
+      "admin/media-service.php": "8dcd02307c8bbba5328606bae37e6e87260bf50da6203dbdfc7fae7083e9d106",
       "admin/private-image.php": "978c2263c7c9747ee3cbfdca0067f18c1b66de313a2a6394050e59e4fa416e9e",
       "admin/product-order.php": "b9f04869f0a8ef92f989e4ea057d86a592b017424450f382630c5d7f37c26561",
       "admin/products.php": "d1181216b0bca9e537701e26eb02bf883ba39d24c58bf917265acee2c3425428",
       "admin/security.php": "1f6894e7deb044e81f341f68e6b10e998f74fca47a5a0e9a77a9ccb1150a9e26",
+      "admin/translate-service.php": "9a0eba57514a4b4e4db6124a77e158a0fcfc839c5473b05f1ce1fce6258bd7c5",
       "database/lib.php": "0d7743c1116feee58588169cac2267704d96f7c8793c0697b666e4bc0a44a48d",
       "index.html": "21228a6740ab31d4b59c8ab3d56140e19ed88c089651c4c335fe34140ba0c8a4",
       "media/.htaccess": "34e5851682c6e610e10176f9658101125ede909dbac8661d2e0d015ea2385fe8"
     },
     "private": {
-      "admin/media-service.php": "d0153387d0e1d9e0126d0ce0a724052697ccc00ca0c5aca43f932727986b8c35",
+      "admin/media-service.php": "8dcd02307c8bbba5328606bae37e6e87260bf50da6203dbdfc7fae7083e9d106",
       "admin/security.php": "1f6894e7deb044e81f341f68e6b10e998f74fca47a5a0e9a77a9ccb1150a9e26",
       "config.production.example.php": "b8e5ed4353ec63fa1fd91b01070225106a270dfcb6b7459d4b694a8b6975144a",
       "database/cli.php": "dd02bf047f542f5622ac6be100e7a67d0015f60826fc31926730b2bfe0b34de7",

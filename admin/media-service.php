@@ -390,24 +390,32 @@ function chef_media_write_webp(GdImage $image, string $relativePath, int $qualit
     return ['bytes' => filesize($path), 'width' => $info[0], 'height' => $info[1]];
 }
 
-function chef_media_stage_upload(PDO $pdo, string $fieldName, string $ownerType): ?array
+// $localFile is for the command-line importer only. Web requests always use $_FILES.
+function chef_media_stage_upload(PDO $pdo, string $fieldName, string $ownerType, ?string $localFile = null): ?array
 {
     $owner = chef_media_owner($ownerType);
     $limits = chef_media_limits();
-    $upload = $_FILES[$fieldName] ?? null;
-    if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
-        return null;
-    }
-    chef_media_assert_request_size();
-    $error = (int)($upload['error'] ?? UPLOAD_ERR_NO_FILE);
-    if ($error !== UPLOAD_ERR_OK) {
-        throw new ChefMediaValidationException(in_array($error, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
-            ? 'The uploaded image is too large.'
-            : 'The uploaded image could not be received.');
-    }
-    $source = (string)($upload['tmp_name'] ?? '');
-    if ($source === '' || !is_uploaded_file($source)) {
-        throw new ChefMediaValidationException('The uploaded file provenance is invalid.');
+    if ($localFile !== null) {
+        if (PHP_SAPI !== 'cli' || !is_file($localFile) || is_link($localFile)) {
+            throw new ChefMediaValidationException('The local image file is invalid.');
+        }
+        $source = $localFile;
+    } else {
+        $upload = $_FILES[$fieldName] ?? null;
+        if (!is_array($upload) || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+            return null;
+        }
+        chef_media_assert_request_size();
+        $error = (int)($upload['error'] ?? UPLOAD_ERR_NO_FILE);
+        if ($error !== UPLOAD_ERR_OK) {
+            throw new ChefMediaValidationException(in_array($error, [UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE], true)
+                ? 'The uploaded image is too large.'
+                : 'The uploaded image could not be received.');
+        }
+        $source = (string)($upload['tmp_name'] ?? '');
+        if ($source === '' || !is_uploaded_file($source)) {
+            throw new ChefMediaValidationException('The uploaded file provenance is invalid.');
+        }
     }
     $actualSize = filesize($source);
     if ($actualSize === false || $actualSize < 1 || $actualSize > $limits['max_bytes']) {
@@ -417,7 +425,7 @@ function chef_media_stage_upload(PDO $pdo, string $fieldName, string $ownerType)
     $operationId = bin2hex(random_bytes(16));
     $sourceRelative = $operationId . '-source.upload';
     $sourcePath = chef_media_absolute_path('temporary', $sourceRelative);
-    if (!move_uploaded_file($source, $sourcePath)) {
+    if (!($localFile !== null ? copy($source, $sourcePath) : move_uploaded_file($source, $sourcePath))) {
         throw new ChefMediaStorageException('The uploaded file could not enter staging.');
     }
     $expires = gmdate('Y-m-d H:i:s', time() + $limits['ttl']);
