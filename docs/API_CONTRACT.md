@@ -56,7 +56,7 @@ Route: `GET /admin/api/menu.php`.
 
 - The cache key is the request origin and menu route.
 - The response does not vary by user, session, or language.
-- `ETag` uses the committed `menu_version`: `"chef-menu-v<version>"`.
+- `ETag` uses the committed `menu_version` and the API file time: `"chef-menu-v<version>-b<mtime>"`. A deploy changes it.
 - `Cache-Control` is `public, no-cache, max-age=0, must-revalidate`.
 - `Vary` is `Accept-Encoding`.
 - A matching `If-None-Match` returns `304` without a body.

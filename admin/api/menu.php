@@ -81,7 +81,9 @@ function menu_etag_matches(string $etag): bool
 try {
     $pdo->beginTransaction();
     $version = get_menu_version($pdo);
-    $etag = '"chef-menu-v' . $version . '"';
+    // The file time changes on every deploy, so a new response format or order
+    // never hides behind a browser copy that has the same menu version.
+    $etag = '"chef-menu-v' . $version . '-b' . (int)@filemtime(__FILE__) . '"';
     header('ETag: ' . $etag);
     if (menu_etag_matches($etag)) {
         $pdo->rollBack();
@@ -115,7 +117,8 @@ try {
                 ingredients, ingredients_en, ingredients_ar, calories,
                 ingredients_verified_at, calories_verified_at
          FROM products
-         ORDER BY sort_order ASC, id ASC'
+         ORDER BY (SELECT c.sort_order FROM categories c WHERE c.id = products.category_id) ASC,
+                  category_id ASC, sort_order ASC, id ASC'
     );
     $productStatement->execute();
     $items = [];
